@@ -1,1 +1,34 @@
+/* *, *::before, *::after{
+  box-sizing: border-box;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: normal;
+} */
+
+.App{
+  min-height: 100vh;
+  font-family: "Roboto";
+  background-color: #262626;
+}
+
+
+
+/*  TODO move to styled components */
+
+/* .search-container{
+  display: flex;
+  justify-content: center;
+  margin-top: 2%;
+}
+
+.search-bar{
+  width: 20%;
+  border-radius: 50em;
+  border: none;
+  padding: 10px;
+} */
+
+.focus:focus{
+  outline: none;
+}
+
 

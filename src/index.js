@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import "./index.css";
+import "./fonts/Roboto-Regular.ttf";
+import "./fonts/Roboto-Medium.ttf";
 import App from './App';
 
 ReactDOM.render(
