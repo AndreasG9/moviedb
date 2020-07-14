@@ -5,30 +5,23 @@
 } */
 
 .App{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
   min-height: 100vh;
+
   font-family: "Roboto";
   background-color: #262626;
+  box-sizing: border-box;
 }
-
-
-
-/*  TODO move to styled components */
-
-/* .search-container{
-  display: flex;
-  justify-content: center;
-  margin-top: 2%;
-}
-
-.search-bar{
-  width: 20%;
-  border-radius: 50em;
-  border: none;
-  padding: 10px;
-} */
 
 .focus:focus{
   outline: none;
 }
 
-
+.hover:hover{
+  cursor: pointer;
+  color: white !important;
+} 
