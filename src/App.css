@@ -17,11 +17,19 @@
   box-sizing: border-box;
 }
 
+input{
+  font-family: Roboto;
+  font-size: 1em;
+}
+
+
 .focus:focus{
   outline: none;
+  background-color: #eee !important;
+  box-shadow: 0px 0px 4px 4px #7eaad6;
 }
 
 .hover:hover{
   cursor: pointer;
-  color: white !important;
+  color: #fff !important;
 } 
