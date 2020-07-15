@@ -89,9 +89,6 @@ const lists_style = {
   marginLeft: ""
 }
 
-function todo(){
-  // todo 
-}
 
 
 

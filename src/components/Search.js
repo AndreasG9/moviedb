@@ -10,8 +10,7 @@ function Search( {update_search, get_search}) {
             style={search_bar_style}
             className="focus" 
             type="text" 
-            onChange={update_search}
-            >
+            onChange={update_search}>
           </input>
           <button 
             style={search_button_style} 
