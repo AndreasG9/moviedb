@@ -33,3 +33,13 @@ input{
   cursor: pointer;
   color: #fff !important;
 } 
+
+
+.hover-blue:hover{
+  cursor: pointer;
+  color: #adadff !important; 
+}
+
+
+
+

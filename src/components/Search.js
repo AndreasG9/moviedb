@@ -50,9 +50,7 @@ function Search( props ) {
 
     console.log(data.results);
 
-    //props.history.push("/search"); // redirect to "/search", which loads the SearchResults component 
-
-    props.history.push("/search", {results: data.results})
+    props.history.push("/search", {results: data.results, query:query}); // redirect to "/search", which loads the SearchResults component 
 
   }
 
@@ -83,12 +81,12 @@ function Search( props ) {
 
 // Style 
 const  container_style = {
-  marginTop: "3%",
+  marginTop: "2%",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   position: "relative",
-  left: "15%"
+  left: "12%"
 }
 
 const search_bar_style = {
@@ -97,12 +95,12 @@ const search_bar_style = {
   borderRadius: "50em", 
   border: "none",
   padding: "10px",
-  width: "20%"
+  width: "12%"
 }
 
 const search_button_style = {
   position: "absolute",
-  right: "40%",
+  right: "44%",
   border: "none",
   backgroundColor: "#404040",
   marginTop: "3px"

@@ -2,15 +2,13 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import SearchRes from "../components/SearchRes"; 
 
-function SearchResults( {props} ) {
+function SearchResults( {results, query} ) {
   // load SearchRes component, narrow search nav component 
 
-  // const state = props.location.results; 
-   console.log(props); 
 
   return (
     <div>
-      {/* <SearchRes></SearchRes> */}
+      <SearchRes results={results} query={query}></SearchRes>
     </div>
   )
 }
