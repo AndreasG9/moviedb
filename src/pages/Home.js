@@ -1,7 +1,7 @@
 import React from "react";
 import BrowseBy from "../components/BrowseBy"; 
 import Search from "../components/Search"; 
-
+import Header from "../components/Header";
 
  function Home() {
   // Home Page (FILMS)
@@ -10,10 +10,13 @@ import Search from "../components/Search";
 
   return (
     <div>
+      
+      <Header></Header>
+      {/* <Search></Search> */}
+      {/* <BrowseBy></BrowseBy> */}
 
-      <Search></Search>
-      <BrowseBy></BrowseBy>
 
+    
       
     </div>
   )

@@ -5,12 +5,26 @@ import FilmResult from "./FilmResult";
    // Display results, each result is of component FilmResult ... 
    // See the Poster, Title, Year, and Director for each result 
 
-   // to access year and director need to use movie id for GET /movie/{movie_id}
+  // to access director: GET /movie/{movie_id}/credits for director 
+  // let movie = `https://api.themoviedb.org/3/movie/${id}?api_key=1584051e241f7b281373448a78937e84&language=en-US`; 
 
-   // TEST
+  // function get_year(id){
+  //   let movie = `https://api.themoviedb.org/3/movie/${id}?api_key=1584051e241f7b281373448a78937e84&language=en-US`; 
+
+  //   fetch(movie)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       return data.release_date; 
+  //     }); 
+  // }
 
 
-   //let movie = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=1584051e241f7b281373448a78937e84&language=en-US`; 
+  function get_director(id){
+    let movie = `https://api.themoviedb.org/3/movie/${id}?api_key=1584051e241f7b281373448a78937e84&language=en-US`; 
+
+
+
+  }
 
   return (
     <div>
@@ -19,9 +33,15 @@ import FilmResult from "./FilmResult";
 
         <h3 style={header_style}> FOUND {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </h3>
 
-        <section style={results_container}>
+        <section>
+          {
+            // filter results (need min ___ hits ), search has to match 100% 
+
+
+
+          }
           {results.map( (result) => (
-            <FilmResult result={result} key={result.id}></FilmResult>
+            <FilmResult key={result.id} result={result}  ></FilmResult>
           ))}
         </section>
 
@@ -36,12 +56,12 @@ import FilmResult from "./FilmResult";
   )
 }
 
+
 // Style 
 const results_container_style = {
   width: "40%",
   position: "relative",
   left: "25%", 
-  marginTop: "5px" 
 }
 
 const header_style = {

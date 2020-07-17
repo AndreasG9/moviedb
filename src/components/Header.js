@@ -1,14 +1,11 @@
 import React from "react";
-//import { Link } from "react-router-dom"; 
-
-// TESTING, context when first visit page
+import Search from "./Search"; 
 
 function Header(  ){
 
-  
+
 
   return(
-
     
     <div style={header_div_style}>
       <h1 style={header_style} className="hover" >
@@ -23,7 +20,7 @@ function Header(  ){
         <button style={{...nav_button, ...lists_style}} className="hover focus" >LISTS</button>
       </nav>
 
-
+      <Search></Search>
 
     </div>
   );
@@ -33,15 +30,17 @@ function Header(  ){
 const header_div_style = {
   width: "100%",
   height: "7%",
-  backgroundColor: "#1a1a1a",
+  // backgroundColor: "#1a1a1a",
+  // backgroundColor: "#1E1E1E", 
+  backgroundColor: "#13181c", 
   fontSize: "1.3rem",
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
 }
 
 const header_style = {
   marginLeft: "25%",
-  color: "#fffff4",
+  color: "#e1e3e5",
 }
 
 // const icon_style = {
@@ -56,7 +55,7 @@ const header_style = {
 
 
 const nav_style = {
-  marginLeft: "18%",
+  marginLeft: "15%",
   display: "flex",
   justifyContent: "space-between",
   width: "20%",
@@ -66,20 +65,14 @@ const nav_style = {
 const nav_button = {
   border: "none",
   background: "none",
-  color: "#a5a5a5",
+  color: "#6f797d",
   fontFamily: "Roboto",
   fontSize: "1.0rem",
   padding: "5px",
 }
 
 const sign_in_style = {
-  //marginLeft: "600px",
-  // border: "none",
-  // background: "none",
-  // color: "#a5a5a5",
-  // marginTop: "auto",
-  // fontFamily: "Roboto",
-  // fontSize: "1.0rem"
+
 }
 
 const create_account_style = {

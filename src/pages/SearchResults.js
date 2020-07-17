@@ -1,6 +1,7 @@
 import React from "react"; 
 import { withRouter } from "react-router-dom";
-import SearchRes from "../components/SearchRes"; 
+import Results from "../components/Results"; 
+import Header from "../components/Header";
 
 function SearchResults( {results, query} ) {
   // load SearchRes component, narrow search nav component 
@@ -8,7 +9,8 @@ function SearchResults( {results, query} ) {
 
   return (
     <div>
-      <SearchRes results={results} query={query}></SearchRes>
+      <Header></Header>
+      <Results results={results} query={query}></Results>
     </div>
   )
 }
