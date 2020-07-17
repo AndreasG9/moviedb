@@ -19,9 +19,15 @@
 } */
 
 
-html, body{
-  height: 100%;
-  background: linear-gradient( #1d242b,#1b2229, #181d22, #181f21); 
+html{
+  min-height: 100%;
+  /* background: linear-gradient( #1d242b,#1b2229, #181d22, #181f21);  */
+}
+
+body{
+  background: linear-gradient(180deg, #1d242b 2%,#1b2229 4%, #181d22 10%, #181f21 100% ); 
+  /* background: linear-gradient(90deg, rgba(29,36,43,1) 1%, rgba(27,34,41,1) 5%, rgba(24,31,33,1) 100%); */
+  
 }
 
 
