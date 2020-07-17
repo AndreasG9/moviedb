@@ -17,3 +17,11 @@
     url(./fonts/Roboto-Medium.ttf),
     format("truetype")
 } */
+
+
+html, body{
+  height: 100%;
+  background: linear-gradient( #1d242b,#1b2229, #181d22, #181f21); 
+}
+
+
