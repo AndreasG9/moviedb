@@ -35,7 +35,7 @@ function Header( props ){
 const HeaderContainer = styled.header`
   background-color: #13181c; 
   display: flex;
-  alignItems: center;
+  align-items: center;
   height: 90px;
 `;
 
