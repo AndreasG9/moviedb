@@ -8,11 +8,14 @@ const Routes = () => (
   <Router>
 
     <Route exact path="/" component={Home}></Route>
+    
     <Route 
       path="/search" 
       render = { (props) => <SearchResults results={props.location.state.results} query={props.location.state.query}></SearchResults>} 
       >
     </Route>
+
+    <Route path="/film "></Route>
 
     {/* render={(props) => <SearchResults result={props.location.results}></SearchResults>} */}
 

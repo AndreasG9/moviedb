@@ -12,17 +12,25 @@ function BrowseBy() {
       <Label>BROWSE BY</Label>
 
       <Container2>
-        <Select>
+        {/* <Select>
           <Option hidden>POPULAR</Option>
           <Option>ALL TIME</Option>
           <Option>THIS YEAR</Option>
           <Option>THIS MONTH</Option>
           <Option>THIS WEEK</Option>
+        </Select> */}
+        <Select>
+          <Option hidden>YEAR</Option>
+          <Option>UPCOMING</Option>
+          <Option>2020s</Option>
+          <Option>2010s</Option>
+          <Option>2000s</Option>
         </Select>
+
         <Select>
           <Option hidden>RATING</Option>
-          <Option>HIGH FIRST</Option>
-          <Option>LOW FIRST</Option>
+          <Option>HIGHESt FIRST</Option>
+          <Option>LOWEST FIRST</Option>
         </Select>
         <Select>
           <Option hidden>GENRE</Option>
@@ -69,8 +77,12 @@ const Container2 = styled.div`
 `;
 
 const Label = styled.label`
-  color: #e1e3e5;
+  color: #6f797d;
   font-size: .9rem; 
+  
+  &:hover{
+    cursor: text; 
+  }
 `;
 
 const Select = styled.select`
@@ -89,12 +101,6 @@ const Option = styled.option`
   text-align: center; 
   font-size: 1.1rem; 
   
-  
-  
-
 `;
-
-
-
 
 export default BrowseBy; 

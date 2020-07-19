@@ -13,7 +13,7 @@ import Routes from "./Routes"; // "/", "/search", ...
 function App() {
   
   return (
-    <div >
+    <div>
       {/* <Header></Header>  */}
       <Routes className="App"></Routes>
       {/* <Footer></Footer> */}

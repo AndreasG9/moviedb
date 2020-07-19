@@ -1,25 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
  function PopularThisWeek() {
-  // TESTING option in BrowseBy 
-
-  // more link to popular/this/week/
-  const this_week = `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}`;
-  
-  // have 12 films, display 3 at a time with left and right arrows 
-
-
   // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 
-
 
   // TEST data 
   const poster = "https://image.tmdb.org/t/p/w400/qJ2tW6WMUDux911r6m7haRef0WH.jpg"; 
   //const poster = "https://image.tmdb.org/t/p/w400/qrMwzei3TnraRrz1DD89DqGwHxc.jpg"; 
   const title = "The Dark Knight";
   const year = 2008; 
+
+  const [results, setResults] = useState([]); 
+  const [postsPage, setPostsPage] = useState(3); // 3 posts a "page"
+
+  // Effect 
+  useEffect(() => {
+    // only called once
+
+    const get_this_week = async () => {
+      // grab the data from GET /trending/{media_type}/{time_window} 
+      
+      const this_week = `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_API_KEY}`;
   
-  
+      const res = await axios.get(this_week);
+      setResults(res.data.results); 
+    }
+
+    get_this_week();
+  }, []); 
+
+
 
   return (
     <Container>
@@ -33,14 +44,12 @@ import styled from "styled-components";
       <FilmsContainer>
 
         <Film>
-          {/* <ReactTooltip></ReactTooltip> */}
-          {/* <Poster src={poster} alt="Poster" data-tip={title + "  (" + year + ")"} data-background-color={"#6f797d"} data-place={"top"}>  
-          </Poster> */}
-
           <ToolTip className="test">{title + "  (" + year + ")"}</ToolTip>
+          <Poster src={poster} alt="Poster"></Poster>
+        </Film>
 
-          <Poster src={poster} alt="Poster">  
-          </Poster>
+        <Film>
+          <ToolTip className="test">{title + "  (" + year + ")"}</ToolTip>
 
         </Film>
 
@@ -55,9 +64,11 @@ import styled from "styled-components";
 
       <RightArrow>{">"}</RightArrow>
 
+
     </Container>
   )
 }
+
 
 // Style 
 const Container = styled.div`
@@ -66,7 +77,6 @@ const Container = styled.div`
   margin-top: 40px; 
   width: 800px;
   height: 500px; 
-  //border: 2px solid white; 
 `;
 
 const Header = styled.h2`
@@ -105,7 +115,7 @@ const FilmsContainer = styled.div`
 
 
 const ToolTip = styled.span`
-  // trying this this, ugly lookin  
+  // trying this, ugly lookin  
 
   position: absolute; 
   left: 6%;
@@ -116,7 +126,7 @@ const ToolTip = styled.span`
    
   background-color: #425566; 
   font-size: 1.0em; 
-  border-radius: 16px; 
+  border-radius: 20px; 
   padding: 8px 0; 
   color: #e1e3e5;
   font-style: italic; 

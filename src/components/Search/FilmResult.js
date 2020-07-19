@@ -1,6 +1,8 @@
-import React from 'react'
+import React from "react";
+import styled from "styled-components"; 
 
-function FilmResult( {result} ) {
+
+function FilmResult( { result, directors, alt_titles } ) {
   // search for a movie, each result is composed of this component 
   
   // for api poster, need base url, file size, and file path 
@@ -11,7 +13,7 @@ function FilmResult( {result} ) {
   let path = ""; 
   path = base + size + poster_path; 
 
-
+  
 
   function get_year(){
     const year = result.release_date.substr(0, 4); 
@@ -20,15 +22,9 @@ function FilmResult( {result} ) {
     else return result.release_date; 
   }
 
-  function get_director(){
-    return "David Byrne"; 
-  }
-
   return (
     <div>
-
       <div style={result_style}>
-        {/* {Testing, will first display title and poster} */}
         <img src={path} alt="POSTER MISSING" style={img_style} className="hover-green"></img>
 
         <div style={title_year_container}>
@@ -39,18 +35,38 @@ function FilmResult( {result} ) {
 
           <div style={director_container}>
             <h3 style={directed_by_style}>Directed By</h3>
-            <h3 style={director_style} className="hover">{get_director()}</h3>
+
+            
+            <h3 style={director_style} className="hover">{"David Byrne"}</h3>
+
           </div>
         </div>
-
       </div>
-
-
     </div>
   )
 }
 
 
+// Style 
+const Container = styled.div`
+border-Top: 1px solid #a5a5a5;
+display: "flex";
+flex-direction: row;
+`;
+
+const Image = styled.img`
+  display: block;
+  border: 1px solid #a5a5a5;
+  border-radius: 3%;
+  margin: 10px;
+  width: 156px;
+  height: 231px; 
+`;
+
+const TitleYear = styled.div`
+  display: flex; 
+  
+`; 
 
 
 const result_style = {

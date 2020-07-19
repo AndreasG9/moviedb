@@ -61,8 +61,6 @@ function Search( props ) {
   //   // grab data from GET /search/multi
   // }
 
-
-
   return (
     
     <div style={center}>

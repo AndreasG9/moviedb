@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components"; 
-import Search from "./Search"; 
+import Search from "./Search/Search"; 
 import { withRouter } from "react-router-dom"; 
 
 function Header( props ){
@@ -18,9 +18,9 @@ function Header( props ){
       </H1>
 
       <NavContainer>
+        <NavButton>HOME</NavButton>
         <NavButton>SIGN IN</NavButton>
         <NavButton>CREATE ACCOUNT</NavButton>
-        <NavButton>FILMS</NavButton>
         <NavButton>LISTS</NavButton>
       </NavContainer>
 
@@ -68,6 +68,10 @@ const NavButton = styled.button`
   &:hover{
     cursor: pointer;
     color: #e1e3e5; 
+  }
+
+  &:focus{
+    outline: none; 
   }
   
 `;
