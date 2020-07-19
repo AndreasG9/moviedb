@@ -1,22 +1,23 @@
 import React from "react";
-import BrowseBy from "../components/BrowseBy"; 
-import Search from "../components/Search"; 
 import Header from "../components/Header";
+import Footer from "../components/Footer"; 
+import BrowseBy from "../components/BrowseBy"; 
+import PopularThisWeek from "../components/PopularThisWeek"; 
+
 
  function Home() {
-  // Home Page (FILMS)
-  // Browse by: Popular(...) GENTRE (...) YEAR(...)   SEARCH (search box)
-  // Default: Popular This Week 
+  // Home Page
+  // Header w/ SEARCH (search box )
+  // Browse by: Popular(...) GENRE (...) YEAR(...)
+  // PopularThisWeek pagination (3 films a "page", max 12 results)  
 
   return (
     <div>
       
-      <Header></Header>
-      {/* <Search></Search> */}
-      {/* <BrowseBy></BrowseBy> */}
-
-
-    
+      <Header></Header> {/* Navigation and Search*/}
+      <BrowseBy></BrowseBy>
+      <PopularThisWeek></PopularThisWeek>
+      <Footer></Footer>
       
     </div>
   )
