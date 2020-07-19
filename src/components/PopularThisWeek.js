@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components"; 
+import styled from "styled-components";
 
  function PopularThisWeek() {
   // TESTING option in BrowseBy 
@@ -10,15 +10,16 @@ import styled from "styled-components";
   // have 12 films, display 3 at a time with left and right arrows 
 
 
+  // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 
+
 
   // TEST data 
-  // .poster_path; 
-  //const poster = "https://image.tmdb.org/t/p/w400/qJ2tW6WMUDux911r6m7haRef0WH.jpg"; 
-  const poster = "https://image.tmdb.org/t/p/w400/qrMwzei3TnraRrz1DD89DqGwHxc.jpg"; 
-
-
-  const poster2 = "https://image.tmdb.org/t/p/w400/hkBaDkMWbLaf8B1lsWsKX7Ew3Xq.jpg"; 
-
+  const poster = "https://image.tmdb.org/t/p/w400/qJ2tW6WMUDux911r6m7haRef0WH.jpg"; 
+  //const poster = "https://image.tmdb.org/t/p/w400/qrMwzei3TnraRrz1DD89DqGwHxc.jpg"; 
+  const title = "The Dark Knight";
+  const year = 2008; 
+  
+  
 
   return (
     <Container>
@@ -27,20 +28,32 @@ import styled from "styled-components";
         <SpanMore>MORE</SpanMore>
       </Header>
 
+      <LeftArrow>{"<"}</LeftArrow>
+
       <FilmsContainer>
+
         <Film>
+          {/* <ReactTooltip></ReactTooltip> */}
+          {/* <Poster src={poster} alt="Poster" data-tip={title + "  (" + year + ")"} data-background-color={"#6f797d"} data-place={"top"}>  
+          </Poster> */}
+
+          <ToolTip className="test">{title + "  (" + year + ")"}</ToolTip>
+
+          <Poster src={poster} alt="Poster">  
+          </Poster>
+
+        </Film>
+
+        {/* <Film>
           <Poster src={poster} alt="Poster"></Poster>
         </Film>
 
         <Film>
           <Poster src={poster} alt="Poster"></Poster>
-        </Film>
-
-        <Film>
-          <Poster src={poster} alt="Poster"></Poster>
-        </Film>
-
+        </Film> */}
       </FilmsContainer>
+
+      <RightArrow>{">"}</RightArrow>
 
     </Container>
   )
@@ -50,13 +63,10 @@ import styled from "styled-components";
 const Container = styled.div`
   position: relative;
   left: 24%; 
-  margin-top: 25px; 
+  margin-top: 40px; 
   width: 800px;
   height: 500px; 
   //border: 2px solid white; 
-
-  
-
 `;
 
 const Header = styled.h2`
@@ -70,7 +80,6 @@ const Header = styled.h2`
 `;
 
 const Span = styled.span`
-
   &:hover{
     cursor: pointer; 
     color: #adadff; 
@@ -89,18 +98,54 @@ font-size: .8rem;
 `;
 
 const FilmsContainer = styled.div`
-  //border: 2px solid green; 
   height: 85%;
   display: flex; 
   flex-direction: row; 
+`;
 
+
+const ToolTip = styled.span`
+  // trying this this, ugly lookin  
+
+  position: absolute; 
+  left: 6%;
+  bottom: 90%;  
+  min-width: 180px; 
+  min-height: 20px; 
+  text-align: center; 
+   
+  background-color: #425566; 
+  font-size: 1.0em; 
+  border-radius: 16px; 
+  padding: 8px 0; 
+  color: #e1e3e5;
+  font-style: italic; 
+
+  transform: scale(0);
+  
+  &:after{
+    content: " ";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #425566 transparent transparent transparent;
+  }
 `;
 
 const Film = styled.div`
-  width: 240px; 
-  height: 355px;
   margin: 5px; 
+  border: 2px solid green; 
+
+  &:hover .test{
+    transition-delay: .4s;
+    transform: scale(1);
+  }
 `;
+
 
 // FIX HOVER WHEN CONTEXT ADDED 
 const Poster = styled.img`
@@ -117,9 +162,40 @@ const Poster = styled.img`
   }
 `;
 
+// FIX FIX 
+const LeftArrow = styled.span`
+  position: absolute; 
+  top: 40%;
+  right: 100%;  
 
+  color: #6f797d; 
+  font-size: 2.0em; 
+  padding: 8px; 
+  font-weight: bold; 
 
+  &:hover{
+    cursor: pointer; 
 
+    color: #e1e3e5; // TODO IF NEXT 
+  }
+`;
+
+const RightArrow = styled.span`
+  position: absolute; 
+  top: 40%;
+  left: 95%;  
+
+  color: #6f797d; 
+  font-size: 2.0em; 
+  padding: 8px; 
+  font-weight: bold; 
+  
+  &:hover{
+    cursor: pointer; 
+
+    color: #e1e3e5; // TODO IF NEXT 
+  }
+`;
 
 
 
