@@ -6,7 +6,8 @@ import { withRouter } from "react-router-dom";
 function Header( props ){
 
   const go_home = () => {
-    props.history.push("/", ); // redirect to "/home", which loads the Header and other home componenets, not passing any props 
+    props.history.push("/"); // redirect to "/home", which loads the Header and other home componenets, not passing any props 
+    window.location.reload(false); // will reset popular films this week pagination back to the start   
   }
 
   return(

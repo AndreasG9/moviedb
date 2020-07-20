@@ -17,7 +17,7 @@ import PopularThisWeek from "../components/PopularThisWeek/PopularThisWeek";
       <Header></Header> {/* Navigation and Search*/}
       <BrowseBy></BrowseBy>
       <PopularThisWeek></PopularThisWeek>
-      <Footer></Footer>
+      {/* <Footer></Footer> */}
       
     </div>
   )
