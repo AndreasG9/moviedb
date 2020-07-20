@@ -10,13 +10,13 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   // State 
   const [results, setResults] = useState([]); 
   const [currentPage, setCurrentPage] = useState(1); 
-  const [postsPage, setPostsPage] = useState(3); // 3 posts a "page"
-  
   const [active, setActive] = useState({
     // disable pagination arrow if no more results 
     left: false,
     right: true
   }); 
+
+  const posts_per_page = 3; 
 
 
   // Effect 
@@ -39,8 +39,8 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   // Pagination (kind of)
   // for homepage only have 20 results (3 per page), 0-3, 3-6, ...  (1 empty)
   // Only have left and right arrow to nav 
-  const index_last = currentPage * postsPage; 
-  const index_first = index_last - postsPage;
+  const index_last = currentPage * posts_per_page; 
+  const index_first = index_last - posts_per_page;
   const current = results.slice(index_first, index_last); 
 
 

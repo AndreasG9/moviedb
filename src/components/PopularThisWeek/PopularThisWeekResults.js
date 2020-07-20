@@ -4,27 +4,25 @@ import PopularThisWeekFilm from "./PopularThisWeekFilm";
 
 function PopularThisWeekResults( { results }) {
 
-  // loading? 
+  let i = 0; // tooltip is position absolute, left % differs to overlap properly. i goes to 3. ++i 
 
-  console.log(results); 
 
   return (
     <FilmsContainer>
       {
         results.map( (result) => (
-          <PopularThisWeekFilm key={result.id} result={result}></PopularThisWeekFilm>
+          <PopularThisWeekFilm key={result.id} result={result} i={++i}></PopularThisWeekFilm>
         )) 
       }
-      
     </FilmsContainer>
   )
 }
 
+// Style 
 const FilmsContainer = styled.div`
   height: 85%;
   display: flex; 
   flex-direction: row; 
 `;
-
 
 export default PopularThisWeekResults; 

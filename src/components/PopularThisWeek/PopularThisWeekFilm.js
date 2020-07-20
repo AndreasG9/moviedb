@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-function PopularThisWeekFilm( {result} ) {
+function PopularThisWeekFilm( {result, i} ) {
   // props will include poster path, movie id (to link to film if clicked), title, and year 
 
-  //console.log(result) ; 
+
   const poster = `https://image.tmdb.org/t/p/w400/${result.poster_path}`; 
 
   function get_year(){
@@ -15,26 +15,34 @@ function PopularThisWeekFilm( {result} ) {
     else return result.release_date; 
   }
 
+  function get_left(){
+    // tooltip position absolute
+    let left = "0%"; 
+
+    if(i === 1) left = "3%";
+    else if(i === 2) left = "36%"; 
+    else if(i === 3) left = "68%"; 
+
+    return left; 
+  }
+
   return (
     <Film>
-      <ToolTip>{result.title + "  (" + get_year() + ")"}</ToolTip>
+      <ToolTip  className="test"  left={get_left()}>{result.title + "  (" + get_year() + ")"}</ToolTip>
       <Poster src={poster} alt="Poster"></Poster>
-      
-      
     </Film>
   )
 }
 
-
-
-
+// Style 
 const ToolTip = styled.span`
   // trying this, ugly lookin  
 
-  position: absolute; 
-  left: 6%;
-  bottom: 90%;  
-  min-width: 180px; 
+  position: absolute;
+  bottom: 91%;
+  left: ${props => props.left}; 
+
+  min-width: 200px; 
   min-height: 20px; 
   text-align: center; 
    
@@ -46,7 +54,7 @@ const ToolTip = styled.span`
   font-style: italic; 
 
   transform: scale(0);
-  
+
   &:after{
     content: " ";
     position: absolute;
@@ -59,13 +67,10 @@ const ToolTip = styled.span`
     border-color: #425566 transparent transparent transparent;
   }
 
-  border: 10px solid black; 
 `;
 
 
 const Film = styled.div`
-  // margin: 5px; 
-  // border: 2px solid green; 
 
   &:hover .test{
     transition-delay: .4s;
