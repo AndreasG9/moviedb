@@ -29,9 +29,14 @@ function Search( props ) {
 
     event.preventDefault();
 
-    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${state.query}&page=1&include_adult=false`; // GET /search/movie 
+    // TODO PAGINATION 
+    
+    const page_num = 1; 
+    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${state.query}&page=${page_num}&include_adult=false`; // GET /search/movie 
     const data = await axios.get(search_movie); 
     const results = data.data.results; 
+
+    console.log(results);
    
     const filtered_results = results.filter( (result) => result.vote_count > 4); // filter out low count films 
 

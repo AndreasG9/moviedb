@@ -6,39 +6,14 @@ import styled from "styled-components";
    // Display results, each result is of component FilmResult ... 
    // See the Poster, Title, Year, and Director for each result (each Link to a specific page/search ...)
 
-   // TODO add pagination???? 
-
-  //let directors = []; // could have more than 1 director 
-
-
-  const get_director = async (id) => {
-
-    // const API_KEY = process.env.API_KEY; 
-    // let credits = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}`; 
-
-    // const res = await fetch(credits);
-    // const data = await res.json(); 
-
-    return "Davis Bryrne"; 
-
-    // for(let i=0; i<crew.length; ++i){
-      
-    //   if(crew[i].job === "Director"){
-    //     directors.push(crew[i].name); 
-    //   }
-    // }
-
-    
-    
-    //return directors; 
-  }
+   // TODO add pagination
 
   return (
       <Container>
-        <Header> FOUND {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </Header>
+        <Header> FOUND AT LEAST {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => (
-            <FilmResult key={result.id} result={result} directors={get_director(result.id)}></FilmResult>
+            <FilmResult key={result.id} result={result}></FilmResult>
           ))}
         </section>
       </Container>
@@ -52,14 +27,12 @@ const Container = styled.div`
   width: 40%;
   position: relative;
   left: 25%;  
-  
 `;
 
 const Header = styled.div`
-  font-size: 1.0em; 
+  font-size: .9em; 
   color: #a5a5a5; 
 `;
-
 
 export default SearchResults; 
 
