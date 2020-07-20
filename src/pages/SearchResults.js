@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import Results from "../components/Search/Results"; 
 import Header from "../components/Header";
-import Footer from "../components/Footer";
+//import Footer from "../components/Footer";
 
 function SearchResults( {results, query} ) {
   // load SearchRes component, narrow search nav component 
@@ -12,7 +12,7 @@ function SearchResults( {results, query} ) {
     <div>
       <Header></Header>
       <Results results={results} query={query}></Results>
-      <Footer></Footer>
+      {/* <Footer></Footer> */}
     </div>
   )
 }

@@ -1,68 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
+import axios from 'axios'; 
 import styled from "styled-components"; 
 
 
 function Search( props ) {
 
   // State 
-  // TODO store single obj, ONLY query submit search 
-  const [search, set_search] = useState("");
-  const [query, set_query] = useState("");
-  const [results, set_results] = useState([]); 
+  // const [search, set_search] = useState("");
+  // const [query, set_query] = useState(""); // query search string 
+  // const [results, set_results] = useState([]); 
 
-  // const [query, set_query] = useState({
-  //   search: "",
-  //   results = []
-  // })
+  // change to query, movies, people 
+  const [state, set_state] = useState({
+    query: "",
+    //results: []
+  }); 
 
-  // Effect 
-  useEffect(() => {
-    // only runs when form submitted (search)
-    // new results each search 
-    if(query !== "") get_films(); // FIX 
-  }, [query]); 
 
   const update_search = (event) => {
-    // onChange with input, REMOVE LATER 
-    set_search(event.target.value); 
+    // onChange with input
+    set_state({query: event.target.value}); // rest of the state empty  
   }
 
-  const get_search = (event) => {
-    // search form submission 
-    event.preventDefault();
-    set_query(search); 
-    set_search(""); // reset  
-  }
-
-  const get_films = async () => {
+  // CHANGE TO MULTI 
+  const get_search = async (event) => {
     // grab the data from GET /search/movie 
-    // query string is value of query state string 
 
-    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`; // GET /search/movie 
+    event.preventDefault();
 
-    const res = await fetch(search_movie);
-    const data = await res.json(); 
-
-    // FILTER DATA 
-    //   return data.vote_count > 50; 
-
-  
+    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${state.query}&page=1&include_adult=false`; // GET /search/movie 
+    const data = await axios.get(search_movie); 
+    const results = data.data.results; 
+   
+    const filtered_results = results.filter( (result) => result.vote_count > 4); // filter out low count films 
 
 
-    set_results(data.results); 
-    // console.log(data.results);
-
-    const params = query.toString().replace(" ", "+"); // ex. search The Witch url: domain.com/search/the+witch
-    props.history.push(`/search/${params}`, {results: data.results, query:query}); // redirect to "/search", which loads the SearchResults component, pass props 
+    const params = state.query.toString().replace(" ", "+"); // ex. search The Witch url: domain.com/search/the+witch
+    props.history.push(`/search/${params}`, {results: filtered_results, query:state.query}); // redirect to "/search", which loads the SearchResults component, pass props 
   }
 
+
+  // TODO search == movies and people 
   // const get_multiple = async () => {
   //   // grab data from GET /search/multi
   // }
 
   return (
-    
     <div style={center}>
       <form onSubmit={get_search}>
         <Container>
@@ -79,7 +63,6 @@ function Search( props ) {
         </Container>
       </form>   
     </div>
-
   ); 
 }
 

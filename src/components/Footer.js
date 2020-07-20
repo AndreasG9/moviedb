@@ -7,8 +7,7 @@ function Footer() {
     <Container>
       <p>Andreas G.'s' react <a href="https://github.com/AndreasG9" target="__blank" style={{color: "#adadff", padding: "4px"}}>project</a>
       <Icon src={GitHubIcon} alt="GitHub Mark Icon"></Icon>. &nbsp;
-
-      Intended for my portfolio. 
+      Intended for my portfolio. Some of the layout and features cloned (or attempted to) from Letterboxd.com. <br></br>
       Film data from <a href="https://www.themoviedb.org/" target="__blank" style={{color: "#adadff", padding: "4px"}}>TMDB</a>. 
       </p>
     </Container>

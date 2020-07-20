@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
 function PopularThisWeekFilm( {result, i} ) {
   // props will include poster path, movie id (to link to film if clicked), title, and year 
-
 
   const poster = `https://image.tmdb.org/t/p/w400/${result.poster_path}`; 
 

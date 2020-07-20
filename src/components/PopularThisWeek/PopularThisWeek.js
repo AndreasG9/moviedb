@@ -10,6 +10,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   // State 
   const [results, setResults] = useState([]); 
   const [currentPage, setCurrentPage] = useState(1); 
+
   const [active, setActive] = useState({
     // disable pagination arrow if no more results 
     left: false,
@@ -64,10 +65,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   const prev = () => {
     setCurrentPage(currentPage - 1); 
 
-    if(currentPage === 2){
-      setActive({left: false, right: true}); 
-    }
-
+    if(currentPage === 2)setActive({left: false, right: true});
     else setActive({left: true, right: true}); 
   }
 
@@ -171,4 +169,3 @@ const RightArrow = styled.span`
 `;
 
 export default PopularThisWeek; 
-

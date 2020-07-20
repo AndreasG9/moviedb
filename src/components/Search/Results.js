@@ -6,6 +6,7 @@ import styled from "styled-components";
    // Display results, each result is of component FilmResult ... 
    // See the Poster, Title, Year, and Director for each result (each Link to a specific page/search ...)
 
+   // TODO add pagination???? 
 
   //let directors = []; // could have more than 1 director 
 
@@ -33,54 +34,31 @@ import styled from "styled-components";
   }
 
   return (
-    <div>
-
-      <div style={results_container_style}>
-
-        <h3 style={header_style}> FOUND {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </h3>
-
+      <Container>
+        <Header> FOUND {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => (
             <FilmResult key={result.id} result={result} directors={get_director(result.id)}></FilmResult>
           ))}
         </section>
-
-      </div>
-
-      {/* 
-      <div style={side_bar_container}>
-        FOR ...
-      </div> */}
-
-       
-    </div>
+      </Container>
   )
 }
 
 
 // Style 
 const Container = styled.div`
+  padding-top: 20px; 
   width: 40%;
   position: relative;
-  left: 25%; 
+  left: 25%;  
+  
 `;
 
 const Header = styled.div`
   font-size: 1.0em; 
   color: #a5a5a5; 
 `;
-
-
-const results_container_style = {
-  width: "40%",
-  position: "relative",
-  left: "25%", 
-}
-
-const header_style = {
-  fontSize: "1.0em", 
-  color: "#a5a5a5"
-}
 
 
 export default SearchResults; 
