@@ -14,7 +14,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   
   const [active, setActive] = useState({
     // disable pagination arrow if no more results 
-    left: true,
+    left: false,
     right: true
   }); 
 
@@ -48,14 +48,27 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   const next = () => {
     setCurrentPage(currentPage + 1); 
 
-    if(currentPage === 20){
+    if(currentPage === 6){
       // disable pointer event, change opacity 
-
+      setActive({left: true, right: false}); 
     }
+
+    else{
+      // gets called multiple times but its fine 
+      setActive({left: true,right: true})
+    }
+
   }
+
 
   const prev = () => {
     setCurrentPage(currentPage - 1); 
+
+    if(currentPage === 2){
+      setActive({left: false, right: true}); 
+    }
+
+    else setActive({left: true, right: true}); 
   }
 
 
@@ -68,13 +81,8 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
       </Header>
 
       <LeftArrow onClick={prev} active={active.left}>{"<"}</LeftArrow>
-
-
       <PopularThisWeekResults results={current}></PopularThisWeekResults>
-
-
       <RightArrow onClick={next} active={active.right}>{">"}</RightArrow>
-
 
     </Container>
   )
@@ -88,6 +96,11 @@ const Container = styled.div`
   margin-top: 40px; 
   width: 800px;
   height: 500px; 
+
+  -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 `;
 
 const Header = styled.h2`
@@ -122,9 +135,9 @@ const LeftArrow = styled.span`
   position: absolute; 
   top: 40%;
   right: 100%;  
-
   color: #6f797d; 
-  font-size: 2.0em; 
+
+  font-size: 2.5em; 
   padding: 8px; 
   font-weight: bold; 
 
@@ -133,9 +146,8 @@ const LeftArrow = styled.span`
     color: #e1e3e5;
   }
 
-  
-
-
+  opacity: ${props => props.active ? "1" : ".2"}; 
+  pointer-events: ${props => props.active ? "auto" : "none"}; 
 `;
 
 const RightArrow = styled.span`
@@ -144,7 +156,7 @@ const RightArrow = styled.span`
   left: 96%;  
 
   color: #6f797d; 
-  font-size: 2.0em; 
+  font-size: 2.5em; 
   padding: 8px; 
   font-weight: bold; 
 
@@ -153,13 +165,10 @@ const RightArrow = styled.span`
     color: #e1e3e5; 
   }
 
+  opacity: ${props => props.active ? "1" : ".2"}; 
+  pointer-events: ${props => props.active ? "auto" : "none"}; 
 
 `;
-
-//opacity: .2;
-//pointer-events: none;   
-
-
 
 export default PopularThisWeek; 
 
