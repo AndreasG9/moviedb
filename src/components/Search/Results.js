@@ -10,7 +10,7 @@ import styled from "styled-components";
 
   return (
       <Container>
-        <Header> FOUND AT LEAST {results.length} FILMS MATCHING &nbsp;"{query.toString().toUpperCase()}" </Header>
+        <Header> FOUND AT LEAST {results.length} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => (
             <FilmResult key={result.id} result={result}></FilmResult>
@@ -23,15 +23,17 @@ import styled from "styled-components";
 
 // Style 
 const Container = styled.div`
-  padding-top: 20px; 
+  padding-top: 3%; 
   width: 40%;
   position: relative;
-  left: 25%;  
+  left: 24%;  
+  border: 2px solid black; 
 `;
 
 const Header = styled.div`
   font-size: .9em; 
   color: #a5a5a5; 
+  padding-bottom: 1%; 
 `;
 
 export default SearchResults; 

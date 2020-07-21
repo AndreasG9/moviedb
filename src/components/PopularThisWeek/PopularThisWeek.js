@@ -95,8 +95,8 @@ const Container = styled.div`
 
   width: 1000px;
   height: 500px; 
-
   
+
   -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

@@ -37,12 +37,14 @@ const HeaderContainer = styled.header`
   background-color: #13181c; 
   display: flex;
   align-items: center;
+
   height: 90px;
+
 `;
 
 const H1 = styled.h1`
   font-size: 2.5rem;
-  margin-left: 25%;
+  margin-left: 24%;
   color: #e1e3e5; 
 
   &:hover{

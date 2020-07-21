@@ -50,38 +50,35 @@ function FilmResult( { result } ) {
 
 
   return (
-    <div>
-      <Container style={result_style}>
-        <Poster src={path} alt="POSTER MISSING"></Poster>
+    <Container>
+      <Poster src={path} alt="POSTER MISSING"></Poster>
+      <ContainerInfo>
+        <ContainerTitleYear>
+          <Title>{result.title}</Title>
+          <Year>{get_year()}</Year>
+        </ContainerTitleYear>
 
-        <ContainerInfo>
-          <h3 style={title_style} className="hover-blue">{result.title}</h3>
-          <h3 style={year_style} className="hover-blue">{get_year()}</h3>
+        <div style={line_break}></div>
 
-          <div style={line_break}></div>
+        <DirectorContainer>
+          <DirectedBy>Directed By</DirectedBy>
+          {
+            directors.map( (director) => (
+              <Director>{director}</Director>
 
-          <DirectorContainer>
-            <DirectedBy>Directed By</DirectedBy>
-            {
-              directors.map( (director) => (
-                <h3 style={director_style} className="hover">{director}</h3>
-              ))
-            }
-          </DirectorContainer>
-
-        </ContainerInfo>
-
-      </Container>
-
-    </div>
+            ))
+          }
+        </DirectorContainer>
+      </ContainerInfo>
+    </Container>
   )
 }
 
 
 // Style 
 const Container = styled.div`
-  border-Top: 1px solid #a5a5a5;
-  display: "flex";
+  border-top: 1px solid #a5a5a5; 
+  display: flex;
   flex-direction: row;
 `;
 
@@ -90,13 +87,14 @@ const Poster = styled.img`
   border: 1px solid #a5a5a5;
   border-radius: 3%;
   margin: 10px;
+
   width: 156px;
   height: 231px; 
 
   &:hover{
     cursor: pointer;
-    border: 4px solid #98fb98 !important;
-    margin: 7px !important;
+    border: 4px solid #98fb98;
+    margin: 7px;
   }
 `;
 
@@ -104,86 +102,70 @@ const ContainerInfo = styled.div`
   display: flex; 
   align-items: center;
   flex-wrap: wrap;
-  height: 35%;
-  margin: 5px;
+  margin: 2% 0% 1% 0%; 
 `; 
 
+const ContainerTitleYear = styled.div`
+  display: flex; 
+  justify-content: flex-start; 
+  align-items: center; 
+
+  position: relative; 
+  bottom: 15%;  
+
+  width: 90%; 
+`;
+
+const Title = styled.h3`
+  color: #e1e3e5;
+  padding: 3px; 
+  font-size: 1.4em;   
+
+  &:hover{
+    cursor: pointer;
+    color: #adadff; 
+  }
+`;
+
+const Year = styled.h3`
+  margin-left: 2%; 
+  color: #a5a5a5;
+
+  &:hover{
+    cursor: pointer;
+    color: #adadff; 
+  }
+`;
 
 const DirectorContainer = styled.div`
   display: flex; 
   flex-direction: row;
+  align-items: center; 
   color: #a5a5a5;
-  margin-top: 25%; 
 `;
 
 const DirectedBy = styled.h3`
   font-size: .9em;
-  margin-right: 10px;
-  margin-top: 14%; 
+  margin-right: 10px; 
 `;
 
+const Director = styled.h3`
+  font-size: .9em; 
+  background-color: #273038; 
+  border-radius: 8%;
+  padding: 5px; 
+  text-align: center; 
+  margin-right: 3px; 
 
+  &:hover{
+    cursor: pointer;
+    color: #e1e3e5;
+  }
+`;
 
-
-
-
-
-/* 
-
-
-
-const director_style = {
- backgroundColor: "#273038",
- borderRadius: "10%",
- padding: "5px"
-}
-
-*/
-
-
-
-const result_style = {
-  borderTop: "1px solid #a5a5a5",
-  display: "flex",
-  flexDirection: "row",
-}
-
-
-const title_style = {
-  color: "#e1e3e5",
-  padding: "3px", 
-  fontSize: "1.2em"
-}
-
-const year_style = {
-  marginLeft: "10px", 
-  color: "#a5a5a5",
-}
 
 const line_break = {
   width: "100%"
 }
-const director_container = {
-  display: "flex",
-  flexDirection: "row",
-  // border: "2px solid green",
-  color: "#a5a5a5",
-  marginTop: "25%",
-}
-
-const directed_by_style = {
-  fontSize: ".9em",
-  marginRight: "12px",
-  marginTop: "14%"
-}
-
-const director_style = {
- backgroundColor: "#273038",
- borderRadius: "10%",
- padding: "5px"
-}
-
-
-
 
 export default FilmResult; 
