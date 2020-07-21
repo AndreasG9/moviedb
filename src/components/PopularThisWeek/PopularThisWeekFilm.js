@@ -21,6 +21,7 @@ function PopularThisWeekFilm( {result, i} ) {
     if(i === 1) left = "3%";
     else if(i === 2) left = "36%"; 
     else if(i === 3) left = "68%"; 
+    else if(i === 4) left = "100%"; 
 
     return left; 
   }
@@ -79,16 +80,16 @@ const Film = styled.div`
 
 // FIX HOVER WHEN CONTEXT ADDED 
 const Poster = styled.img`
-  width: 236px; 
+  width: 230px; 
   height: 351px;
   border: 1px solid #a5a5a5;
   border-radius: 2%; 
-  margin: 10px; 
+  margin: 5px;
 
   &:hover{
     cursor: pointer;
     border: 2px solid #98fb98;
-    margin: 9px; 
+    margin: 4px; 
   }
 `;
 

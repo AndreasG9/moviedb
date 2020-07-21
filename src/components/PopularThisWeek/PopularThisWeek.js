@@ -17,7 +17,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
     right: true
   }); 
 
-  const posts_per_page = 3; 
+  const posts_per_page = 4; 
 
 
   // Effect 
@@ -38,7 +38,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
 
 
   // Pagination (kind of)
-  // for homepage only have 20 results (3 per page), 0-3, 3-6, ...  (1 empty)
+  // for homepage only have 20 results (4 per page), 0-4, 4-8, ... 
   // Only have left and right arrow to nav 
   const index_last = currentPage * posts_per_page; 
   const index_first = index_last - posts_per_page;
@@ -49,7 +49,7 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
   const next = () => {
     setCurrentPage(currentPage + 1); 
 
-    if(currentPage === 6){
+    if(currentPage === 4){
       // disable pointer event, change opacity 
       setActive({left: true, right: false}); 
     }
@@ -91,10 +91,12 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
 const Container = styled.div`
   position: relative;
   left: 24%; 
-  margin-top: 40px; 
-  width: 800px;
+  margin-top: 1.2%; 
+
+  width: 1000px;
   height: 500px; 
 
+  
   -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -102,13 +104,15 @@ const Container = styled.div`
 `;
 
 const Header = styled.h2`
-  font-size: 1.1rem; 
+  font-size: 1.0rem; 
   color: #6f797d;
-  padding: 5px; 
+  padding-bottom: 4px; 
   border-bottom: 1px solid #6f797d; 
   font-style: bold;
-  width: 93%; 
-  margin-left: 1%; 
+  width: 95.7%; 
+  margin: 0 0 1% .5%; 
+
+
 `;
 
 const Span = styled.span`
@@ -119,9 +123,9 @@ const Span = styled.span`
 `;
 
 const SpanMore = styled.span`
-font-size: .8rem; 
+  font-size: .8rem; 
   position: relative; 
-  left: 62%; 
+  left: 72.3%; 
 
   &:hover{
     cursor: pointer; 
@@ -131,7 +135,7 @@ font-size: .8rem;
 
 const LeftArrow = styled.span`
   position: absolute; 
-  top: 40%;
+  top: 36%;
   right: 100%;  
   color: #6f797d; 
 
@@ -150,8 +154,8 @@ const LeftArrow = styled.span`
 
 const RightArrow = styled.span`
   position: absolute; 
-  top: 40%;
-  left: 96%;  
+  top: 36%;
+  left: 97%;  
 
   color: #6f797d; 
   font-size: 2.5em; 

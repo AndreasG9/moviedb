@@ -57,10 +57,12 @@ function BrowseBy() {
 const Container = styled.div`
   font-family: Roboto; 
   margin-top: 1%; 
+
   width: 700px;
   height: 50px; 
+  
   position: relative;
-  left: 25%; 
+  left: 24%; 
   display: flex; 
   align-items: center; 
 
