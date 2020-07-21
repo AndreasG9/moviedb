@@ -1,6 +1,7 @@
 import React from 'react'; 
 import FilmResult from "./FilmResult";
 import styled from "styled-components"; 
+//import Pagination from "../Pagination"; 
 
  function SearchResults( {query, results} ) {
    // Display results, each result is of component FilmResult ... 
@@ -23,11 +24,11 @@ import styled from "styled-components";
 
 // Style 
 const Container = styled.div`
-  padding-top: 3%; 
+  padding-top: 1%; 
   width: 40%;
   position: relative;
   left: 24%;  
-  border: 2px solid black; 
+  // border: 2px solid black; 
 `;
 
 const Header = styled.div`
@@ -35,6 +36,7 @@ const Header = styled.div`
   color: #a5a5a5; 
   padding-bottom: 1%; 
 `;
+
 
 export default SearchResults; 
 
