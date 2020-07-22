@@ -18,10 +18,10 @@ function PopularThisWeekFilm( {result, i} ) {
     // tooltip position absolute
     let left = "0%"; 
 
-    if(i === 1) left = "3%";
-    else if(i === 2) left = "36%"; 
-    else if(i === 3) left = "68%"; 
-    else if(i === 4) left = "100%"; 
+    if(i === 1) left = "2%";
+    else if(i === 2) left = "27%"; 
+    else if(i === 3) left = "51%"; 
+    else if(i === 4) left = "75%"; 
 
     return left; 
   }
@@ -39,7 +39,7 @@ const ToolTip = styled.span`
   // trying this, ugly lookin  
 
   position: absolute;
-  bottom: 91%;
+  bottom: 94%;
   left: ${props => props.left}; 
 
   min-width: 200px; 
