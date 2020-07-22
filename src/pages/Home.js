@@ -12,7 +12,7 @@ import PopularThisWeek from "../components/PopularThisWeek/PopularThisWeek";
   // PopularThisWeek pagination (3 films a "page", max 12 results)  
 
   return (
-    <div>
+    <div >
       
       <Header></Header> {/* Navigation and Search*/}
       <BrowseBy></BrowseBy>
@@ -22,5 +22,8 @@ import PopularThisWeek from "../components/PopularThisWeek/PopularThisWeek";
     </div>
   )
 }
+
+
+
 
 export default Home; 
