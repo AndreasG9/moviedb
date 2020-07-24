@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components"; 
 import CreditsTab from "./CreditsTab";
 import DetailsTab from "./DetailsTab"; 
+import GenresTab from "./GenresTab"; 
+import {v4 as uuidv4} from "uuid"; 
 
 function Tabs( {credits, result}) {
 
@@ -14,7 +16,7 @@ function Tabs( {credits, result}) {
   });
 
 
-  const [active_tab, set_active_tab] = useState("details"); 
+  const [active_tab, set_active_tab] = useState("cast"); // show cast tab as default 
 
 
   function show_tab(tab){
@@ -29,13 +31,13 @@ function Tabs( {credits, result}) {
     if(active_tab === "cast") return <CreditsTab credits={credits.cast} key="1" autofocus></CreditsTab>; 
     else if(active_tab === "crew") return <CreditsTab credits={credits.crew} key="2"></CreditsTab>
     else if(active_tab === "details") return <DetailsTab result={result}></DetailsTab>
-    else return <DetailsTab ></DetailsTab> 
+    else return <GenresTab genres={result.genres} key={uuidv4()}></GenresTab>
   }
+
 
 
   return (
     <div>
-
       <Header>
         <Tab  onClick={ () => show_tab("cast") }   active={active.cast}>CAST</Tab>
         <Tab  onClick={ () => show_tab("crew") }  active={active.crew}>CREW</Tab>
@@ -44,11 +46,9 @@ function Tabs( {credits, result}) {
       </Header>
 
       {tab()} 
-
     </div>
   )
 }
-
 
 const Header = styled.div`
   display: flex; 
@@ -75,11 +75,9 @@ const Tab = styled.button`
     outline: none; 
   }
 
-
   color: ${ (props) => props.active ? "#e1e3e5" : "#00dd61"}; 
   border-bottom: ${ (props) => props.active ? "2px solid white" : "2px solid #333"}; 
 
-  
   width: 50%;
   height: 15%; 
 
@@ -87,10 +85,6 @@ const Tab = styled.button`
   font-size: 1.3em; 
 `;
 
-const ActiveTab = styled.div`
-
-
-`;
 
 
 

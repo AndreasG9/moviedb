@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import {v4 as uuidv4} from "uuid"; 
 
 function DetailsTab( {result} ) {
   // display og language, budget, alt titles, and runtime 
@@ -29,7 +30,7 @@ function DetailsTab( {result} ) {
         <Key>Production Companies</Key>
           <Values>
           {production_companies.map( (company) => (
-            <Value smaller>{company}</Value>
+            <Value smaller key={uuidv4()}>{company}</Value>
           ))}
           </Values>
       </KeyValue>
