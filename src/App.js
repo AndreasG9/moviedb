@@ -1,6 +1,5 @@
 import React, {  } from 'react';
 import './App.css';
-//import Header from "./components/Header";
 import Routes from "./Routes"; // "/", "/search", ... 
 //import Footer from './components/Footer';
 
@@ -14,7 +13,6 @@ function App() {
   
   return (
     <div>
-      {/* <Header></Header>  */}
       <Routes className="App"></Routes>
       {/* <Footer></Footer> */}
     </div>

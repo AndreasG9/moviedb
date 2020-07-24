@@ -1,6 +1,6 @@
 import React from "react"; 
 import Header from "../components/Header"; 
-import Film from "../components/Film"; 
+import Film from "../components/Film/Film"; 
 
  function FilmPage( {movie_id} ) {
   // /film/movie-title-here

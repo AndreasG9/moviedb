@@ -1,6 +1,10 @@
-import React, { useState, useEffect, Fragment} from "react"; 
+import React, { useState, useEffect, Fragment, useRef} from "react"; 
 import axios from "axios"; 
 import styled from "styled-components"; 
+
+//import Rating from "...."; 
+
+import Credits from "./Credits";
 
 
 function Film( { movie_id }) {    
@@ -8,9 +12,22 @@ function Film( { movie_id }) {
 
   const [result, set_result] = useState([]);
   const [year, set_year] = useState(""); 
-  const [credits, set_credits] = useState([]);
+  //const [credits, set_credits] = useState([]);
   const [directors, set_directors] = useState([]); 
   const [rating, set_rating] = useState(""); 
+
+  const [credits, set_credits] = useState({
+    cast: [],
+    crew: []
+  });
+
+  const [active, set_active] = useState({
+    // active tab 
+    cast: true,
+    crew: false,
+    details: false,
+    genres: false
+  })
 
 
   const base = "https://image.tmdb.org/t/p";
@@ -33,7 +50,13 @@ function Film( { movie_id }) {
 
       // credits 
       data = await axios.get(credits);
-      set_credits(data.data); // cast and crew each have arr of objects 
+      //set_credits(data.data);
+      set_credits({
+         // cast and crew each have arr of objects 
+        cast: data.data.cast,
+        crew: data.data.crew
+      });
+
 
       let directors_arr = [];  // display director, (max 2, if have more redirect to full crew)
 
@@ -43,9 +66,8 @@ function Film( { movie_id }) {
 
       set_directors(directors_arr); 
 
-      // rating 
+      // rating/certification  
       data = await axios.get(release_dates);
-      console.log(data.data.results); 
 
       const found = data.data.results.find( (result) => result.iso_3166_1 === "US");
       let certification = found.release_dates[0].certification || {}; 
@@ -54,6 +76,10 @@ function Film( { movie_id }) {
     }
 
     fetch_data(); 
+    //open_info("CAST"); 
+
+
+
   }, [movie_id]); 
 
 
@@ -73,10 +99,10 @@ function Film( { movie_id }) {
 
     else if (directors.length > 1){
       return (
-        <Fragment>
+        <React.Fragment>
           <Director>{directors[0]}</Director>
           <Director>{directors[1]}</Director>
-        </Fragment>
+        </React.Fragment>
       )
     }
 
@@ -84,8 +110,14 @@ function Film( { movie_id }) {
   }
 
 
+  function open_info(tab){
+    // display CAST, CREW, DETAILS, or GENRE 
+  }
+
+
   return (
     <Container>
+
       <BackDrop src={base + size + result.backdrop_path} alt="backdrop" draggable="false"></BackDrop>
 
       <Poster src={base + poster_size + result.poster_path} alt="poster"></Poster>
@@ -94,7 +126,6 @@ function Film( { movie_id }) {
         <TitleYearContainer>
           <Title>{result.title}</Title>
           <Year>{`(${year})`}</Year>
-          {/* <Rating>{rating}</Rating> */}
         </TitleYearContainer>
 
         <DirectorContainer>
@@ -110,12 +141,25 @@ function Film( { movie_id }) {
         <Overview>{result.overview}</Overview>
       </Container1> 
 
-      <RatingContainer>
-        
-      </RatingContainer>
+      {/* <RatingContainer>
+      </RatingContainer> */}
 
-      <DetailsContainer></DetailsContainer>
-      
+
+      <DetailsContainer>
+
+        <Header>
+          <Tab active={active.cast}>CAST</Tab>
+          <Tab active={active.crew} onClick={open_info}>CREW</Tab>
+          <Tab active={active.details}>DETAILS</Tab>
+          <Tab active={active.genres}>GENRES</Tab>
+        </Header>
+
+        {/* <ActiveTab></ActiveTab> */}
+
+        <Credits credits={credits.cast}></Credits> 
+
+
+      </DetailsContainer>
       
     </Container>
   )
@@ -124,7 +168,7 @@ function Film( { movie_id }) {
 // Style 
 // prob should have used grid layout 
 const Container = styled.div`
-  margin-top: .5%; 
+  margin-top: .5%;
   border: 2px solid black; 
   height: 100vh;
 
@@ -135,7 +179,9 @@ const Container = styled.div`
 
   display: flex;
   flex-direction: row; 
-  justify-content: flex-start;  
+ // justify-content: flex-start; 
+ 
+ flex-flow: wrap; 
 
 `; 
 
@@ -166,7 +212,8 @@ const Poster = styled.img`
   height: 345px; 
   border: 1px solid #a5a5a5;
   border-radius: 3%;
-  margin-left: 5%; 
+ // margin-left: 5%; 
+  margin-left: 2%; 
 `;
 
 const TitleYearContainer = styled.div`
@@ -188,7 +235,6 @@ const Year = styled.div`
   margin-left: 2%;
   opacity: .5; 
 `; 
-
 
 const DirectorContainer = styled.div`
   margin-left: 3%; 
@@ -227,17 +273,17 @@ const Director = styled.h3`
 `;
 
 // RATING
-const RatingContainer = styled.div`
-  border: 2px solid green; 
-
-  height: 40%;
-  width: 30%; 
-   
-`;
+// const RatingContainer = styled.div`
+//   border: 2px solid green; 
+//   margin-top: 20%; 
+//   margin-right: 2%; 
+//   height: 37%;
+//   width: 30%; 
+// `;
 
 
 const TagLineRatingContainer = styled.div`
-
+  z-index: 1;
   display: flex; 
   flex-direction: row; 
 `;
@@ -263,7 +309,7 @@ const Rating = styled.div`
 const Overview = styled.div`
   font-family: Roboto; 
   color: #e1e3e5; 
-
+  z-index: 1;
   width: 70%; 
   
   display: inline-block;
@@ -272,17 +318,59 @@ const Overview = styled.div`
 `; 
 
 const DetailsContainer = styled.div`
+  //width: 30%;  
 
-  border: 1px solid green; 
+  border: 2px solid white; 
+
+  // margin-top: 7%; 
+  // margin-left: 20%; 
+`; 
+
+const Header = styled.div`
+  display: flex; 
+  justify-content: space-between; 
+`;
+
+const ActiveTab = styled.div`
 
 
 `; 
 
+const Tab = styled.button`
+  font-family: Roboto; 
+  //color: #00dd61; 
+  padding-bottom: 4px; 
+  border: none;   
+
+  &:hover{
+    cursor: pointer; 
+    border-bottom: 2px solid #e1e3e5;  
+    //padding-bottom: 2px; 
+  }
 
 
+  color: ${ (props) => props.active ? "#e1e3e5" : "#00dd61"}; 
+  border-bottom: ${ (props) => props.active ? "2px solid white" : "2px solid #333"}; 
+  
+
+  &:focus{
+    outline: none; 
+    padding-bottom: 2px; 
+  }
+
+  width: 50%;
+  height: 15%; 
+
+  background: none; 
+  font-size: 1.3em; 
+`;
+
+
+
+
+
+// TODO maybe 
 // const ViewBackdrops = styled.button`
-
-
 // `;
 
 
