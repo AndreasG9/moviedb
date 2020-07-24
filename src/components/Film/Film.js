@@ -1,10 +1,13 @@
-import React, { useState, useEffect, Fragment, useRef} from "react"; 
+import React, { useState, useEffect, Fragment} from "react"; 
 import axios from "axios"; 
 import styled from "styled-components"; 
 
 //import Rating from "...."; 
 
-import Credits from "./Credits";
+//import Credits from "./Tabs/CreditsTab";
+
+import Tabs from "./Tabs/Tabs.js";
+
 
 
 function Film( { movie_id }) {    
@@ -12,7 +15,6 @@ function Film( { movie_id }) {
 
   const [result, set_result] = useState([]);
   const [year, set_year] = useState(""); 
-  //const [credits, set_credits] = useState([]);
   const [directors, set_directors] = useState([]); 
   const [rating, set_rating] = useState(""); 
 
@@ -21,13 +23,13 @@ function Film( { movie_id }) {
     crew: []
   });
 
-  const [active, set_active] = useState({
-    // active tab 
-    cast: true,
-    crew: false,
-    details: false,
-    genres: false
-  })
+  // const [active, set_active] = useState({
+  //   // active tab 
+  //   cast: true,
+  //   crew: false,
+  //   details: false,
+  //   genres: false
+  // });
 
 
   const base = "https://image.tmdb.org/t/p";
@@ -36,7 +38,7 @@ function Film( { movie_id }) {
 
 
   useEffect( () => {
-    // called on mount 
+    // bunch of diff state vars  
 
     const fetch_data = async () => {
       const movie = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
@@ -78,8 +80,6 @@ function Film( { movie_id }) {
     fetch_data(); 
     //open_info("CAST"); 
 
-
-
   }, [movie_id]); 
 
 
@@ -109,10 +109,6 @@ function Film( { movie_id }) {
     else return <Director>{directors[0]}</Director>
   }
 
-
-  function open_info(tab){
-    // display CAST, CREW, DETAILS, or GENRE 
-  }
 
 
   return (
@@ -145,21 +141,9 @@ function Film( { movie_id }) {
       </RatingContainer> */}
 
 
-      <DetailsContainer>
-
-        <Header>
-          <Tab active={active.cast}>CAST</Tab>
-          <Tab active={active.crew} onClick={open_info}>CREW</Tab>
-          <Tab active={active.details}>DETAILS</Tab>
-          <Tab active={active.genres}>GENRES</Tab>
-        </Header>
-
-        {/* <ActiveTab></ActiveTab> */}
-
-        <Credits credits={credits.cast}></Credits> 
-
-
-      </DetailsContainer>
+      <TabsContainer>          
+        <Tabs credits={credits}></Tabs>
+      </TabsContainer>
       
     </Container>
   )
@@ -248,7 +232,7 @@ const DirectorContainer = styled.div`
   color: #a5a5a5; 
   white-space: nowrap;  
 
-  // border: 1px solid blue; 
+
 
 `;
 
@@ -317,13 +301,14 @@ const Overview = styled.div`
   margin-left: 4%; 
 `; 
 
-const DetailsContainer = styled.div`
+const TabsContainer = styled.div`
   //width: 30%;  
 
   border: 2px solid white; 
 
   // margin-top: 7%; 
   // margin-left: 20%; 
+  z-index: 1; 
 `; 
 
 const Header = styled.div`
@@ -331,10 +316,6 @@ const Header = styled.div`
   justify-content: space-between; 
 `;
 
-const ActiveTab = styled.div`
-
-
-`; 
 
 const Tab = styled.button`
   font-family: Roboto; 
