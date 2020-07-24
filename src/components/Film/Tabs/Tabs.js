@@ -3,33 +3,32 @@ import styled from "styled-components";
 import CreditsTab from "./CreditsTab";
 import DetailsTab from "./DetailsTab"; 
 
-function Tabs( {credits}) {
+function Tabs( {credits, result}) {
 
-  // const [active, set_active] = useState({
-  //   // active tab 
-  //   cast: true,
-  //   crew: false,
-  //   details: false,
-  //   genres: false
-  // });
+  const [active, set_active] = useState({
+    // active tab 
+    cast: true,
+    crew: false,
+    details: false,
+    genres: false
+  });
 
 
-  const [active_tab, set_active_tab] = useState("cast"); 
+  const [active_tab, set_active_tab] = useState("details"); 
 
 
   function show_tab(tab){
     set_active_tab(tab);
+    set_active({[tab]: true}); 
   }
-
-
-
 
   function tab(){
     // probably a better way to do tabs ... 
     // credits componenet used twice, gave it a key so state not reused
-    if(active_tab === "cast") return <CreditsTab credits={credits.cast} key="1"></CreditsTab>
+
+    if(active_tab === "cast") return <CreditsTab credits={credits.cast} key="1" autofocus></CreditsTab>; 
     else if(active_tab === "crew") return <CreditsTab credits={credits.crew} key="2"></CreditsTab>
-    else if(active_tab === "details") return <DetailsTab ></DetailsTab>
+    else if(active_tab === "details") return <DetailsTab result={result}></DetailsTab>
     else return <DetailsTab ></DetailsTab> 
   }
 
@@ -38,10 +37,10 @@ function Tabs( {credits}) {
     <div>
 
       <Header>
-        <Tab  onClick={ () => show_tab("cast") } autoFocus>CAST</Tab>
-        <Tab  onClick={ () => show_tab("crew") }>CREW</Tab>
-        <Tab  onClick={ () => show_tab("details") }>DETAILS</Tab>
-        <Tab  onClick={ () => show_tab("genres") }>GENRES</Tab>
+        <Tab  onClick={ () => show_tab("cast") }   active={active.cast}>CAST</Tab>
+        <Tab  onClick={ () => show_tab("crew") }  active={active.crew}>CREW</Tab>
+        <Tab  onClick={ () => show_tab("details") } active={active.details}>DETAILS</Tab>
+        <Tab  onClick={ () => show_tab("genres") } active={active.genres}>GENRES</Tab>
       </Header>
 
       {tab()} 
@@ -74,15 +73,13 @@ const Tab = styled.button`
 
   &:focus{
     outline: none; 
-    color: #e1e3e5;
-    border-bottom: 2px solid white;  
-    
   }
 
+
+  color: ${ (props) => props.active ? "#e1e3e5" : "#00dd61"}; 
+  border-bottom: ${ (props) => props.active ? "2px solid white" : "2px solid #333"}; 
+
   
-
-
-
   width: 50%;
   height: 15%; 
 
