@@ -13,9 +13,8 @@ import styled from "styled-components";
 }
 
 // Style
-
 const Container = styled.div`
-  margin: 10%; 
+  margin: 5%; 
 `; 
 
 const Genre = styled.div`
@@ -24,13 +23,11 @@ const Genre = styled.div`
   background-color: #273038; 
   text-align: center; 
   padding: 10px; 
-  margin: 4%; 
+  margin: 2%; 
 
   &:hover{
     cursor: pointer; 
   }
-
 `;
-
 
 export default GenresTab; 

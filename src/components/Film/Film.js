@@ -1,14 +1,8 @@
 import React, { useState, useEffect, Fragment} from "react"; 
 import axios from "axios"; 
 import styled from "styled-components"; 
-
 //import Rating from "...."; 
-
-//import Credits from "./Tabs/CreditsTab";
-
 import Tabs from "./Tabs/Tabs.js";
-
-
 
 function Film( { movie_id }) {    
   // ex. /film/the-thing
@@ -22,14 +16,6 @@ function Film( { movie_id }) {
     cast: [],
     crew: []
   });
-
-  // const [active, set_active] = useState({
-  //   // active tab 
-  //   cast: true,
-  //   crew: false,
-  //   details: false,
-  //   genres: false
-  // });
 
 
   const base = "https://image.tmdb.org/t/p";
@@ -52,7 +38,6 @@ function Film( { movie_id }) {
 
       // credits 
       data = await axios.get(credits);
-      //set_credits(data.data);
       set_credits({
          // cast and crew each have arr of objects 
         cast: data.data.cast,
@@ -109,106 +94,103 @@ function Film( { movie_id }) {
     else return <Director>{directors[0]}</Director>
   }
 
-
-
   return (
-    <Container>
-
+    <React.Fragment>
       <BackDrop src={base + size + result.backdrop_path} alt="backdrop" draggable="false"></BackDrop>
 
-      <Poster src={base + poster_size + result.poster_path} alt="poster"></Poster>
+      <Container>
+        <TopContainer>
 
-      <Container1> 
-        <TitleYearContainer>
-          <Title>{result.title}</Title>
-          <Year>{`(${year})`}</Year>
-        </TitleYearContainer>
+          <Poster src={base + poster_size + result.poster_path} alt="poster"></Poster>
 
-        <DirectorContainer>
-          <DirectedBy>Directed by</DirectedBy>
-          {display_directors()}
-        </DirectorContainer>
+          <InfoContainer> 
+            <TitleYearContainer>
+              <Title>{result.title}</Title>
+              <Year>{`(${year})`}</Year>
+            </TitleYearContainer>
 
-        <TagLineRatingContainer>
-          <TagLine>{result.tagline}</TagLine>
-          <Rating>{rating}</Rating>
-        </TagLineRatingContainer>
+            <DirectorContainer>
+              <DirectedBy>Directed by</DirectedBy>
+              {display_directors()}
+            </DirectorContainer>
 
-        <Overview>{result.overview}</Overview>
-      </Container1> 
+            <TagLineRatingContainer>
+              <TagLine>{result.tagline}</TagLine>
+              <Rating>{rating}</Rating>
+            </TagLineRatingContainer>
 
-      {/* <RatingContainer>
-      </RatingContainer> */}
+            <Overview>{result.overview}</Overview>
+          </InfoContainer> 
 
+          <RatingContainer>
+          </RatingContainer> 
+          
+        </TopContainer>
 
-      <TabsContainer>          
-        <Tabs credits={credits}></Tabs>
-      </TabsContainer>
-      
-    </Container>
+        <TabsContainer>          
+          <Tabs credits={credits} result={result}></Tabs>
+        </TabsContainer>
+
+      </Container>
+    </React.Fragment>
   )
 }
 
 // Style 
-// prob should have used grid layout 
+const BackDrop = styled.img`
+  position: absolute; 
+  opacity: .2;
+  left: 16%; 
+  top: 10%; 
+`; 
+
 const Container = styled.div`
-  margin-top: .5%;
-  border: 2px solid black; 
-  height: 100vh;
+  margin: 0 auto;
+  width: 62%; 
+  height: max-content; 
 
+  // display: flex;
+  // flex-direction: column; 
 
-  width: 60%; 
-  position: relative;
-  left: 20%;
+  //border: 2px solid blue; 
+`; 
 
+const TopContainer = styled.div`
+  margin-top: 20%; 
   display: flex;
   flex-direction: row; 
- // justify-content: flex-start; 
- 
- flex-flow: wrap; 
+  align-items: flex-start; 
+  //border: 2px solid white; 
+`;
 
-`; 
-
-// FIX 
-const BackDrop = styled.img`
-  // position better? 
-
-  position: absolute; 
-  //left: 15%;  
-
-  opacity: .2;
-  width: 100%; 
-
-`; 
-
-const Container1 = styled.div`
-  margin-top: 18%; 
+const InfoContainer = styled.div`
   display: flex;
   flex-direction: column; 
   color: #e1e3e5; 
-  width: 60%; 
-`;
+
+  width: 65%;
+
+  //border: 2px solid white; 
+`; 
 
 const Poster = styled.img`
-  margin-top: 20%; 
   z-index: 1;
   width: 230px;
   height: 345px; 
   border: 1px solid #a5a5a5;
   border-radius: 3%;
- // margin-left: 5%; 
   margin-left: 2%; 
 `;
 
 const TitleYearContainer = styled.div`
   display: flex;
   align-items: center; 
-  height: 15%; 
+  flex-wrap: wrap;
+  margin-left: 5%; 
 `; 
 
 const Title = styled.div`
   z-index: 1;
-  margin-left: 5%; 
   font-size: 3.4em;  
   font-weight: bold; 
 `;
@@ -223,17 +205,12 @@ const Year = styled.div`
 const DirectorContainer = styled.div`
   margin-left: 3%; 
   z-index: 1;
-  // height: 50%;
 
   display: flex; 
   flex-direction: row;
   align-items: center; 
 
   color: #a5a5a5; 
-  white-space: nowrap;  
-
-
-
 `;
 
 const DirectedBy = styled.div`
@@ -256,14 +233,16 @@ const Director = styled.h3`
   }
 `;
 
-// RATING
-// const RatingContainer = styled.div`
-//   border: 2px solid green; 
-//   margin-top: 20%; 
-//   margin-right: 2%; 
-//   height: 37%;
-//   width: 30%; 
-// `;
+// PLACEHOLDER for component 
+const RatingContainer = styled.div`
+  border: 2px solid green; 
+  // margin-top: 20%; 
+  // margin-right: 2%; 
+
+  width: 250px; 
+  height: 300px; 
+  
+`;
 
 
 const TagLineRatingContainer = styled.div`
@@ -301,53 +280,16 @@ const Overview = styled.div`
   margin-left: 4%; 
 `; 
 
-const TabsContainer = styled.div`
-  //width: 30%;  
-
-  border: 2px solid white; 
-
-  // margin-top: 7%; 
-  // margin-left: 20%; 
+const TabsContainer = styled.div`  
+  //border: 2px solid white; 
   z-index: 1; 
+
+  //margin: 0 10% 0 10%; 
+
+  position: absolute; 
+  top: 84.3%; 
+  left: 26%; 
 `; 
-
-const Header = styled.div`
-  display: flex; 
-  justify-content: space-between; 
-`;
-
-
-const Tab = styled.button`
-  font-family: Roboto; 
-  //color: #00dd61; 
-  padding-bottom: 4px; 
-  border: none;   
-
-  &:hover{
-    cursor: pointer; 
-    border-bottom: 2px solid #e1e3e5;  
-    //padding-bottom: 2px; 
-  }
-
-
-  color: ${ (props) => props.active ? "#e1e3e5" : "#00dd61"}; 
-  border-bottom: ${ (props) => props.active ? "2px solid white" : "2px solid #333"}; 
-  
-
-  &:focus{
-    outline: none; 
-    padding-bottom: 2px; 
-  }
-
-  width: 50%;
-  height: 15%; 
-
-  background: none; 
-  font-size: 1.3em; 
-`;
-
-
-
 
 
 // TODO maybe 

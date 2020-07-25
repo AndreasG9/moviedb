@@ -8,7 +8,7 @@ function Credits( { credits } ) {
   // w/ pagination arrows 
 
   const [current_page, set_current_page] = useState(1); 
-  const posts_per_page = 4; 
+  const posts_per_page = 5; 
   const total_pages = Math.floor(credits.length / posts_per_page); 
   
   const [active, set_active] = useState({
@@ -51,9 +51,7 @@ function Credits( { credits } ) {
 
 const Container = styled.div`
   display: flex; 
-  flex-direction: row; 
-
-  //border: 1px solid blue; 
+  flex-direction: row;  
 `;
 
 const Arrow = styled.span`
@@ -67,7 +65,7 @@ const Arrow = styled.span`
     color: #e1e3e5;
   }
   
-  margin-top: 15%; 
+  margin-top: 12%; 
 
 
   opacity: ${props => props.active ? "1" : ".2"}; 
@@ -79,11 +77,5 @@ const Arrow = styled.span`
     -ms-user-select: none;
     user-select: none;
 `;
-
-
-
-
-
-
 
 export default Credits; 

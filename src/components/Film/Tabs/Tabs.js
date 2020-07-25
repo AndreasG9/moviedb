@@ -35,7 +35,6 @@ function Tabs( {credits, result}) {
   }
 
 
-
   return (
     <div>
       <Header>
@@ -67,7 +66,6 @@ const Tab = styled.button`
   &:hover{
     cursor: pointer; 
     border-bottom: 2px solid #e1e3e5;  
-    //padding-bottom: 2px; 
   }
 
 
@@ -84,11 +82,6 @@ const Tab = styled.button`
   background: none; 
   font-size: 1.3em; 
 `;
-
-
-
-
-
 
 
 export default Tabs; 
