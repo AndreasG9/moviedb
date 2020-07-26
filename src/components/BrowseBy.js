@@ -18,7 +18,7 @@ function BrowseBy( ) {
     // redirect to /films/browse-by/selected 
     let selected = event.target.value; 
 
-    const target = `/films/${select}/{selected}`; // ex. genre crime : domain.com/films/genre/crime
+    const target = `/films/${select}/${selected.toLowerCase()}`; // ex. genre crime : domain.com/films/genre/crime
     history.push(target, {browseby: select, selected: selected});
   }
 
@@ -43,8 +43,8 @@ function BrowseBy( ) {
         </Select>
 
         <Select>
-          <Option hidden>RATING</Option>
-          <Option>HIGHESt FIRST</Option>
+          <Option hidden> TMDB RATING</Option>
+          <Option>HIGHEST FIRST</Option>
           <Option>LOWEST FIRST</Option>
         </Select>
 
@@ -65,7 +65,6 @@ const Container = styled.div`
   font-family: Roboto; 
   margin: 3% 0; 
   width: 50%; 
-  
 
   position: relative;
   left: 24%; 
@@ -96,8 +95,7 @@ const Select = styled.select`
   font-size: 1.0rem; 
   background-color: #13181c; 
   color: #e1e3e5;
-  padding: 5px; 
-  text-indent: 10px; 
+  padding: 5px;  
 
   &:hover{
     color: #adadff;
