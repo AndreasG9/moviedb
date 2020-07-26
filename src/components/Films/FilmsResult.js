@@ -1,49 +1,33 @@
 import React from "react"; 
 import styled from "styled-components";
+import ReactTooltip from "react-tooltip";
 
  function FilmsResult( {result} ) {
 
   const poster = `https://image.tmdb.org/t/p/w154/${result.poster_path}`; 
-
-  // function get_year(){
-  //   // API release date format: "year-month-day"
-  //   const year = result.release_date.substr(0, 4); 
-
-  //   if(year.length === 4) return year;
-  //   else return result.release_date; 
-  // }
+  const tool_tip = `${result.title} (${result.release_date.substr(0, 4)})`; 
 
   return (
     <div>
-      <Poster src={poster} alt="poster">
-
-      </Poster>
+      <ReactTooltip></ReactTooltip>
+      <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
     </div>
   )
 }
 
 
-
-// tool tip 
-
 const Poster = styled.img`
   display: block; 
-
   border: 1px solid #a5a5a5;
   border-radius: 3%;
 
   &:hover{
     cursor: pointer;
     border: 2px solid #98fb98;
-    margin: 9px; 
+    margin: 4px; 
   }
 
-  margin: 10px; 
+  margin: 5px; 
 `; 
-
-
-
-
-
 
 export default FilmsResult; 

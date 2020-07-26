@@ -1,82 +1,23 @@
 import React from "react";
 import styled from "styled-components";
+import ReactTooltip from "react-tooltip";
 
 function PopularThisWeekFilm( {result, i} ) {
   // props will include poster path, movie id (to link to film if clicked), title, and year 
 
   const poster = `https://image.tmdb.org/t/p/w400/${result.poster_path}`; 
+  const tool_tip = `${result.title} (${result.release_date.substr(0, 4)})`; 
 
-  function get_year(){
-    // API release date format: "year-month-day"
-    const year = result.release_date.substr(0, 4); 
-
-    if(year.length === 4) return year;
-    else return result.release_date; 
-  }
-
-  function get_left(){
-    // tooltip position absolute
-    let left = "0%"; 
-
-    if(i === 1) left = "2%";
-    else if(i === 2) left = "27%"; 
-    else if(i === 3) left = "51%"; 
-    else if(i === 4) left = "75%"; 
-
-    return left; 
-  }
 
   return (
-    <Film>
-      <ToolTip  className="test"  left={get_left()}>{result.title + "  (" + get_year() + ")"}</ToolTip>
-      <Poster src={poster} alt="Poster"></Poster>
-    </Film>
+    <div>
+      <ReactTooltip></ReactTooltip>
+      <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
+    </div>
   )
 }
 
 // Style 
-const ToolTip = styled.span`
-  // trying this, ugly lookin  
-
-  position: absolute;
-  bottom: 94%;
-  left: ${props => props.left}; 
-
-  min-width: 200px; 
-  min-height: 20px; 
-  text-align: center; 
-   
-  background-color: #425566; 
-  font-size: 1.0em; 
-  border-radius: 20px; 
-  padding: 8px 0; 
-  color: #e1e3e5;
-  font-style: italic; 
-
-  transform: scale(0);
-
-  &:after{
-    content: " ";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    
-    margin-left: -8px;
-    border-width: 8px;
-    border-style: solid;
-    border-color: #425566 transparent transparent transparent;
-  }
-
-`;
-
-
-const Film = styled.div`
-
-  &:hover .test{
-    transition-delay: .4s;
-    transform: scale(1);
-  }
-`;
 
 // FIX HOVER WHEN CONTEXT ADDED 
 const Poster = styled.img`

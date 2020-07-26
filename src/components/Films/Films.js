@@ -33,6 +33,8 @@ function Films( {browseby, selected} ) {
   });
 
   const [current_page, set_current_page] = useState(1); 
+  const [loading, set_loading] = useState(false); 
+  //const posts_per_page = 20; 
 
   const [active, set_active] = useState({
     left: false,
@@ -43,7 +45,7 @@ function Films( {browseby, selected} ) {
   useEffect(  () => {
 
     const get_data = async () => {
-
+      set_loading(true);
       const request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&sort_by=vote_average.desc&include_adult=false&include_video=false&page=${current_page}&vote_count.gte=50&with_genres=80`; 
       const res = await axios.get(request); 
 
@@ -54,16 +56,12 @@ function Films( {browseby, selected} ) {
       }); 
 
       set_results(res.data.results); // display 72 posts a page? maybe less 
+      set_loading(false); 
     }
 
     get_data();
 
   }, [current_page]); 
-
-  const index_last = pages.current * pages.posts_per_page; 
-  const index_first = index_last - pages.posts_per_page;
-  const current = results.slice(index_first, index_last); 
-  
 
 
   // re-render will new page request 
@@ -142,7 +140,7 @@ function Films( {browseby, selected} ) {
 
 
       
-      <FilmsResults results={results}></FilmsResults>
+      <FilmsResults results={results} loading={loading}></FilmsResults>
      
 
 
@@ -170,10 +168,9 @@ const HeaderContainer = styled.h2`
   display: flex;
   flex-direction: row; 
   justify-content: space-between; 
-  align-items: center; 
+  align-items: flex-end; 
   font-size: 1.1em; 
-  border-bottom: 2px solid #a5a5a5; 
-  padding-bottom: 1%;  
+  border-bottom: 1px solid #a5a5a5;
 `;
 
 const FiltersContainer = styled.div`
@@ -234,27 +231,26 @@ const Filters = styled.div`
 `;
 
 const Filter = styled.div`
-
 `; 
-
-
 
 const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row; 
   justify-content: space-between; 
-  border-top: 2px solid #a5a5a5; 
-  margin-bottom: 3%; 
+  border-top: 1px solid #a5a5a5; 
 `; 
 
 const Button = styled.button`
   color: #a5a5a5;
   border-radius: 4px; 
+
   padding: 10px;  
+  width: 8%;
+
   text-align: center; 
   border: none; 
   background-color: #273038; 
-  margin-top: 1.5%; 
+  margin-top: .5%; 
 
   &:hover{
     cursor: pointer;

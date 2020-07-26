@@ -27,13 +27,6 @@ function BrowseBy( ) {
       <Label>BROWSE BY</Label>
 
       <Container2>
-        {/* <Select>
-          <Option hidden>POPULAR</Option>
-          <Option>ALL TIME</Option>
-          <Option>THIS YEAR</Option>
-          <Option>THIS MONTH</Option>
-          <Option>THIS WEEK</Option>
-        </Select> */}
 
         <Select>
           <Option hidden>YEAR</Option>
@@ -46,6 +39,14 @@ function BrowseBy( ) {
           <Option hidden> TMDB RATING</Option>
           <Option>HIGHEST FIRST</Option>
           <Option>LOWEST FIRST</Option>
+        </Select>
+
+        <Select>
+          <Option hidden>POPULAR</Option>
+          <Option>ALL TIME</Option>
+          <Option>THIS YEAR</Option>
+          <Option>THIS MONTH</Option>
+          <Option>THIS WEEK</Option>
         </Select>
 
         <Select onChange={ (event) => get_selected("genre", event) }>

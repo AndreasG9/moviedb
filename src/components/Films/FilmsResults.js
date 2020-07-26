@@ -2,7 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import FilmResult from "./FilmsResult"; 
 
-function FilmsResults( {results}) {
+function FilmsResults( {results, loading}) {
+
+  if(loading) {
+   return <Test>LOADING LOADING</Test>
+  }; 
+
 
   return (
     <Container>
@@ -22,6 +27,7 @@ const Container = styled.div`
   display: flex; 
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center; 
 `;
 
 const Wrap = styled.div`
@@ -29,5 +35,12 @@ const Wrap = styled.div`
   width: 20%;
   box-sizing: border-box;
 `; 
+
+const Test = styled.div`
+  width: 1000px
+  height: 1000px;
+  background-color: white; 
+
+`;
 
 export default FilmsResults; 
