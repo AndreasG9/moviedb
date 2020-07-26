@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route} from "react-router-dom";
 import Home from "./pages/Home";
 import SearchResults from "./pages/Search"; 
 import FilmPage from "./pages/FilmPage"; 
+import FilmsPage from "./pages/FilmsPage"; 
 // ... 
 
 const Routes = () => (
@@ -31,6 +32,20 @@ const Routes = () => (
         </FilmPage>}
       >
     </Route>
+
+    <Route
+      path="/films"
+      render = { (props) => (
+        <FilmsPage
+          browseby={props.location.state.browseby}
+          selected={props.location.state.selected}
+        >
+        </FilmsPage>
+      )}
+    >
+    </Route>
+
+    
 
   </Router>
 ); 

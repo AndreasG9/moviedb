@@ -1,11 +1,26 @@
 import React from "react"; 
+import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 
-function BrowseBy() {
-  // BrowseBy Popular, Rating, Genre, Year 
-  // path home/popular , home/rating .... 
 
+function BrowseBy( ) {
+  // BrowseBy Popular, Rating, Genre, Year 
+  // path home/popular/ sorting method , home/rating/ sorting method  .... 
   // home/popular/this/month ... 
+
+  const GENRES = ["ACTION", "ADVENTURE", "ANIMATION", "COMEDY", "CRIME", "DOCUMENTARY", "DRAMA", "FAMILY", "FANTASY", "HORROR", "MUSIC", "MYSTERY", "ROMANCE", "SCIFI", 
+                  "TV MOVIE", "THRILLER", "WAR", "WESTERN"]; 
+  const YEARS = ["UPCOMING", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
+
+  const history = useHistory(); 
+
+  function get_selected(select, event){
+    // redirect to /films/browse-by/selected 
+    let selected = event.target.value; 
+
+    const target = `/films/${select}/{selected}`; // ex. genre crime : domain.com/films/genre/crime
+    history.push(target, {browseby: select, selected: selected});
+  }
 
   return (
     <Container>
@@ -19,12 +34,12 @@ function BrowseBy() {
           <Option>THIS MONTH</Option>
           <Option>THIS WEEK</Option>
         </Select> */}
+
         <Select>
           <Option hidden>YEAR</Option>
-          <Option>UPCOMING</Option>
-          <Option>2020s</Option>
-          <Option>2010s</Option>
-          <Option>2000s</Option>
+          {YEARS.map( (year) => (
+            <Option key={year}>{year}</Option>
+          ))}
         </Select>
 
         <Select>
@@ -32,21 +47,13 @@ function BrowseBy() {
           <Option>HIGHESt FIRST</Option>
           <Option>LOWEST FIRST</Option>
         </Select>
-        <Select>
+
+        <Select onChange={ (event) => get_selected("genre", event) }>
           <Option hidden>GENRE</Option>
-          <Option>ACTION</Option>
-          <Option>ANIMATION</Option>
-          <Option>COMEDY</Option>
-          <Option>CRIME</Option>
-          <Option>DRAMA</Option>
-          <Option>HISTORY</Option>
-          <Option>HORROR</Option>
-          <Option>MYSTERY</Option>
-          <Option>ROMANCE</Option>
-          <Option>SCIENCE FICTION</Option>
-          <Option>THRILLER</Option>
-          <Option>WESTERN</Option>
-          <Option>WAR</Option>
+          {GENRES.map( (genre) => (
+            <Option key={genre}>{genre}</Option>
+          ))}
+
         </Select>
         </Container2>
     </Container>
@@ -56,17 +63,14 @@ function BrowseBy() {
 // Style 
 const Container = styled.div`
   font-family: Roboto; 
-  margin-top: 1%; 
-
-  width: 700px;
-  height: 50px; 
+  margin: 3% 0; 
+  width: 50%; 
   
+
   position: relative;
   left: 24%; 
   display: flex; 
   align-items: center; 
-
-
 `;
 
 const Container2 = styled.div`
@@ -93,16 +97,22 @@ const Select = styled.select`
   background-color: #13181c; 
   color: #e1e3e5;
   padding: 5px; 
-  width: 140px;
   text-indent: 10px; 
+
+  &:hover{
+    color: #adadff;
+  }
+
+  &:focus{
+    outline: none; 
+  }
 `;
 
 const Option = styled.option`
   background-color: #8699aa; 
   color: #333; 
   text-align: center; 
-  font-size: 1.1rem; 
-  
+  font-size: 1.2rem; 
 `;
 
 export default BrowseBy; 

@@ -1,12 +1,9 @@
-import React, { } from "react";
+import React from "react";
 import styled from "styled-components"; 
 import Search from "./Search/Search"; 
 import { withRouter } from "react-router-dom"; 
 
 function Header( props ){
-
-  // const [active, set_active] = useState(true); 
-  
 
   const go_home = () => {
     props.history.push("/"); // redirect to "/home", which loads the Header and other home componenets, not passing any props 

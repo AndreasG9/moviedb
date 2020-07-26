@@ -280,8 +280,12 @@ const Overview = styled.div`
   margin-left: 4%; 
 `; 
 
-const TabsContainer = styled.div`  
-  //border: 2px solid white; 
+const TabsContainer = styled.div`
+  // border-left: 2px solid white; 
+  // border-right: 2px solid white; 
+
+
+  border: 2px solid white; 
   z-index: 1; 
 
   //margin: 0 10% 0 10%; 
@@ -289,6 +293,9 @@ const TabsContainer = styled.div`
   position: absolute; 
   top: 84.3%; 
   left: 26%; 
+
+  width: 43.5%; 
+  height: 38%; 
 `; 
 
 
