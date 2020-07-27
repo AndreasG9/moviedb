@@ -39,6 +39,7 @@ const Routes = () => (
         <FilmsPage
           browseby={props.location.state.browseby}
           selected={props.location.state.selected}
+          genres={props.location.state.genres}
         >
         </FilmsPage>
       )}

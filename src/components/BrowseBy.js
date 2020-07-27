@@ -1,6 +1,7 @@
-import React from "react"; 
+import React, { useState, useEffect } from "react"; 
 import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
+import axios from "axios"; 
 
 
 function BrowseBy( ) {
@@ -8,18 +9,35 @@ function BrowseBy( ) {
   // path home/popular/ sorting method , home/rating/ sorting method  .... 
   // home/popular/this/month ... 
 
-  const GENRES = ["ACTION", "ADVENTURE", "ANIMATION", "COMEDY", "CRIME", "DOCUMENTARY", "DRAMA", "FAMILY", "FANTASY", "HORROR", "MUSIC", "MYSTERY", "ROMANCE", "SCIFI", 
-                  "TV MOVIE", "THRILLER", "WAR", "WESTERN"]; 
+  // const GENRES = ["ACTION", "ADVENTURE", "ANIMATION", "COMEDY", "CRIME", "DOCUMENTARY", "DRAMA", "FAMILY", "FANTASY", "HORROR", "MUSIC", "MYSTERY", "ROMANCE", "SCIFI", 
+  //                 "TV MOVIE", "THRILLER", "WAR", "WESTERN"]; 
   const YEARS = ["UPCOMING", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
 
+
   const history = useHistory(); 
+  const [genres, set_genres] = useState([]);
+
+  useEffect( () => {
+
+    const get_genre_ids = async () => {
+      const genre_req = `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`; 
+      const res = await axios.get(genre_req); 
+      set_genres(res.data.genres);
+
+    };
+
+    get_genre_ids(); 
+
+  }, []);
+
 
   function get_selected(select, event){
     // redirect to /films/browse-by/selected 
+
     let selected = event.target.value; 
 
     const target = `/films/${select}/${selected.toLowerCase()}`; // ex. genre crime : domain.com/films/genre/crime
-    history.push(target, {browseby: select, selected: selected});
+    history.push(target, {browseby: select, selected: selected, genres:genres});
   }
 
   return (
@@ -28,20 +46,20 @@ function BrowseBy( ) {
 
       <Container2>
 
-        <Select>
+        <Select onChange={ (event) => get_selected("year", event) }>
           <Option hidden>YEAR</Option>
           {YEARS.map( (year) => (
             <Option key={year}>{year}</Option>
           ))}
         </Select>
 
-        <Select>
-          <Option hidden> TMDB RATING</Option>
+        <Select onChange={ (event) => get_selected("tmdb_rating", event) }>
+          <Option hidden>TMDB RATING</Option>
           <Option>HIGHEST FIRST</Option>
           <Option>LOWEST FIRST</Option>
         </Select>
 
-        <Select>
+        <Select onChange={ (event) => get_selected("popular", event) }>
           <Option hidden>POPULAR</Option>
           <Option>ALL TIME</Option>
           <Option>THIS YEAR</Option>
@@ -51,8 +69,8 @@ function BrowseBy( ) {
 
         <Select onChange={ (event) => get_selected("genre", event) }>
           <Option hidden>GENRE</Option>
-          {GENRES.map( (genre) => (
-            <Option key={genre}>{genre}</Option>
+          {genres.map( (genre) => (
+            <Option key={genre.id}>{genre.name}</Option>
           ))}
 
         </Select>
@@ -110,7 +128,6 @@ const Select = styled.select`
 const Option = styled.option`
   background-color: #8699aa; 
   color: #333; 
-  text-align: center; 
   font-size: 1.2rem; 
 `;
 
