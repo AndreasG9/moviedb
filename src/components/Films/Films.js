@@ -7,6 +7,7 @@ const DECADES = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s
 
 function Films( {browseby, selected, genres} ) {
   // ex. .../films/genre/crime (default sorted by popularity (not the biggest fan of how they determine those values))
+
   // on first render 
   let selected_genre;  
   if(browseby === "genre") selected_genre = genres.find( (g) => g.name === selected); // returns obj with name and id keys 
@@ -31,9 +32,7 @@ function Films( {browseby, selected, genres} ) {
 
   let sorted; 
   if(browseby === "TMDB rating" || browseby === "popular") sorted = selected; 
-  else sorted = "Popular Today"; 
-
-  //else sorted = "TMDB Highest First"; 
+  else sorted = "Popularity Descending"; 
 
 
   // State 
@@ -69,39 +68,41 @@ function Films( {browseby, selected, genres} ) {
       set_loading(true);
       
       // set up query params 
-      // ---------------------GENRE-----------------------------------------------------
-      if(genre.id !== 0) { 
-        // get correct genre id to add to query 
-        query += `&with_genres=${genre.id}`;
-        //path += `/genre/genre.name`; 
-       }
-      else set_genre({id: 0, name: "All"}); 
-
-      // ---------------------YEAR----------------------------------------------------
-      if(year.visible === true){
-        query += `primary_release_year=${year.year} `;
-      }
-     // else set_year({}); 
- 
-
+    
       // -------------------- SORT BY-----------------------------------------------------
       // Release Date 
       if(sort_by === "Release Date Descending"){
         // starting with films released before today  
         const today = new Date().toISOString().slice(0,10); // (yyyy-mm-dd)
-        request += `&sort_by=primary_release_date.desc&primary_release_date.lte=${today}`;
+        query += `&sort_by=primary_release_date.desc&primary_release_date.lte=${today}`;
       }
-      
-      
       else if(sort_by === "Release Date Ascending") request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=falsepage=${current_page}&sort_by=primary_release_date.asc`; // removed min vote count  
 
       // Rating 
-      else if(sort_by === "TMDB lowest first") query += "&sort_by=vote_average.asc";
-      else if(sort_by === "TMDB highest first") query += "&sort_by=vote_average.desc";
+      else if(sort_by === "Highest All Time First") query += "&sort_by=vote_average.desc&without_genres=10770&vote_count.gte=100&primary_release_date.lte=2020-01-01"; // fix later 
+      else if(sort_by === "Lowest All Time First") query += "&sort_by=vote_average.asc";
+      else if(sort_by === "Highest This Year First") query += `&sort_by=vote_average.desc&primary_release_year=${new Date().getFullYear()}`;
+      else if(sort_by === "Lowest This Year First") query += `&sort_by=vote_average.asc&primary_release_year=${new Date().getFullYear()}`;
 
       // Most popular today or this year 
-      else if(sort_by === "This Year") request += `primary_release_year=${new Date().getFullYear()}&sort_by=vote_average.desc`; 
-      else request += "&sort_by=popularity.desc"; // most popular/ popular today is default / fallback sorting method 
+      // ${new Date().getFullYear()}
+      else if(sort_by === "Popularity Ascending") query += "&sort_by=popularity.asc"; 
+      else query += "&sort_by=popularity.desc"; // most popular/ popular today is default / fallback sorting method 
+
+      // ---------------------YEAR----------------------------------------------------
+      if(year.visible === true){
+        query += `primary_release_year=${year.year} `;
+      }
+      // else set_year({}); 
+       
+
+      // ---------------------GENRE-----------------------------------------------------
+      if(genre.id !== 0) { 
+        // get correct genre id to add to query 
+        query += `&with_genres=${genre.id}`;
+        //path += `/genre/genre.name`; 
+        }
+      else set_genre({id: 0, name: "All"}); 
 
 
       request += query; 
@@ -159,8 +160,6 @@ function Films( {browseby, selected, genres} ) {
 
   const handle_sorting = (event) => {
     set_sort_by(event.target.value);
-
-    
   }
 
   const handle_year = (year) => {
@@ -203,14 +202,17 @@ function Films( {browseby, selected, genres} ) {
           <Select onChange={handle_sorting} >
             <Option hidden>Sort by</Option>
 
-              <Group label="TMDB RATING">
-                <Option>Highest First</Option>
-                <Option>Lowest First</Option>
+
+            <Group label=" TMDB FILM POPULARITY">
+                <Option>Popularity Descending</Option>
+                <Option>Popularity Ascending</Option>
               </Group>
 
-              <Group label=" TMDB FILM POPULARITY">
-                <Option>Today</Option>
-                <Option>This Year</Option>
+              <Group label="TMDB RATING (awful system)">
+                <Option>Highest All Time First</Option>
+                <Option>Lowest All Time First</Option>
+                <Option>Highest This Year First</Option>
+                <Option>Lowest This Year First</Option>
               </Group>
 
               <Group label="RELEASE DATE">
