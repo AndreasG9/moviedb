@@ -47,28 +47,30 @@ function BrowseBy( ) {
       <Container2>
 
         <Select onChange={ (event) => get_selected("year", event) }>
-          <Option hidden>YEAR</Option>
+          <Option hidden>Year</Option>
           {YEARS.map( (year) => (
             <Option key={year}>{year}</Option>
           ))}
         </Select>
 
-        <Select onChange={ (event) => get_selected("tmdb_rating", event) }>
-          <Option hidden>TMDB RATING</Option>
-          <Option>HIGHEST FIRST</Option>
-          <Option>LOWEST FIRST</Option>
+        <Select onChange={ (event) => get_selected("TMDB rating", event) }>
+          <Option hidden>TMDB Rating</Option>
+          <Option>TMDB Highest First</Option>
+          <Option>TMDB Lowest First</Option>
         </Select>
 
         <Select onChange={ (event) => get_selected("popular", event) }>
-          <Option hidden>POPULAR</Option>
-          <Option>ALL TIME</Option>
-          <Option>THIS YEAR</Option>
-          <Option>THIS MONTH</Option>
-          <Option>THIS WEEK</Option>
+          <Option hidden>TMDB Film Popularity</Option>
+          <Option>Today</Option>
+          <Option>This Year</Option>
+          {/* <Option>All Time</Option>
+          <Option>This Year</Option>
+          <Option>This Month</Option>
+          <Option>This Week</Option> */}
         </Select>
 
         <Select onChange={ (event) => get_selected("genre", event) }>
-          <Option hidden>GENRE</Option>
+          <Option hidden>Genre</Option>
           {genres.map( (genre) => (
             <Option key={genre.id}>{genre.name}</Option>
           ))}

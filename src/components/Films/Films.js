@@ -3,164 +3,204 @@ import styled from "styled-components";
 import axios from "axios"; 
 import FilmsResults from "./FilmsResults"; 
 
-const YEARS = ["UPCOMING", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
+const DECADES = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
 
 function Films( {browseby, selected, genres} ) {
-  // ex. .../films/genre/crime 
-  // DEFAULT sorted by tmdb rating all time (according to tmdb user score which suck)
-
-
+  // ex. .../films/genre/crime (default sorted by popularity (not the biggest fan of how they determine those values))
   // on first render 
   let selected_genre;  
   if(browseby === "genre") selected_genre = genres.find( (g) => g.name === selected); // returns obj with name and id keys 
-  else selected_genre = "ALL"; 
+  else selected_genre = {id: 0, name: "All"}; 
+
+  let selected_year;
+  let years_arr = [];  
+  let visible = false; 
+  if(browseby === "year"){
+    // include a decade
+    let decade = selected.substring(0,4); 
+    years_arr.push(selected); 
+
+    for(let i=0; i<10; ++i){
+      years_arr.push(decade); 
+      ++decade; 
+    }
+    selected_year = selected; 
+    visible = true; 
+  }
+  else selected_year = "All"; 
+
+  let sorted; 
+  if(browseby === "TMDB rating" || browseby === "popular") sorted = selected; 
+  else sorted = "Popular Today"; 
+
+  //else sorted = "TMDB Highest First"; 
+
 
   // State 
   const [query_params, set_query_params] = useState(""); 
-  const [sort_by, set_sort_by] = useState(" TMDB highest first");
-
-  // will be mutated, initial is a genre or ALL 
-  const [genre, set_genre] = useState(selected_genre);
+  const [genre, set_genre] = useState(selected_genre);   // will be mutated, initial is a genre or ALL 
 
 
-  // initial is a year or ALL 
-  const [year, set_year] = useState(browseby);
+  const [year, set_year] = useState({
+    year: selected_year,
+    years: years_arr,
+    visible: visible
+  });
 
+  const [sort_by, set_sort_by] = useState(sorted);
   const [results, set_results] = useState([]);
   const [current_page, set_current_page] = useState(1); 
   const [total_results, set_total_results] = useState(0); 
-
   const [loading, set_loading] = useState(false); 
 
-
-  const [active, set_active] = useState({
-    // next and prev buttons 
+  const [btn_active, set_btn_active] = useState({
+    // prev and next buttons 
     prev: false,
     next: true
   });
 
-  // const decade = selected === "year" ? "DECADE" : "ALL"; // FIX FIX 
-  // const genre = browseby === "genre" ? selected : "ALL"; 
-  // const SORT_BY_DEFAULT_STRING = "TMDB RATING"; 
 
   useEffect( () => {
     let request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&vote_count.gte=40&page=${current_page}`; // base with some default query params 
-    let path = `/films`; 
+    let query = ""; 
+    //let path = `/films`; // update 
 
     const get_data = async () => {
       set_loading(true);
       
       // set up query params 
-      // RATING TODO 
-      // YEAR TODO TODO 
-      // if(year !== "genre"){
-
-      // }
-      // else set_year("ALL"); 
-
-      // GENRE
+      // ---------------------GENRE-----------------------------------------------------
       if(genre.id !== 0) { 
         // get correct genre id to add to query 
-        console.log("ADDED GENRE"); 
-        request += `&with_genres=${genre.id}`;
-        path += `/genre/genre.name`; 
+        query += `&with_genres=${genre.id}`;
+        //path += `/genre/genre.name`; 
        }
       else set_genre({id: 0, name: "All"}); 
 
+      // ---------------------YEAR----------------------------------------------------
+      if(year.visible === true){
+        query += `primary_release_year=${year.year} `;
+      }
+     // else set_year({}); 
+ 
 
-      //if(selected === "lowest first") request += `&sort_by=vote_average`; 
-      // SORTING (pick one, vote avg desc/ highest rated  is default)
-      if(selected === "newest first") request += "&sort_by=release_date.desc"; 
-      else if(selected === "earliest first") request += "&sort_by=release_date.asc";
-
-      // most popular all time, this year, this month, or this week 
-      else if(selected === "all time") request += "&sort_by=popularity.desc"; 
-      else if(selected === "this year") request += `primary_release_year=${new Date().getFullYear()}`; // most popular
-      // else if(selected === "this month"){
-      //   // year-month-day
-      //   // TESTING
-      //   const today = "2020-7-27";
-      //   const month_ago = "2020-6-27"; 
-      //   request += ``
-     // }
-      // else if(selected === "popularity descending") request += `&sort_by=popularity.desc`;
-      // else if(selected === "popularity ascending") request += `&sort_by=popularity.asc`;
-
-      else if(selected === "lowest first") request += "&sort_by=vote_average.asc"; 
-      else request += "&sort_by=vote_average.desc" // HIGHEST RATING FIRST IS DEFAULT/ fallback SORTING METHOD 
-
-      //const request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&sort_by=vote_average.desc&include_adult=false&include_video=false&page=${current_page}&vote_count.gte=50&with_genres=80`; 
+      // -------------------- SORT BY-----------------------------------------------------
+      // Release Date 
+      if(sort_by === "Release Date Descending"){
+        // starting with films released before today  
+        const today = new Date().toISOString().slice(0,10); // (yyyy-mm-dd)
+        request += `&sort_by=primary_release_date.desc&primary_release_date.lte=${today}`;
+      }
       
+      
+      else if(sort_by === "Release Date Ascending") request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=falsepage=${current_page}&sort_by=primary_release_date.asc`; // removed min vote count  
 
-      // finally get the requested data 
+      // Rating 
+      else if(sort_by === "TMDB lowest first") query += "&sort_by=vote_average.asc";
+      else if(sort_by === "TMDB highest first") query += "&sort_by=vote_average.desc";
+
+      // Most popular today or this year 
+      else if(sort_by === "This Year") request += `primary_release_year=${new Date().getFullYear()}&sort_by=vote_average.desc`; 
+      else request += "&sort_by=popularity.desc"; // most popular/ popular today is default / fallback sorting method 
+
+
+      request += query; 
+      // finally get the requested data  
       const res = await axios.get(request); 
+      console.log(request);      
       set_results(res.data.results); // display 72 posts a page? maybe less 
       set_total_results(res.data.total_results); 
       set_loading(false); 
+
+      // if new filter, reset current page 
+      if((query_params !== query) && (query_params !== "")) set_current_page(1); 
+      set_query_params(query); 
+      //console.log(`CURRENT PAGE: ${current_page}`); 
     }
 
     get_data();
 
-  }, [current_page, selected, genre.id]); 
+  }, [current_page, selected, genre.id, sort_by, query_params, year.visible, year.year]); 
 
 
   // Funcs. 
   // re-render will new page request 
   const next = () => {
     set_current_page(current_page + 1); 
+
+    if(current_page === Math.floor(total_results / 20)) set_btn_active({prev: true, next: false})
+    else set_btn_active({prev: true, next: true}); 
   }
 
   const prev = () => {
     set_current_page(current_page - 1); 
 
-    if(current_page === 2) set_active({prev: false, next: true});
-    else set_active({prev: true, next: true}); 
+    if(current_page === 2) set_btn_active({prev: false, next: true});
+    else set_btn_active({prev: true, next: true}); 
   }
 
 
   const handle_genre = (event) => {
     // update query, re-render 
-    let selected_genre = genres.find( (g) => g.name === event.target.value);
+    let selected_genre;
+    if(event.target.value === "All") selected_genre = {id: 0, name: "All"}; // if select all, change id to 0 and query will not include a genre 
+    else selected_genre = genres.find( (g) => g.name === event.target.value);
+
     set_genre(selected_genre); 
   }
 
-  const handle_year = (event) => {
+  const handle_years = (event) => {
+    // update with selected decade  
+
     console.log(event.target.value);
 
     set_year(event.target.value); 
   }
 
   const handle_sorting = (event) => {
-    console.log(event.target.value); 
+    set_sort_by(event.target.value);
+
+    
+  }
+
+  const handle_year = (year) => {
+    console.log(`Year Selected: ${year}`);
+
+    set_year({
+      year: year
+    });
+
+
+
   }
 
 
 
   return (
-
     <Container>
 
       <HeaderContainer>
         <Title>FILMS</Title>
 
         <FiltersContainer>
-          <Select onChange={handle_year}>
-            <Option hidden>YEAR</Option>
-            <Option>ALL</Option>
-            {YEARS.map( (year) => (
+          <Select onChange={handle_years}>
+            <Option hidden>Year</Option>
+            <Option>All</Option>
+            {DECADES.map( (year) => (
               <Option key={year}>{year}</Option>
             ))}
           </Select>
 
+
           <Select onChange={handle_genre}>
-            <Option hidden>GENRE</Option>
+            <Option hidden>Genre</Option>
             <Option>All</Option>
             {genres.map( (genre) => (
               <Option key={genre.id}>{genre.name}</Option> 
             ))}
           </Select>
 
-          <Select  onChange={handle_sorting} >
+          <Select onChange={handle_sorting} >
             <Option hidden>Sort by</Option>
 
               <Group label="TMDB RATING">
@@ -168,39 +208,45 @@ function Films( {browseby, selected, genres} ) {
                 <Option>Lowest First</Option>
               </Group>
 
-              <Group label="FILM POPULARITY">
-                <Option>All Time</Option>
+              <Group label=" TMDB FILM POPULARITY">
+                <Option>Today</Option>
                 <Option>This Year</Option>
-                <Option>This Month</Option>
-                <Option>This Week</Option>
               </Group>
 
               <Group label="RELEASE DATE">
-                <Option>Newest First</Option>
-                <Option>Earliest First</Option>
+                <Option>Release Date Descending</Option>
+                <Option>Release Date Ascending</Option>
               </Group>
           </Select>
 
         </FiltersContainer>
       </HeaderContainer>
 
+
       <SearchResultContainer>
         <Header>There are {total_results} films matching your filters</Header>
         <Filters>
-          <Filter>YEAR: {year}</Filter>
-          <Filter>GENRE: {genre.name}</Filter>
+          <Filter>Year: {year.year}</Filter>
+          <Filter>Genre: {genre.name}</Filter>
           <Filter>Sort By: {sort_by}</Filter>
         </Filters>
       </SearchResultContainer>
 
 
+      <YearsContainer visible={year.visible}>
+          {year.years.map( (year) => (
+            <Year onClick={handle_year()}>{year}</Year>
+          ))}
+      </YearsContainer>
+
+
       <FilmsResults results={results} loading={loading}></FilmsResults>
     
 
-      <ButtonsContainer>
-        <Button active={active.prev} onClick={prev}>Previous</Button>
-        <Button active={active.next} onClick={next}>Next</Button>
-      </ButtonsContainer>
+       <ButtonsContainer>
+        <Button active={btn_active.prev} onClick={prev}>Previous</Button>
+        <Button active={btn_active.next} onClick={next}>Next</Button>
+      </ButtonsContainer> 
       
     </Container>
   )
@@ -289,6 +335,44 @@ const Filters = styled.div`
 const Filter = styled.div`
 `; 
 
+const YearsContainer = styled.div`
+  transform: ${(props) => props.visible ? "scale(1)" : "scale(0)"};
+
+  margin: 0 auto; 
+  display: flex;
+  flex-direction: row; 
+  padding-bottom: 15px; 
+`; 
+
+const Year = styled.button`
+  color: #a5a5a5;
+  border: none;
+  background-color: #1a2127; 
+  outline: 2px solid #31383e; 
+  font-size: 1.0em; 
+  
+  padding: 5px 20px;  
+
+  &:hover{
+    cursor: pointer; 
+    color: #fff; 
+  }
+
+  &:focus{
+    outline: none;
+    color: #fff; 
+    background-color: #6f7d89; 
+  }
+
+  &:active{
+    color: #fff; 
+    background-color: #6f7d89; 
+  }
+
+
+
+`; 
+
 const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row; 
@@ -308,7 +392,7 @@ const Button = styled.button`
   background-color: #273038; 
   margin-top: .5%; 
 
-  //transform: ${(props) => props.active ? "scale(1)" : "scale(0)"}; 
+  transform: ${(props) => props.active ? "scale(1)" : "scale(0)"}; 
 
   &:hover{
     cursor: pointer;
