@@ -1,27 +1,38 @@
-import React from  "react"; 
+import React, {  } from  "react"; 
 import styled from "styled-components"; 
 import FilmResult from "../Films/FilmsResult.js"; 
 
- function Films( {results}) {
+ function Films( {credits, dept}) {
    // mostly similiar to the other component apart from layout 
+   // dept is the arr of objects for that specific department that person has a credit in.
+   
+   console.log(credits); 
+
+
+    function get_film(){
+      if(credits !== undefined){
+        return (
+          credits.map( (credit) => (
+            <Wrap key={credit.id}>
+              <FilmResult key={credit.id} result={credit}></FilmResult>
+            </Wrap>
+          ))
+        )
+      }
+    }
 
 
    return (
     <Container>
-      {/* {results.map( (result) => (
-        <Wrap key={result.id}>
-          <FilmResult result={result} key={result.id}></FilmResult>
-        </Wrap>
-      ))} */}
-
+      {get_film()}
     </Container>
   )
 }
 
 const Container = styled.div`
-  width: 80%;
-  
-  margin: 0 auto;  
+  //width: 60%;
+   
+  margin-top: 3% 1% 0 0; 
   display: flex; 
   flex-direction: row;
   flex-wrap: wrap;
