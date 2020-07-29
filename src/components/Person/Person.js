@@ -9,6 +9,7 @@ function Person( {credit}) {
   const [credits, set_credits] = useState([]); 
   const [crew_depts, set_crew_depts] = useState({}); // filled w/ k,v pairs (department: count arr (numbers dont matter here, only length of arr)); 
   const [current_dept, set_current_dept] = useState(""); 
+  const [sort_by, set_sort_by] = useState("Popularity Descending"); 
   const [show_more, set_show_more] = useState(false); 
 
 
@@ -80,30 +81,15 @@ function Person( {credit}) {
   }
 
   const handle_dept = (event) => {
-    set_current_dept(event.target.value); 
+    // ignore the count in dept (count) 
+    const index = event.target.value.indexOf(" ");
+    const dept = event.target.value.substr(0, index); 
+    set_current_dept(dept); 
   }
 
   function get_count(dept){
     const indexes = crew_depts[dept]; 
     return indexes.length; 
-  }
-
-
-  function get_dept_credits(){
-    // pass arr of objects containing films info for the specific dept that person has credit/credits for 
-    
-   // if(current_dept.name === "") set_current_dept({name: person.known_for_department, credits: []}); // default 
-    console.log(current_dept);
-
-    const indexes = crew_depts[current_dept];
-
-    if(indexes !== undefined){
-      let start = indexes[0];
-      let end = indexes[indexes.length -1];
-      let current = credits.crew.slice(start, end+1); 
-
-      return current; 
-    }
   }
 
   function get_title(){
@@ -113,13 +99,13 @@ function Person( {credit}) {
 
     if(current_dept !== undefined){
       if(current_dept.includes("Directing")) title = "DIRECTED";
-      else if(current_dept.includes("Writing")) title = "WRITTEN";
+      else if(current_dept.includes("Writing")) title = "WITH WRITING CREDITS";
       else if(current_dept.includes("Camera")) title = "WITH CAMERA WORK";
       else if(current_dept.includes("Art")) title = "WITH ART";
       else if(current_dept.includes("Lighting")) title = "WITH LIGHTING";
-      // else if(current_dept === "Crew") title = "WITH CREW WORK";
-      // else if(current_dept === "Sound") title = "WITH SOUND WORK";
-      // else if(current_dept === "Visual Effects") title = "WITH VISUAL EFFECTS";
+      else if(current_dept.includes("Crew")) title = "WITH CREW WORK";
+      else if(current_dept.includes("Sound")) title = "WITH SOUND WORK";
+      else if(current_dept.includes("Visual Effects")) title = "WITH VISUAL EFFECTS";
       // else if(current_dept === "Costume & Make-Up") title = "WITH COSTUME & MAKE-UP";
       // else if(current_dept === "Editing") title = "WITH EDITING";
       // else if(current_dept === "Production") title = "WITH PRODUCTION";
@@ -127,6 +113,35 @@ function Person( {credit}) {
 
       return title; 
     }
+  }
+
+  function get_dept_credits(){
+    // pass arr of objects containing films info for the specific dept that person has credit/credits for 
+    
+   // if(current_dept.name === "") set_current_dept({name: person.known_for_department, credits: []}); // default 
+
+    const indexes = crew_depts[current_dept];
+
+    if(indexes !== undefined){
+      let start = indexes[0];
+      let end = indexes[indexes.length -1];
+      let current = credits.crew.slice(start, end+1); 
+
+      // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
+      if(sort_by === "Popularity Descending") current.sort((a, b) => (a.popularity > b.popularity) ? -1 : 1);
+      else if(sort_by === "Popularity Ascending") current.sort((a, b) => (a.popularity > b.popularity) ? 1 : -1);
+      else if(sort_by === "Rating Descending") current.sort((a, b) => (a.vote_average > b.vote_average) ? -1 : 1);
+      else if(sort_by === "Rating Ascending") current.sort((a, b) => (a.vote_average > b.vote_average) ? 1 : -1);
+
+      // TODO  ... 
+
+      return current; 
+    }
+
+  }
+
+  const handle_sort_by = (event) => {
+    set_sort_by(event.target.value); 
   }
 
 
@@ -147,10 +162,10 @@ function Person( {credit}) {
             ))}
         </Select>
         
-        <Select>
+        <Select onChange={handle_sort_by}>
           <Option hidden>Sort By</Option>
-          <Option>Popular Descending</Option>
-          <Option>Popular Ascending</Option>
+          <Option>Popularity Descending</Option>
+          <Option>Popularity Ascending</Option>
           <Option>Rating Descending</Option>
           <Option>Rating Ascending</Option>
           <Option>Release Date Descending</Option>
@@ -195,6 +210,7 @@ const Container1 = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column; 
+  margin-left: 1.2%; 
 `;
 
 const Title = styled.h3`
@@ -230,8 +246,6 @@ const Select = styled.select`
     outline: none; 
   }
 `; 
-
-
 
 const Option = styled.option`
   background-color: #8699aa; 
@@ -295,7 +309,5 @@ const LessBtn = styled.button`
     outline: none; 
   }
 `; 
-
-
 
 export default Person; 
