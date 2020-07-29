@@ -54,19 +54,17 @@ function BrowseBy( ) {
         </Select>
 
         <Select onChange={ (event) => get_selected("TMDB rating", event) }>
-          <Option hidden>TMDB Rating</Option>
-          <Option>TMDB Highest First</Option>
-          <Option>TMDB Lowest First</Option>
+          <Option hidden>TMDB RATING</Option>
+          <Option>Highest First</Option>
+          <Option>Lowest First</Option>
+          {/* <Option>Highest This Year First</Option>
+          <Option>Lowest This Year First</Option> */}
         </Select>
 
         <Select onChange={ (event) => get_selected("popular", event) }>
           <Option hidden>TMDB Film Popularity</Option>
-          <Option>Today</Option>
-          <Option>This Year</Option>
-          {/* <Option>All Time</Option>
-          <Option>This Year</Option>
-          <Option>This Month</Option>
-          <Option>This Week</Option> */}
+          <Option>Popularity Descending</Option>
+          <Option>Popularity Ascending</Option>
         </Select>
 
         <Select onChange={ (event) => get_selected("genre", event) }>

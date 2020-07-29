@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import SearchResults from "./pages/Search"; 
 import FilmPage from "./pages/FilmPage"; 
 import FilmsPage from "./pages/FilmsPage"; 
+import PersonPage from "./pages/PersonPage"; 
 // ... 
 
 const Routes = () => (
@@ -42,6 +43,17 @@ const Routes = () => (
           genres={props.location.state.genres}
         >
         </FilmsPage>
+      )}
+    >
+    </Route>
+
+    <Route
+      path="/person"
+      render = { (props) => (
+        <PersonPage
+        credit={props.location.state.credit}
+        >
+        </PersonPage>
       )}
     >
     </Route>
