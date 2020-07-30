@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route} from "react-router-dom"; 
 import Home from "./pages/Home";
-import SearchResults from "./pages/Search"; 
+import SearchPage from "./pages/SearchPage"; 
 import FilmPage from "./pages/FilmPage"; 
 import FilmsPage from "./pages/FilmsPage"; 
 import PersonPage from "./pages/PersonPage"; 
@@ -15,13 +15,10 @@ const Routes = () => (
     <Route 
       path="/search" 
       render = { (props) => 
-        <SearchResults 
-          results={props.location.state.results} 
+        <SearchPage 
           query={props.location.state.query} 
-          // posts_per_page={props.location.state.posts_per_page}
-          // total_pages={props.location.state.total_pages}
         >
-        </SearchResults>}>
+        </SearchPage>}>
     </Route>
 
     <Route

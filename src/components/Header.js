@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components"; 
-import Search from "./Search/Search"; 
+import SearchBar from "./Search/SearchBar"; 
 import { withRouter } from "react-router-dom"; 
 
 function Header( props ){
@@ -25,7 +25,7 @@ function Header( props ){
         <NavButton>LISTS</NavButton>
       </NavContainer>
 
-      <Search></Search>
+      <SearchBar></SearchBar>
 
     </HeaderContainer>
   );
@@ -40,6 +40,7 @@ const HeaderContainer = styled.header`
   align-items: center;
 
   height: 90px;
+   
 
 `;
 
@@ -58,7 +59,10 @@ const NavContainer = styled.nav`
   margin-left: 15%;
   display: flex;
   justify-content: space-between;
+
   width: 20%;
+  border: 1px solid white; 
+
 `;
 
 const NavButton = styled.button`

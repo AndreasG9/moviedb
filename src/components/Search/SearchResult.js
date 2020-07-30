@@ -14,8 +14,6 @@ function FilmResult( { result }, props ) {
 
   const [credit, set_credit] = useState([]); 
 
-  //const [redirect, set_redirect] = useState(false); 
-
   useEffect( () => {
     const get_specific_data = async () => {
       // director is available under cast in the credits request 
@@ -62,15 +60,12 @@ function FilmResult( { result }, props ) {
   const base = "https://image.tmdb.org/t/p";
   const size = "/w200/";
   const poster_path = result.poster_path; 
-  //const backdrop_path = result.backdrop_path; 
   let path = ""; 
   path = base + size + poster_path; 
 
   function get_year(){
-    const year = result.release_date.substr(0, 4); 
-
-    if(year.length === 4) return year;
-    else return result.release_date; 
+    const year = result.release_date !== undefined ? result.release_date.substr(0, 4) : ""; 
+    return year; 
   }
 
   const history = useHistory(); 

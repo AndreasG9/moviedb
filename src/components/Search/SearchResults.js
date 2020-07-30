@@ -1,18 +1,16 @@
-import React, {} from 'react'; 
+import React from 'react'; 
 import FilmResult from "./SearchResult";
 import styled from "styled-components"; 
-//import PaginationNumbers from "../PaginationNumbers"; 
 
 
-function SearchResults( {query, results } ) {
+function SearchResults( {query, results, total} ) {
   // Display results (20 a page), each result is of component FilmResult ... 
   // See the Poster, Title, Year, and Director for each result (each Link to a specific page/search ...)
 
-  console.log(results); 
 
   return (
       <Container className="media-width-50">
-        <Header> FOUND AT LEAST {"TODO"} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
+        <Header> FOUND AT LEAST {total} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => (
             <FilmResult key={result.id} result={result}></FilmResult>

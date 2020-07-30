@@ -119,7 +119,7 @@ const SpanMore = styled.span`
 
   font-size: .8rem; 
   position: relative; 
-  left: 72.3%; 
+  left: 72%; 
 
   &:hover{
     cursor: pointer; 
@@ -139,6 +139,7 @@ const Arrow = styled.span`
   font-size: 2.5em; 
   font-weight: bold; 
   padding: 0 5px; 
+  margin-bottom: 4%; 
 
 
   &:hover{

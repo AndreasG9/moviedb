@@ -1,166 +1,146 @@
 import React, { useState, useEffect } from "react";
-// import PaginationNumbers from "../PaginationNumbers"; 
-import { withRouter } from "react-router-dom";
 import styled from "styled-components"; 
 import axios from 'axios'; 
+import SearchResults from "./SearchResults"; 
+import PaginantionNumbers from "./PaginationNumbers"; 
 
-function Search( props ) {
+function Search( {query} ) {
 
   // State 
-  const [query, set_query] = useState(""); 
-  const [results, setResults] = useState([]);
+  const [results, set_results] = useState([]);
+
+  const [current_page, set_current_page] = useState(1);
+
+  const [pages, set_pages] = useState({
+    posts_per_page: 20,
+    total_pages: 1
+  })
 
 
-  // const [pages, set_pages] = useState({
-  //   current_page: 1,
-  //   posts_per_page: 20,
-  //   total_pages: 1
-  // }); 
-
-
-  const update_search = (event) => {
-    // onChange with input
-    set_query(event.target.value); 
-  }
-
-
-  // useEffect( () => {
-  //   console.log(pages.total_pages);
-  // }, [pages])
-
-
-  const get_search = async (event) => {
+  useEffect( () => {
     // grab the data from GET /search/movie 
     // PAGINATION MAX 10 PAGES for search result 
+    document.querySelector('body').scrollTo(0,0); // select new page, make sure start at the top 
 
-    event.preventDefault();
+    const get_search = async () => {
+      const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`; // GET /search/movie 
+      const data = await axios.get(search_movie); 
+      set_results(data.data.results);  
 
-    // get data 
-    // const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${pages.current_page}&include_adult=false`; // GET /search/movie 
-    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`; // GET /search/movie 
- 
-    const data = await axios.get(search_movie); 
-    const results = data.data.results; 
+      
+      set_pages({
+        posts_per_page: data.data.results.length,
+        total_pages: data.data.total_pages
+      })
 
-    // get total pages
-    //const total_pages = data.data.total_pages;
-    //console.log(total_pages); 
+      //console.log(data.data.total_pages); 
 
+      //const total_pages = data.data.results
+
+      // filter ??  
+      // 
     //filter out low count films 
-    const filtered_results = results.filter( (result) => result.vote_count > 3);
+    //const filtered_results = results.filter( (result) => result.vote_count > 3);
+    }
 
+    get_search(); 
 
-    // modify indexes (display 20 results a page)
-    // const last = pages.current_page * pages.posts_per_page;
-    // const first = last - pages.posts_per_page;
-    // // const current = filtered_results.slice(first, last); 
-    // const current = results.slice(first, last); 
+  }, [query, current_page]); 
 
-    // set_pages({
-    //   current_page: 1,
-    //   posts_per_page: 20,
-    //   total_pages: total_pages
-    // }); 
+  const page_limit = 10; 
+  const total = pages.total_pages > 10 ? page_limit*pages.posts_per_page : pages.total_pages*pages.posts_per_page;
 
-    /* 
-          results:results, 
-      posts_per_page:pages.posts_per_page, 
-      total_pages: total_pages 
-    */
+  const next = () => {
+    set_current_page(current_page + 1);
 
-    
-    // FIX LATER 
-    // modify path
-    const params = query.toString().replace("/ /g", "+"); // ex. search The Witch url: domain.com/search/the+witch
-    //     props.history.push(`/search/${params}/page/${pages.current_page}`, 
-    props.history.push(`/search/${params}`, 
-      {query:query, 
-      results:filtered_results 
-      }); // redirect to "/search", which loads the Results component, pass query 
+    // if(current_page === total){
+
+    // }
+
+  }
+  const prev = () => {
+    set_current_page(current_page - 1);
+
   }
 
+  const go_to_page = (page_num) => set_current_page(page_num); 
 
-  // TODO search == movies and people 
-  // const get_multiple = async () => {
-  //   // grab data from GET /search/multi
-  // }
 
-  
 
   return (
-    <div style={center}>
-      <form onSubmit={get_search}>
-        <Container>
-        <div style={box}>
-            <Input 
-              type="text" 
-              onChange={update_search}
-              placeholder="Search for film or person">
-            </Input>
-            <Button 
-              type="submit">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            </Button>
-        </div>
-        </Container>
-      </form>   
-    </div>
+    <div>
+      <SearchResults query={query} results={results} total={total}></SearchResults>
+      <PaginantionNumbers posts_per_page={pages.posts_per_page} total_pages={pages.total_pages} prev={prev} next={next} go_to_page={go_to_page}></PaginantionNumbers>
+
+      {/* <Nav className="media-width-50">
+      <Button active={active.left}>Previous</Button>
+       <UList>
+        {page_numbers.map( (num) => (
+          <Item key={num}>
+            <A href= "!#" >{num}</A>
+          </Item>
+        ))}
+      </UList> 
+      <Button active={active.right}>Next</Button>
+    </Nav> */}
+    </div> 
   ); 
 }
 
-
 // Style 
-const Container = styled.div`
-  margin-top: 12%;
-  display: flex; 
-  justify-content: center;
-  align-items: center; 
-  position: relative;
-  left: 15%; 
+const Nav = styled.nav`
+  border-top: 1px solid #a5a5a5; 
+  display: flex;
+  flex-direction: row; 
+  align-items: center;
+  justify-content: space-between; 
+  padding: 5% 0; 
 `;
 
-const Input = styled.input`
-  font-family: Roboto;
-  background-color: #2b3440;
-  border: none;  
-  flex-grow: 2; 
-  width: 200px;
-  height: 30px;   
-  padding: 5px;
-
-  &:focus{
-    outline: none;
-    background-color: #e1e3e5;
-  }
-`;
 
 const Button = styled.button`
-  background-color: #e1e3e5;
-  border: none;
-  border-left: 2px solid #2b3440; 
+  //margin-top: 5px; 
+  width: 18%; 
+  height: 5%; 
+  padding: 10px; 
+  background-color: #273038; 
+  text-align: center; 
+  border: none; 
+  border-radius: 5%; 
+  color: #a5a5a5;
 
   &:hover{
-    cursor: pointer;
+    cursor: pointer;  
+    opacity: .3; 
+    color: #e1e3e5;
   }
 
-  &:focus{
-    outline: none; 
-  }
+  transform: ${props => props.active ? "scale(1)": "scale(0)"}; 
+`;
 
-  &:active{
-    background-color: #2b3440 !important; 
+
+const UList = styled.ul`
+  list-style: none; 
+  display: flex;
+  flex-direction: row; 
+  justify-content: center; 
+
+  padding: 0; 
+  margin: 0 2% 0 2%; 
+`;
+
+const Item = styled.li`
+  padding: 6px; 
+
+  &:hover{
+    background-color: #273038 
   }
 `;
 
-const box = {
-  display: "flex",
-  flexDirection: "row",
-  padding: "1px"
-}
+const A = styled.a`
+  color: #a5a5a5;
+`;
 
 
-const center = {
-  marginBottom: "30px"  
-}
 
-export default withRouter(Search); 
+export default Search; 
