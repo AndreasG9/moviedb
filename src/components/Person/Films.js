@@ -1,6 +1,6 @@
 import React, {  } from  "react"; 
 import styled from "styled-components"; 
-import Result from "./Result.js"; 
+import Film from "./Film.js"; 
 import {v4 as uuidv4} from "uuid"; 
 
  function Films( {credits, dept}) {
@@ -11,7 +11,7 @@ import {v4 as uuidv4} from "uuid";
       if(credits !== undefined){
         return (
           credits.map( (credit) => (
-            <Result key={uuidv4()} result={credit}></Result>
+            <Film key={uuidv4()} result={credit}></Film>
           ))
         )
       }

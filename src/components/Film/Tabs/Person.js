@@ -1,4 +1,5 @@
-import React, {} from "react"; 
+import React from "react"; 
+import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 import missing_portrait from "../../../missing_portrait.png"; 
 
@@ -8,8 +9,18 @@ function Person( {person} ) {
 
   const character = person.character !== undefined ? person.character : person.job; 
 
+  const history = useHistory();
+
+  const handle_person = () => {
+    // redirect to person/person-name 
+
+    const params = person.name.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
+    const target = `/person/${params}`; 
+    history.push(target, {credit: person.id});
+  }
+
   return (
-    <Container>
+    <Container onClick={handle_person}>
       <Profile 
         src={`https://image.tmdb.org/t/p/w185${person.profile_path}`} 
         alt="portrait" 

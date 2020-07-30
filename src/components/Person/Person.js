@@ -8,7 +8,9 @@ function Person( {credit}) {
   const [person , set_person] = useState([]); 
   const [credits, set_credits] = useState([]); 
   const [crew_depts, set_crew_depts] = useState({}); // filled w/ k,v pairs (department: count arr (numbers dont matter here, only length of arr)); 
+  const [cast, set_cast] = useState([]); 
   const [current_dept, set_current_dept] = useState(""); 
+
   const [sort_by, set_sort_by] = useState("Popularity Descending"); 
   const [show_more, set_show_more] = useState(false); 
 
@@ -21,27 +23,34 @@ function Person( {credit}) {
 
       let data = await axios.get(details); 
       set_person(data.data); 
-      //set_current_dept({name: data.data.known_for_department, credit: []});
       set_current_dept(data.data.known_for_department); 
 
       data = await axios.get(cr);
       set_credits(data.data);
+      console.log(data.data); 
 
+      // Cast (if present)
+      if(data.data.cast.length > 1){
+        set_cast(data.data.cast); 
+      }
 
-      let map = data.data.crew.map( (credit) => credit.department); // get all departments the person has a credit 
-      //let depts = [...new Set(map)]; // for the department options 
-      let temp = {}; 
+      // Crew (if present)
+      if(data.data.crew.length > 1){
 
-      map.forEach( (dept, count) => {
-        // go from 0 to crew.length 
-        // a single object w/ k,v pairs
-        // key is the name of the dept and the value is an array of numbers, whose length is the count of occurances 
-        if(!temp[dept]) temp[dept] = [count]; // initial
-        else temp[dept].push(count); // add incrementing num 
-      });
+        // FORMAT 
+        let map = data.data.crew.map( (credit) => credit.department); // get all departments the person has a credit 
+        //let depts = [...new Set(map)]; // for the department options 
+        let temp = {}; 
 
-      //console.log(temp); 
-      set_crew_depts(temp); 
+        map.forEach( (dept, count) => {
+          // go from 0 to crew.length 
+          // a single object w/ k,v pairs
+          // key is the name of the dept and the value is an array of numbers, whose length is the count of occurances 
+          if(!temp[dept]) temp[dept] = [count]; // initial
+          else temp[dept].push(count); // add incrementing num 
+        });
+        set_crew_depts(temp); 
+      }
     }
 
     get_data(); 
@@ -84,58 +93,50 @@ function Person( {credit}) {
   }
 
   function get_count(dept){
+    // crew
     const indexes = crew_depts[dept]; 
     return indexes.length; 
   }
 
-  // function get_title(){
-  //   // actor TODO 
-
-
-  //   if(current_dept !== undefined){
-
-  //     // if(current_dept.includes("Directing")) title = "DIRECTED";
-  //     // else if(current_dept.includes("Writing")) title = "WITH WRITING CREDITS";
-  //     // else if(current_dept.includes("Camera")) title = "WITH CAMERA WORK";
-  //     // else if(current_dept.includes("Art")) title = "WITH ART";
-  //     // else if(current_dept.includes("Lighting")) title = "WITH LIGHTING";
-  //     // else if(current_dept.includes("Crew")) title = "WITH CREW WORK";
-  //     // else if(current_dept.includes("Sound")) title = "WITH SOUND WORK";
-  //     // else if(current_dept.includes("Visual Effects")) title = "WITH VISUAL EFFECTS";
-  //     // else if(current_dept.includes("Costume & Make-Up")) title = "WITH COSTUME & MAKE-UP";
-  //     // else if(current_dept.includes("Editing")) title = "WITH EDITING";
-  //     // else if(current_dept === "Production") title = "WITH PRODUCTION";
-  //     // else title = "some dept";
-
-  //     return `With ${current_dept} by`; 
-  //   }
-  // }
+  function get_cast_option(){
+    // only if person has cast credits 
+    if(cast.length > 1) return <Option>Acting  ({cast.length})</Option>; 
+  }
 
   function get_dept_credits(){
-    // pass arr of objects containing films info for the specific dept that person has credit/credits for 
-    
-   // if(current_dept.name === "") set_current_dept({name: person.known_for_department, credits: []}); // default 
+    // pass arr of objects containing films info for the specific dept that person has credit/credits for  
 
-    const indexes = crew_depts[current_dept]; // return an array of indexes, which correspond to that dept in the credits arr
+    let indexes; 
+    let current;
 
-    if(indexes !== undefined){
-      let start = indexes[0];
-      let end = indexes[indexes.length -1];
-      let current = credits.crew.slice(start, end+1); 
+    if(current_dept !== "Acting"){
+      // crew
+      indexes = crew_depts[current_dept]; // return an array of indexes, which correspond to that dept in the credits arr
 
-      // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
+      if(indexes !== undefined){
+        let start = indexes[0];
+        let end = indexes[indexes.length -1];
+        current = credits.crew.slice(start, end+1); 
+        }
+    }
+
+    else current = cast; 
+
+    console.log(current);
+
+    // // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
+   if(current !== undefined){
       if(sort_by === "Popularity Descending") current.sort((a, b) => (a.popularity > b.popularity) ? -1 : 1);
       else if(sort_by === "Popularity Ascending") current.sort((a, b) => (a.popularity > b.popularity) ? 1 : -1);
       else if(sort_by === "Rating Descending") current.sort((a, b) => (a.vote_average > b.vote_average) ? -1 : 1);
       else if(sort_by === "Rating Ascending") current.sort((a, b) => (a.vote_average > b.vote_average) ? 1 : -1);
-
       else if(sort_by === "Release Date Descending") current.sort((a, b) => (a.release_date > b.release_date) ? -1 : 1);
       else if(sort_by === "Release Date Ascending") current.sort((a, b) => (a.release_date > b.release_date) ? 1 : -1);
+   }
 
-      console.log(current); 
+    // console.log(current); 
 
-      return current; 
-    }
+    return current; 
 
   }
 
@@ -155,15 +156,17 @@ function Person( {credit}) {
 
       <FiltersContainer>
         <Select onChange={handle_dept}>
-          <Option hidden>Department</Option>
+          {/* <Option hidden>Department</Option> */}
+          <Option hidden>{current_dept}</Option>
+          {get_cast_option()}
           {Object.keys(crew_depts).map( (dept) => (
             <Option key={dept}>{dept}   ({get_count(dept)})</Option>
             ))}
         </Select>
         
-        <Select onChange={handle_sort_by} defaultValue={"DEFAULT"}>
-          <Option hidden>Sort By</Option>
-          <Option value="DEFAULT">Popularity Descending</Option>
+        <Select onChange={handle_sort_by}>
+          {/* <Option hidden>Sort By</Option> */}
+          <Option>Popularity Descending</Option>
           <Option>Popularity Ascending</Option>
           <Option>Rating Descending</Option>
           <Option>Rating Ascending</Option>
