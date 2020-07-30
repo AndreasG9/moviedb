@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router-dom"; 
 import ReactTooltip from "react-tooltip";
 
 function PopularThisWeekFilm( {result, i} ) {
@@ -9,8 +10,18 @@ function PopularThisWeekFilm( {result, i} ) {
   const tool_tip = `${result.title} (${result.release_date.substr(0, 4)})`; 
 
 
+  const history = useHistory();
+  
+  const handle_film = () => {
+    // redirect to film/film-name
+    const params = result.title.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
+    const target = `/film/${params}`; 
+    history.push(target, {movie_id: result.id});
+  }
+
+
   return (
-    <div>
+    <div onClick={handle_film}>
       <ReactTooltip></ReactTooltip>
       <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
     </div>
