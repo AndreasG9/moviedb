@@ -2,7 +2,6 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import SearchResults from "../components/Search/SearchResults"; 
 import Header from "../components/Header";
-//import Footer from "../components/Footer";
 
 function Search( {results, query} ) {
   // load SearchRes component, narrow search nav component 
@@ -18,7 +17,6 @@ function Search( {results, query} ) {
         // total_pages={total_pages}
         >
       </SearchResults>
-      {/* <Footer></Footer> */}
     </div>
   )
 }

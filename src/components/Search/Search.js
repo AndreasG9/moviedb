@@ -1,48 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// import PaginationNumbers from "../PaginationNumbers"; 
 import { withRouter } from "react-router-dom";
-import axios from 'axios'; 
 import styled from "styled-components"; 
-
+import axios from 'axios'; 
 
 function Search( props ) {
 
   // State 
-  // const [search, set_search] = useState("");
-  // const [query, set_query] = useState(""); // query search string 
-  // const [results, set_results] = useState([]); 
+  const [query, set_query] = useState(""); 
+  const [results, setResults] = useState([]);
 
-  // change to query, movies, people 
-  const [state, set_state] = useState({
-    query: "",
-    //results: []
-  }); 
+
+  // const [pages, set_pages] = useState({
+  //   current_page: 1,
+  //   posts_per_page: 20,
+  //   total_pages: 1
+  // }); 
 
 
   const update_search = (event) => {
     // onChange with input
-    set_state({query: event.target.value}); // rest of the state empty  
+    set_query(event.target.value); 
   }
 
-  // CHANGE TO MULTI 
+
+  // useEffect( () => {
+  //   console.log(pages.total_pages);
+  // }, [pages])
+
+
   const get_search = async (event) => {
     // grab the data from GET /search/movie 
+    // PAGINATION MAX 10 PAGES for search result 
 
     event.preventDefault();
 
-    // TODO PAGINATION 
-    
-    const page_num = 1; 
-    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${state.query}&page=${page_num}&include_adult=false`; // GET /search/movie 
+    // get data 
+    // const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${pages.current_page}&include_adult=false`; // GET /search/movie 
+    const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`; // GET /search/movie 
+ 
     const data = await axios.get(search_movie); 
     const results = data.data.results; 
 
-    console.log(results);
-   
-    const filtered_results = results.filter( (result) => result.vote_count > 4); // filter out low count films 
+    // get total pages
+    //const total_pages = data.data.total_pages;
+    //console.log(total_pages); 
+
+    //filter out low count films 
+    const filtered_results = results.filter( (result) => result.vote_count > 3);
 
 
-    const params = state.query.toString().replace(" ", "+"); // ex. search The Witch url: domain.com/search/the+witch
-    props.history.push(`/search/${params}`, {results: filtered_results, query:state.query}); // redirect to "/search", which loads the SearchResults component, pass props 
+    // modify indexes (display 20 results a page)
+    // const last = pages.current_page * pages.posts_per_page;
+    // const first = last - pages.posts_per_page;
+    // // const current = filtered_results.slice(first, last); 
+    // const current = results.slice(first, last); 
+
+    // set_pages({
+    //   current_page: 1,
+    //   posts_per_page: 20,
+    //   total_pages: total_pages
+    // }); 
+
+    /* 
+          results:results, 
+      posts_per_page:pages.posts_per_page, 
+      total_pages: total_pages 
+    */
+
+    
+    // FIX LATER 
+    // modify path
+    const params = query.toString().replace("/ /g", "+"); // ex. search The Witch url: domain.com/search/the+witch
+    //     props.history.push(`/search/${params}/page/${pages.current_page}`, 
+    props.history.push(`/search/${params}`, 
+      {query:query, 
+      results:filtered_results 
+      }); // redirect to "/search", which loads the Results component, pass query 
   }
 
 
@@ -51,6 +85,8 @@ function Search( props ) {
   //   // grab data from GET /search/multi
   // }
 
+  
+
   return (
     <div style={center}>
       <form onSubmit={get_search}>
@@ -58,7 +94,8 @@ function Search( props ) {
         <div style={box}>
             <Input 
               type="text" 
-              onChange={update_search}>
+              onChange={update_search}
+              placeholder="Search for film or person">
             </Input>
             <Button 
               type="submit">
@@ -89,13 +126,12 @@ const Input = styled.input`
   flex-grow: 2; 
   width: 200px;
   height: 30px;   
-  padding: 5px; 
+  padding: 5px;
 
   &:focus{
     outline: none;
     background-color: #e1e3e5;
   }
-
 `;
 
 const Button = styled.button`
@@ -121,6 +157,7 @@ const box = {
   flexDirection: "row",
   padding: "1px"
 }
+
 
 const center = {
   marginBottom: "30px"  

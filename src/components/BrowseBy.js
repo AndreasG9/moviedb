@@ -4,15 +4,11 @@ import styled from "styled-components";
 import axios from "axios"; 
 
 
-function BrowseBy( ) {
+function BrowseBy() {
   // BrowseBy Popular, Rating, Genre, Year 
   // path home/popular/ sorting method , home/rating/ sorting method  .... 
-  // home/popular/this/month ... 
 
-  // const GENRES = ["ACTION", "ADVENTURE", "ANIMATION", "COMEDY", "CRIME", "DOCUMENTARY", "DRAMA", "FAMILY", "FANTASY", "HORROR", "MUSIC", "MYSTERY", "ROMANCE", "SCIFI", 
-  //                 "TV MOVIE", "THRILLER", "WAR", "WESTERN"]; 
   const YEARS = ["UPCOMING", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
-
 
   const history = useHistory(); 
   const [genres, set_genres] = useState([]);
@@ -41,7 +37,7 @@ function BrowseBy( ) {
   }
 
   return (
-    <Container>
+    <Container className="media-width-50">
       <Label>BROWSE BY</Label>
 
       <Container2>
@@ -82,11 +78,15 @@ function BrowseBy( ) {
 // Style 
 const Container = styled.div`
   font-family: Roboto; 
-  margin: 3% 0; 
-  width: 50%; 
+  margin-top: 3%; 
 
-  position: relative;
-  left: 24%; 
+  //margin: 3% 0; 
+
+   //width: 50%; 
+
+  // position: relative;
+  // left: 24%; 
+
   display: flex; 
   align-items: center; 
 `;

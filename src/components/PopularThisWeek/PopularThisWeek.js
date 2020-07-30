@@ -71,16 +71,18 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
 
 
   return (
-    <Container>
+    <Container className="media-width-55">
 
       <Header>
         <Span>POPULAR FILMS THIS WEEK</Span>
         <SpanMore>MORE</SpanMore>
       </Header>
 
-      <LeftArrow onClick={prev} active={active.left}>{"<"}</LeftArrow>
-      <PopularThisWeekResults results={current}></PopularThisWeekResults>
-      <RightArrow onClick={next} active={active.right}>{">"}</RightArrow>
+      <BrowseContainer className="position-a-bit">
+        <Arrow onClick={prev} active={active.left}>{"<"}</Arrow>
+        <PopularThisWeekResults results={current}></PopularThisWeekResults>
+        <Arrow onClick={next} active={active.right}>{">"}</Arrow>
+      </BrowseContainer>
 
     </Container>
   )
@@ -89,18 +91,12 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
 
 // Style 
 const Container = styled.div`
-  position: relative;
-  left: 24%; 
-  margin-top: 1.2%; 
-
-  width: 1000px;
-  height: 500px; 
+  margin-top: 2%; 
   
-
   -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 `;
 
 const Header = styled.h2`
@@ -109,10 +105,7 @@ const Header = styled.h2`
   padding-bottom: 4px; 
   border-bottom: 1px solid #6f797d; 
   font-style: bold;
-  width: 95.7%; 
-  margin: 0 0 1% .5%; 
-
-
+  width: 92%; 
 `;
 
 const Span = styled.span`
@@ -123,6 +116,7 @@ const Span = styled.span`
 `;
 
 const SpanMore = styled.span`
+
   font-size: .8rem; 
   position: relative; 
   left: 72.3%; 
@@ -133,15 +127,19 @@ const SpanMore = styled.span`
   }
 `;
 
-const LeftArrow = styled.span`
-  position: absolute; 
-  top: 36%;
-  right: 100%;  
+const BrowseContainer = styled.div`
+  display: flex; 
+  flex-direction: row; 
+  align-items: center; 
+`;
+
+const Arrow = styled.span`
   color: #6f797d; 
 
   font-size: 2.5em; 
-  padding: 8px; 
   font-weight: bold; 
+  padding: 0 5px; 
+
 
   &:hover{
     cursor: pointer; 
@@ -150,26 +148,6 @@ const LeftArrow = styled.span`
 
   opacity: ${props => props.active ? "1" : ".2"}; 
   pointer-events: ${props => props.active ? "auto" : "none"}; 
-`;
-
-const RightArrow = styled.span`
-  position: absolute; 
-  top: 36%;
-  left: 97%;  
-
-  color: #6f797d; 
-  font-size: 2.5em; 
-  padding: 8px; 
-  font-weight: bold; 
-
-  &:hover{
-    cursor: pointer; 
-    color: #e1e3e5; 
-  }
-
-  opacity: ${props => props.active ? "1" : ".2"}; 
-  pointer-events: ${props => props.active ? "auto" : "none"}; 
-
 `;
 
 export default PopularThisWeek; 

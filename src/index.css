@@ -8,31 +8,26 @@
     format("truetype")
 }
 
-/* 
-@font-face {
-  font-family: 'Roboto-Medium';
-  src: 
-    local("Roboto-Medium"),
-    local("Roboto Medium"),
-    url(./fonts/Roboto-Medium.ttf),
-    format("truetype")
-} */
-
 
 html{
   min-height: 100%;
   /* background: linear-gradient( #1d242b,#1b2229, #181d22, #181f21);  */
   background: linear-gradient( #1d242b 12%,#1b2229 16%, #181d22 25%, #181f21 90%); 
   box-sizing: border-box;
+
+  overflow: hidden;
+  height: 100%;
 }
 
 body{
   height: 100%;
+  overflow: auto;
   padding: 0;
   margin: 0; 
-  /* background: linear-gradient( #1d242b,#1b2229, #181d22, #181f21);  */
-  padding-bottom: -80px;
+
+  /* padding-bottom: -20px;   */  
 }
+
 
 
 

@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { useHistory } from "react-router-dom"; 
 import ReactTooltip from "react-tooltip";
 
-function PopularThisWeekFilm( {result, i} ) {
+function PopularThisWeekFilm( {result} ) {
   // props will include poster path, movie id (to link to film if clicked), title, and year 
 
   const poster = `https://image.tmdb.org/t/p/w400/${result.poster_path}`; 
-  const tool_tip = `${result.title} (${result.release_date.substr(0, 4)})`; 
-
+  const date= result.release_date !== undefined ? result.release_date.substr(0, 4) : " ";
+  const tool_tip = `${result.title} (${date})`; 
 
   const history = useHistory();
   
@@ -29,8 +29,6 @@ function PopularThisWeekFilm( {result, i} ) {
 }
 
 // Style 
-
-// FIX HOVER WHEN CONTEXT ADDED 
 const Poster = styled.img`
   width: 230px; 
   height: 351px;
