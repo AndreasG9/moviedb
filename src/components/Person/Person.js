@@ -32,8 +32,6 @@ function Person( {credit}) {
       //let depts = [...new Set(map)]; // for the department options 
       let temp = {}; 
 
-
-      // FIX FIX --------------------------------- FIX 
       map.forEach( (dept, count) => {
         // go from 0 to crew.length 
         // a single object w/ k,v pairs
@@ -42,10 +40,8 @@ function Person( {credit}) {
         else temp[dept].push(count); // add incrementing num 
       });
 
-      console.log(temp); 
-
+      //console.log(temp); 
       set_crew_depts(temp); 
-
     }
 
     get_data(); 
@@ -92,35 +88,35 @@ function Person( {credit}) {
     return indexes.length; 
   }
 
-  function get_title(){
-    // actor TODO 
+  // function get_title(){
+  //   // actor TODO 
 
-    let title = "";
 
-    if(current_dept !== undefined){
-      if(current_dept.includes("Directing")) title = "DIRECTED";
-      else if(current_dept.includes("Writing")) title = "WITH WRITING CREDITS";
-      else if(current_dept.includes("Camera")) title = "WITH CAMERA WORK";
-      else if(current_dept.includes("Art")) title = "WITH ART";
-      else if(current_dept.includes("Lighting")) title = "WITH LIGHTING";
-      else if(current_dept.includes("Crew")) title = "WITH CREW WORK";
-      else if(current_dept.includes("Sound")) title = "WITH SOUND WORK";
-      else if(current_dept.includes("Visual Effects")) title = "WITH VISUAL EFFECTS";
-      // else if(current_dept === "Costume & Make-Up") title = "WITH COSTUME & MAKE-UP";
-      // else if(current_dept === "Editing") title = "WITH EDITING";
-      // else if(current_dept === "Production") title = "WITH PRODUCTION";
-      else title = "some dept";
+  //   if(current_dept !== undefined){
 
-      return title; 
-    }
-  }
+  //     // if(current_dept.includes("Directing")) title = "DIRECTED";
+  //     // else if(current_dept.includes("Writing")) title = "WITH WRITING CREDITS";
+  //     // else if(current_dept.includes("Camera")) title = "WITH CAMERA WORK";
+  //     // else if(current_dept.includes("Art")) title = "WITH ART";
+  //     // else if(current_dept.includes("Lighting")) title = "WITH LIGHTING";
+  //     // else if(current_dept.includes("Crew")) title = "WITH CREW WORK";
+  //     // else if(current_dept.includes("Sound")) title = "WITH SOUND WORK";
+  //     // else if(current_dept.includes("Visual Effects")) title = "WITH VISUAL EFFECTS";
+  //     // else if(current_dept.includes("Costume & Make-Up")) title = "WITH COSTUME & MAKE-UP";
+  //     // else if(current_dept.includes("Editing")) title = "WITH EDITING";
+  //     // else if(current_dept === "Production") title = "WITH PRODUCTION";
+  //     // else title = "some dept";
+
+  //     return `With ${current_dept} by`; 
+  //   }
+  // }
 
   function get_dept_credits(){
     // pass arr of objects containing films info for the specific dept that person has credit/credits for 
     
    // if(current_dept.name === "") set_current_dept({name: person.known_for_department, credits: []}); // default 
 
-    const indexes = crew_depts[current_dept];
+    const indexes = crew_depts[current_dept]; // return an array of indexes, which correspond to that dept in the credits arr
 
     if(indexes !== undefined){
       let start = indexes[0];
@@ -133,7 +129,10 @@ function Person( {credit}) {
       else if(sort_by === "Rating Descending") current.sort((a, b) => (a.vote_average > b.vote_average) ? -1 : 1);
       else if(sort_by === "Rating Ascending") current.sort((a, b) => (a.vote_average > b.vote_average) ? 1 : -1);
 
-      // TODO  ... 
+      else if(sort_by === "Release Date Descending") current.sort((a, b) => (a.release_date > b.release_date) ? -1 : 1);
+      else if(sort_by === "Release Date Ascending") current.sort((a, b) => (a.release_date > b.release_date) ? 1 : -1);
+
+      console.log(current); 
 
       return current; 
     }
@@ -150,7 +149,7 @@ function Person( {credit}) {
 
       <Container1>
       <HeaderContainer>
-        <Title>FILMS {get_title()} BY</Title>
+        <Title>Films With {current_dept} By</Title>
         <Name>{person.name}</Name>
       </HeaderContainer>
 
@@ -162,9 +161,9 @@ function Person( {credit}) {
             ))}
         </Select>
         
-        <Select onChange={handle_sort_by}>
+        <Select onChange={handle_sort_by} defaultValue={"DEFAULT"}>
           <Option hidden>Sort By</Option>
-          <Option>Popularity Descending</Option>
+          <Option value="DEFAULT">Popularity Descending</Option>
           <Option>Popularity Ascending</Option>
           <Option>Rating Descending</Option>
           <Option>Rating Ascending</Option>
