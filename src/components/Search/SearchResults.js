@@ -1,20 +1,23 @@
 import React from 'react'; 
-import FilmResult from "./SearchResult";
+import SearchResultFilm from "./SearchResultFilm";
+import SearchResultPerson from "./SearchResultPerson"; 
 import styled from "styled-components"; 
 
 
 function SearchResults( {query, results, total} ) {
-  // Display results (20 a page), each result is of component FilmResult ... 
+  // Display results (20 a page), each result is of component SearchResultFilm or SearchResultPerson ... 
   // See the Poster, Title, Year, and Director for each result (each Link to a specific page/search ...)
+  // or Profile, name, and known for dept of person
 
 
   return (
       <Container className="media-width-50">
         <Header> FOUND AT LEAST {total} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
-          {results.map( (result) => (
-            <FilmResult key={result.id} result={result}></FilmResult>
-          ))}
+          {results.map( (result) => {
+            if(result.known_for_department === undefined) return <SearchResultFilm key={result.id} result={result}></SearchResultFilm>
+            else return <SearchResultPerson key={result.id} result={result}></SearchResultPerson>
+          })}
         </section>
       </Container>
   )

@@ -31,7 +31,6 @@ function FilmResult( { result }, props ) {
         // quick search to get the director among the tens of crew memebers 
         if(person.job === "Director") {
           directors.push(person.name);
-          
           set_credit(person.id); 
         }
       })

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components"; 
 import axios from 'axios'; 
 import SearchResults from "./SearchResults"; 
 import PaginantionNumbers from "./PaginationNumbers"; 
@@ -23,10 +22,15 @@ function Search( {query} ) {
     document.querySelector('body').scrollTo(0,0); // select new page, make sure start at the top 
 
     const get_search = async () => {
-      const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`; // GET /search/movie 
-      const data = await axios.get(search_movie); 
-      set_results(data.data.results);  
 
+      // multi-search (include movies and people, exclude the rest);
+      const search_multi = `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`;
+      //const search_movie = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`; // GET /search/movie 
+      const data = await axios.get(search_multi); 
+
+      // exclude media type: tv , only want movie and person results 
+      const filtered = data.data.results.filter( (result) => result.media_type === "movie" || result.known_for_department !== undefined);
+      set_results(filtered); 
       
       set_pages({
         posts_per_page: data.data.results.length,
@@ -66,81 +70,12 @@ function Search( {query} ) {
   const go_to_page = (page_num) => set_current_page(page_num); 
 
 
-
   return (
     <div>
       <SearchResults query={query} results={results} total={total}></SearchResults>
       <PaginantionNumbers posts_per_page={pages.posts_per_page} total_pages={pages.total_pages} prev={prev} next={next} go_to_page={go_to_page}></PaginantionNumbers>
-
-      {/* <Nav className="media-width-50">
-      <Button active={active.left}>Previous</Button>
-       <UList>
-        {page_numbers.map( (num) => (
-          <Item key={num}>
-            <A href= "!#" >{num}</A>
-          </Item>
-        ))}
-      </UList> 
-      <Button active={active.right}>Next</Button>
-    </Nav> */}
     </div> 
   ); 
 }
-
-// Style 
-const Nav = styled.nav`
-  border-top: 1px solid #a5a5a5; 
-  display: flex;
-  flex-direction: row; 
-  align-items: center;
-  justify-content: space-between; 
-  padding: 5% 0; 
-`;
-
-
-const Button = styled.button`
-  //margin-top: 5px; 
-  width: 18%; 
-  height: 5%; 
-  padding: 10px; 
-  background-color: #273038; 
-  text-align: center; 
-  border: none; 
-  border-radius: 5%; 
-  color: #a5a5a5;
-
-  &:hover{
-    cursor: pointer;  
-    opacity: .3; 
-    color: #e1e3e5;
-  }
-
-  transform: ${props => props.active ? "scale(1)": "scale(0)"}; 
-`;
-
-
-const UList = styled.ul`
-  list-style: none; 
-  display: flex;
-  flex-direction: row; 
-  justify-content: center; 
-
-  padding: 0; 
-  margin: 0 2% 0 2%; 
-`;
-
-const Item = styled.li`
-  padding: 6px; 
-
-  &:hover{
-    background-color: #273038 
-  }
-`;
-
-const A = styled.a`
-  color: #a5a5a5;
-`;
-
-
 
 export default Search; 
