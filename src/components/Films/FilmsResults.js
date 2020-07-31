@@ -4,10 +4,7 @@ import FilmResult from "./FilmsResult";
 
 function FilmsResults( {results, loading}) {
 
-  if(loading) {
-   return <Test>LOADING LOADING</Test>
-  }; 
-
+  // if results are empty (ex. select upcoming year of 2029 then say THERE ARE NO FILMS FOR 2029 YET)
 
   return (
     <Container>
@@ -16,14 +13,12 @@ function FilmsResults( {results, loading}) {
           <FilmResult result={result} key={result.id}></FilmResult>
         </Wrap>
       ))}
+
     </Container>
   )
 }
 
 const Container = styled.div`
-  width: 80%;
-  
-  margin: 0 auto;  
   display: flex; 
   flex-direction: row;
   flex-wrap: wrap;
@@ -35,12 +30,5 @@ const Wrap = styled.div`
   width: 20%;
   box-sizing: border-box;
 `; 
-
-const Test = styled.div`
-  width: 1000px
-  height: 1000px;
-  background-color: white; 
-
-`;
 
 export default FilmsResults; 

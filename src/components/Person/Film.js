@@ -5,7 +5,7 @@ import ReactTooltip from "react-tooltip";
 
  function Result( {result} ) {
 
-  const poster = `https://image.tmdb.org/t/p/w154\/${result.poster_path}`; 
+  const poster = `https://image.tmdb.org/t/p/w154/${result.poster_path}`; 
   const year = result.release_date !== undefined ? result.release_date.substr(0, 4) : " "; 
   const tool_tip = `${result.title} (${year})`; 
 

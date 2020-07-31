@@ -95,29 +95,40 @@ function Films( {browseby, selected, genres} ) {
 
 
       // ------------------------------------YEAR----------------------------------------------------
-      // if(year.visible === true){
-      //   //query += `primary_release_year=${year.year} `;
 
-      //   console.log(year); 
+      if(year.selected !== "All"){
+        // narrow results to a decade or specific year 
 
-      //   // if(isNaN(year.selected)){
-      //   //   // show results for that decade (ex. 2000-01-01 - 2010-01-01); 
-      //   //   let from = `${year.years[1]}-01-01`;
-      //   //   let to = `${year.years[10]+1}-01-01`;
+        if(isNaN(year.selected)){
 
-      //   //   query += `&primary_release_date.gte=${from}&primary_release_date.lte=${to}`;
-      //   // }
+          if(year.selected === "Upcoming"){
+            // upcoming (any release past current date)
+            let date = new Date().toISOString().slice(0,10);  
+            query += `&primary_release_date.gte=${date}`; 
+          }
+          else{
+            // show results for that decade (ex. 2000-01-01 - 2010-01-01);  
+            let from = `${year.years[1]}-01-01`;
+            let to = `${year.years[10]+1}-01-01`; // +1 b/c last year is xxx9
+            query += `&primary_release_date.gte=${from}&primary_release_date.lte=${to}`;
+          }
+        }
 
-      // IF UPCOMING !! 
+        else{
+          // specific year 
+          query += `&primary_release_year=${year.selected}`;
+        }
+      }
 
-      //   // else{
-      //   //   // show results for that specific year 
-      //   //   query += `&primary_release_year=${year.selected}`;
-      //   // }   
-      // }
-      // else set_year({visible: false}); 
-       
 
+      // SET YEAR TO NOT VISIBLE 
+     // else document.getElementById("years-id").style.transform = "scale(0)"; 
+
+      // FIX BREAKS 
+     // else set_year({ selected: "All", years: [], visible: false});// set year to not visible 
+
+
+    
     // ------------------------------------GENRE-----------------------------------------------------
     if(genre.id !== 0) { 
       // get correct genre id to add to query 
@@ -235,6 +246,10 @@ function Films( {browseby, selected, genres} ) {
       visible: false
     });
     set_genre({id: 0, name: "All"});
+
+    document.getElementById("year-id").selectedIndex = 0; 
+    document.getElementById("genre-id").selectedIndex = 0; 
+    document.getElementById("sort-by-id").selectedIndex = 0; 
   }
 
 
@@ -243,10 +258,10 @@ function Films( {browseby, selected, genres} ) {
     <Container className="media-width-50">
 
       <HeaderContainer>
-        <Title>FILMS</Title>
+        <div>FILMS</div>
 
-        <FiltersContainer>
-          <Select onChange={handle_years}>
+        <div>
+          <Select onChange={handle_years} id="year-id">
             <Option hidden>Year</Option>
             <Option>All</Option>
             {DECADES.map( (year) => (
@@ -254,7 +269,7 @@ function Films( {browseby, selected, genres} ) {
             ))}
           </Select>
 
-          <Select onChange={handle_genre}>
+          <Select onChange={handle_genre} id="genre-id">
             <Option hidden>Genre</Option>
             <Option>All</Option>
             {genres.map( (genre) => (
@@ -262,7 +277,7 @@ function Films( {browseby, selected, genres} ) {
             ))}
           </Select>
 
-          <Select onChange={handle_sorting} >
+          <Select onChange={handle_sorting} id="sort-by-id">
             <Option hidden>Sort by</Option>
 
             <Group label=" TMDB FILM POPULARITY">
@@ -280,23 +295,23 @@ function Films( {browseby, selected, genres} ) {
                 <Option>Release Date Ascending</Option>
               </Group>
           </Select>
-        </FiltersContainer>
+        </div>
       </HeaderContainer>
 
 
       <SearchResultContainer>
         <Header>There are {total_results} films matching your filters</Header>
         <Filters>
-          <Filter>Year: {year.selected}</Filter>
-          <Filter>Genre: {genre.name}</Filter>
-          <Filter>Sort By: {sort_by}</Filter>
+          <div>Year: {year.selected}</div>
+          <div>Genre: {genre.name}</div>
+          <div>Sort By: {sort_by}</div>
           <ResetButton onClick={reset}>Reset</ResetButton>
         </Filters>
       </SearchResultContainer>
 
 
 
-      <YearsContainer visible={year.visible}>
+      <YearsContainer visible={year.visible} id="years-id">
         {show_years()}
       </YearsContainer>
 
@@ -318,7 +333,6 @@ const Container = styled.div`
   display: flex; 
   flex-direction: column; 
   font-family: Roboto; 
-  // border: 2px solid black; 
   color: #a5a5a5; 
 `; 
 
@@ -330,12 +344,6 @@ const HeaderContainer = styled.h2`
   font-size: 1.1em; 
   border-bottom: 1px solid #a5a5a5;
 `;
-
-const FiltersContainer = styled.div`
-`;
-
-const Title = styled.div` 
-`; 
 
 const Select = styled.select`
   font-family: Roboto;
@@ -385,10 +393,6 @@ const Filters = styled.div`
   font-size: .8em; 
   white-space: nowrap;
 `;
-
-const Filter = styled.div`
-
-`; 
 
 const ResetButton = styled.button`
   
