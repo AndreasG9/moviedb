@@ -8,27 +8,31 @@ const DECADES = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s
 function Films( {browseby, selected, genres} ) {
   // ex. .../films/genre/crime (default sorted by popularity (not the biggest fan of how they determine those values))
 
-  // on first render 
+  // on first render (info from BrowseBy component)
   let selected_genre;  
   if(browseby === "genre") selected_genre = genres.find( (g) => g.name === selected); // returns obj with name and id keys 
   else selected_genre = {id: 0, name: "All"}; 
 
-  let selected_year;
-  let years_arr = [];  
+
+  let years_arr = []; 
+  let decade = "All"; 
   let visible = false; 
   if(browseby === "year"){
     // include a decade
-    let decade = selected.substring(0,4); 
+    let a_year = parseInt(selected.substring(0,4)); 
     years_arr.push(selected); 
 
     for(let i=0; i<10; ++i){
-      years_arr.push(decade); 
-      ++decade; 
+      years_arr.push(a_year); 
+      ++a_year; 
     }
-    selected_year = selected; 
+
+    decade = selected; 
     visible = true; 
   }
-  else selected_year = "All"; 
+
+
+
 
   let sorted; 
   if(browseby === "TMDB rating" || browseby === "popular") sorted = selected; 
@@ -41,7 +45,7 @@ function Films( {browseby, selected, genres} ) {
 
 
   const [year, set_year] = useState({
-    year: selected_year,
+    selected: decade,
     years: years_arr,
     visible: visible
   });
@@ -65,11 +69,12 @@ function Films( {browseby, selected, genres} ) {
     //let path = `/films`; // update 
 
     const get_data = async () => {
+      document.querySelector('body').scrollTo(0,0); // select new page, make sure start at the top 
       set_loading(true);
       
       // set up query params 
     
-      // -------------------- SORT BY-----------------------------------------------------
+      // ------------------------------------SORT BY-----------------------------------------------------
       // Release Date 
       if(sort_by === "Release Date Descending"){
         // starting with films released before today  
@@ -79,52 +84,84 @@ function Films( {browseby, selected, genres} ) {
       else if(sort_by === "Release Date Ascending") request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=falsepage=${current_page}&sort_by=primary_release_date.asc`; // removed min vote count  
 
       // Rating 
-      else if(sort_by === "Highest All Time First") query += "&sort_by=vote_average.desc&without_genres=10770&vote_count.gte=100&primary_release_date.lte=2020-01-01"; // fix later 
-      else if(sort_by === "Lowest All Time First") query += "&sort_by=vote_average.asc";
-      else if(sort_by === "Highest This Year First") query += `&sort_by=vote_average.desc&primary_release_year=${new Date().getFullYear()}`;
-      else if(sort_by === "Lowest This Year First") query += `&sort_by=vote_average.asc&primary_release_year=${new Date().getFullYear()}`;
+      else if(sort_by === "Highest First") query += "&sort_by=vote_average.desc&without_genres=10770&vote_count.gte=100&primary_release_date.lte=2020-01-01"; // fix later 
+      else if(sort_by === "Lowest First") query += "&sort_by=vote_average.asc";
+      // else if(sort_by === "Highest This Year First") query += `&sort_by=vote_average.desc&primary_release_year=${new Date().getFullYear()}`;
+      // else if(sort_by === "Lowest This Year First") query += `&sort_by=vote_average.asc&primary_release_year=${new Date().getFullYear()}`;
 
-      // Most popular today or this year 
-      // ${new Date().getFullYear()}
+      // Most popular today desc or asc  
       else if(sort_by === "Popularity Ascending") query += "&sort_by=popularity.asc"; 
       else query += "&sort_by=popularity.desc"; // most popular/ popular today is default / fallback sorting method 
 
-      // ---------------------YEAR----------------------------------------------------
-      if(year.visible === true){
-        query += `primary_release_year=${year.year} `;
-      }
-      // else set_year({}); 
+
+      // ------------------------------------YEAR----------------------------------------------------
+      // if(year.visible === true){
+      //   //query += `primary_release_year=${year.year} `;
+
+      //   console.log(year); 
+
+      //   // if(isNaN(year.selected)){
+      //   //   // show results for that decade (ex. 2000-01-01 - 2010-01-01); 
+      //   //   let from = `${year.years[1]}-01-01`;
+      //   //   let to = `${year.years[10]+1}-01-01`;
+
+      //   //   query += `&primary_release_date.gte=${from}&primary_release_date.lte=${to}`;
+      //   // }
+
+      // IF UPCOMING !! 
+
+      //   // else{
+      //   //   // show results for that specific year 
+      //   //   query += `&primary_release_year=${year.selected}`;
+      //   // }   
+      // }
+      // else set_year({visible: false}); 
        
 
-      // ---------------------GENRE-----------------------------------------------------
-      if(genre.id !== 0) { 
-        // get correct genre id to add to query 
-        query += `&with_genres=${genre.id}`;
-        //path += `/genre/genre.name`; 
-        }
-      else set_genre({id: 0, name: "All"}); 
+    // ------------------------------------GENRE-----------------------------------------------------
+    if(genre.id !== 0) { 
+      // get correct genre id to add to query 
+      query += `&with_genres=${genre.id}`;
+      //path += `/genre/genre.name`; 
+      }
+    else set_genre({id: 0, name: "All"}); 
 
+    // finally get the requested data  
+    request += query; 
+    const res = await axios.get(request); 
+    console.log(request);      
+    set_results(res.data.results); // display 72 posts a page? maybe less 
+    set_total_results(res.data.total_results); 
+    set_loading(false); 
 
-      request += query; 
-      // finally get the requested data  
-      const res = await axios.get(request); 
-      console.log(request);      
-      set_results(res.data.results); // display 72 posts a page? maybe less 
-      set_total_results(res.data.total_results); 
-      set_loading(false); 
-
-      // if new filter, reset current page 
-      if((query_params !== query) && (query_params !== "")) set_current_page(1); 
-      set_query_params(query); 
-      //console.log(`CURRENT PAGE: ${current_page}`); 
-    }
+    // if new filter, reset current page 
+    if((query_params !== query) && (query_params !== "")) set_current_page(1); 
+    set_query_params(query); 
+    //console.log(`CURRENT PAGE: ${current_page}`); 
+  }
 
     get_data();
 
-  }, [current_page, selected, genre.id, sort_by, query_params, year.visible, year.year]); 
+  }, [current_page, selected, genre.id, sort_by, query_params, year]); 
 
 
   // Funcs. 
+  function show_years(){
+    // horizontal list of buttons with a decade and its years 
+    let test = null; 
+ 
+    if(year.visible === true){
+      test = 
+        <React.Fragment>{
+          year.years.map( (year) => (
+            <Year key={year} onClick={(event) => handle_year(event, year)}>{year}</Year>
+          ))}
+        </React.Fragment>
+    }
+
+    return test; 
+  }
+
   // re-render will new page request 
   const next = () => {
     set_current_page(current_page + 1); 
@@ -140,7 +177,6 @@ function Films( {browseby, selected, genres} ) {
     else set_btn_active({prev: true, next: true}); 
   }
 
-
   const handle_genre = (event) => {
     // update query, re-render 
     let selected_genre;
@@ -150,33 +186,61 @@ function Films( {browseby, selected, genres} ) {
     set_genre(selected_genre); 
   }
 
-  const handle_years = (event) => {
-    // update with selected decade  
-
-    console.log(event.target.value);
-
-    set_year(event.target.value); 
-  }
-
   const handle_sorting = (event) => {
     set_sort_by(event.target.value);
   }
 
-  const handle_year = (year) => {
-    console.log(`Year Selected: ${year}`);
+  const handle_years = (event) => {
+    // Decade or Upcoming 
+    // if decade, fill years 
 
+    let years_arr = []; 
+    let visible = false; 
+
+    if(event.target.value !== "Upcoming"){
+      visible = true; 
+      let a_year = parseInt(event.target.value.substring(0,4)); 
+      years_arr.push(event.target.value); 
+
+      for(let i=0; i<10; ++i){
+        years_arr.push(a_year); 
+        ++a_year; 
+      }
+    }
+    
     set_year({
-      year: year
+      selected: event.target.value,
+      years: years_arr,
+      visible: visible
+    }); 
+
+  }
+
+  const handle_year = (event, selected_year) => {
+    // Specific year 
+
+    console.log(year); 
+
+    let temp = {...year};
+    temp.selected = selected_year; 
+    set_year(temp);  
+  }
+
+  const reset = () => {
+    // set search to year: all genre: all sort by: pop descending
+    set_sort_by("Popularity Descending");
+    set_year({
+      selected: "All",
+      years: [],
+      visible: false
     });
-
-
-
+    set_genre({id: 0, name: "All"});
   }
 
 
 
   return (
-    <Container>
+    <Container className="media-width-50">
 
       <HeaderContainer>
         <Title>FILMS</Title>
@@ -190,7 +254,6 @@ function Films( {browseby, selected, genres} ) {
             ))}
           </Select>
 
-
           <Select onChange={handle_genre}>
             <Option hidden>Genre</Option>
             <Option>All</Option>
@@ -202,17 +265,14 @@ function Films( {browseby, selected, genres} ) {
           <Select onChange={handle_sorting} >
             <Option hidden>Sort by</Option>
 
-
             <Group label=" TMDB FILM POPULARITY">
                 <Option>Popularity Descending</Option>
                 <Option>Popularity Ascending</Option>
               </Group>
 
               <Group label="TMDB RATING (awful system)">
-                <Option>Highest All Time First</Option>
-                <Option>Lowest All Time First</Option>
-                <Option>Highest This Year First</Option>
-                <Option>Lowest This Year First</Option>
+                <Option>Highest First</Option>
+                <Option>Lowest First</Option>
               </Group>
 
               <Group label="RELEASE DATE">
@@ -220,7 +280,6 @@ function Films( {browseby, selected, genres} ) {
                 <Option>Release Date Ascending</Option>
               </Group>
           </Select>
-
         </FiltersContainer>
       </HeaderContainer>
 
@@ -228,17 +287,17 @@ function Films( {browseby, selected, genres} ) {
       <SearchResultContainer>
         <Header>There are {total_results} films matching your filters</Header>
         <Filters>
-          <Filter>Year: {year.year}</Filter>
+          <Filter>Year: {year.selected}</Filter>
           <Filter>Genre: {genre.name}</Filter>
           <Filter>Sort By: {sort_by}</Filter>
+          <ResetButton onClick={reset}>Reset</ResetButton>
         </Filters>
       </SearchResultContainer>
 
 
+
       <YearsContainer visible={year.visible}>
-          {year.years.map( (year) => (
-            <Year onClick={handle_year()}>{year}</Year>
-          ))}
+        {show_years()}
       </YearsContainer>
 
 
@@ -247,6 +306,7 @@ function Films( {browseby, selected, genres} ) {
 
        <ButtonsContainer>
         <Button active={btn_active.prev} onClick={prev}>Previous</Button>
+            <span>{query_params}</span>
         <Button active={btn_active.next} onClick={next}>Next</Button>
       </ButtonsContainer> 
       
@@ -258,13 +318,8 @@ const Container = styled.div`
   display: flex; 
   flex-direction: column; 
   font-family: Roboto; 
-  border: 2px solid black; 
+  // border: 2px solid black; 
   color: #a5a5a5; 
-
-  //width: 60%; 
-
-
-  margin: 0 auto; 
 `; 
 
 const HeaderContainer = styled.h2`
@@ -277,11 +332,9 @@ const HeaderContainer = styled.h2`
 `;
 
 const FiltersContainer = styled.div`
-  
 `;
 
 const Title = styled.div` 
- 
 `; 
 
 const Select = styled.select`
@@ -314,7 +367,6 @@ const Option = styled.option`
 `; 
 
 const SearchResultContainer = styled.div`
-  //margin: 0 auto; 
   margin-left: 18%; 
   padding: 1% 0 2% 0; 
 
@@ -335,7 +387,28 @@ const Filters = styled.div`
 `;
 
 const Filter = styled.div`
+
 `; 
+
+const ResetButton = styled.button`
+  
+  padding: 5px; 
+  color: #a5a5a5;
+  border-radius: 4px; 
+  border: none; 
+  background-color: #273038; 
+  margin-top: 2%;
+
+  &:hover{
+    cursor: pointer; 
+    color: #e1e3e5;
+  }
+
+  &:focus{
+    outline: none; 
+  }
+
+`;
 
 const YearsContainer = styled.div`
   transform: ${(props) => props.visible ? "scale(1)" : "scale(0)"};
@@ -371,8 +444,6 @@ const Year = styled.button`
     background-color: #6f7d89; 
   }
 
-
-
 `; 
 
 const ButtonsContainer = styled.div`
@@ -380,6 +451,7 @@ const ButtonsContainer = styled.div`
   flex-direction: row; 
   justify-content: space-between; 
   border-top: 1px solid #a5a5a5; 
+  padding-top: 2%; 
 `; 
 
 const Button = styled.button`
