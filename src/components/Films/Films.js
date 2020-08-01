@@ -301,7 +301,7 @@ function Films( {browseby, selected, genres} ) {
 
        <ButtonsContainer>
         <Button active={btn_active.prev} onClick={prev}>Previous</Button>
-            <span>{query_params}</span>
+            {/* <span>{query_params}</span> */}
         <Button active={btn_active.next} onClick={next}>Next</Button>
       </ButtonsContainer> 
       

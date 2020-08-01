@@ -31,8 +31,6 @@ function BrowseBy() {
     // redirect to /films/browse-by/selected 
 
     let selected = event.target.value; 
-    console.log(selected); 
-
     const target = `/films/${select}/${selected.toLowerCase()}`; // ex. genre crime : domain.com/films/genre/crime
     history.push(target, {browseby: select, selected: selected, genres:genres});
   }

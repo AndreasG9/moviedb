@@ -1,8 +1,10 @@
-import React, { useState, useEffect, Fragment} from "react"; 
+import React, { useState, useEffect} from "react"; 
 import axios from "axios"; 
+import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
-//import Rating from "...."; 
 import Tabs from "./Tabs/Tabs.js";
+import Backdrops from "./Backdrops";
+
 
 function Film( { movie_id }) {    
   // ex. /film/the-thing
@@ -17,10 +19,9 @@ function Film( { movie_id }) {
     crew: []
   });
 
+  const [director_credit, set_director_credit] = useState(""); // for redirect to /person (redirect to cast or crew inside tabs)
 
-  const base = "https://image.tmdb.org/t/p";
-  const size = "/w1280/"; // 300, 780, or 1280 for backdrops  
-  const poster_size = "/w342/"; 
+  const history = useHistory();
 
 
   useEffect( () => {
@@ -48,7 +49,10 @@ function Film( { movie_id }) {
       let directors_arr = [];  // display director, (max 2, if have more redirect to full crew)
 
       data.data.crew.forEach( (person) => {
-        if(person.job === "Director") directors_arr.push(person.name);
+        if(person.job === "Director") {
+          directors_arr.push(person.name);
+          set_director_credit(person.id); 
+        }
       });
 
       set_directors(directors_arr); 
@@ -63,22 +67,21 @@ function Film( { movie_id }) {
     }
 
     fetch_data(); 
-    //open_info("CAST"); 
 
   }, [movie_id]); 
 
 
-  // format better 
+
   function display_directors(){
     // if more than 2, link to full list 
 
     if(directors.length > 2){
       return (
-        <Fragment>
-          <Director>{directors[0]}</Director>
+        <React.Fragment>
+          <Director onClick={() => handle_director(directors[0])}>{directors[0]}</Director>
           <Director>{directors[1]}</Director>
           <Director >...</Director>
-        </Fragment>
+        </React.Fragment>
       )
     }
 
@@ -91,21 +94,42 @@ function Film( { movie_id }) {
       )
     }
 
-    else return <Director>{directors[0]}</Director>
+    else return <Director onClick={() => handle_director(directors[0])}>{directors[0]}</Director>
+  }
+
+  function get_title(){
+    if(result.title !== undefined){
+      if(result.title.length > 30) return <Title style={{fontSize: "2.2em"}}>{result.title}</Title> // smaller font for longer titles 
+      else return <Title>{result.title}</Title>
+    }
+  }
+
+  const handle_director = (director) => {
+    // redirect /person/person-name
+
+    const params = director.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
+    const target = `/person/${params}`; 
+    history.push(target, {credit: director_credit});
+  }
+
+  const handle_backdrops = () => {
+
   }
 
   return (
     <React.Fragment>
-      <BackDrop src={base + size + result.backdrop_path} alt="backdrop" draggable="false"></BackDrop>
+      <div style={{position: "relative"}}>
+        <BackDrop src={`https://image.tmdb.org/t/p/w1280/${result.backdrop_path}`} alt="backdrop" draggable="false" className="media-width-60"></BackDrop>
+      </div>
 
-      <Container>
+      <Container className="media-width-60">
         <TopContainer>
 
-          <Poster src={base + poster_size + result.poster_path} alt="poster"></Poster>
+          <Poster src={`https://image.tmdb.org/t/p/w342/${result.poster_path}`} alt="poster"></Poster>
 
           <InfoContainer> 
             <TitleYearContainer>
-              <Title>{result.title}</Title>
+              {get_title()}
               <Year>{`(${year})`}</Year>
             </TitleYearContainer>
 
@@ -127,9 +151,13 @@ function Film( { movie_id }) {
           
         </TopContainer>
 
-        <TabsContainer>          
-          <Tabs credits={credits} result={result}></Tabs>
-        </TabsContainer>
+        <div style={{position: "relative"}}>
+          <TabsContainer>          
+            <Tabs credits={credits} result={result}></Tabs>
+          </TabsContainer>
+        </div>
+
+        <Backdrops movie_id={movie_id}></Backdrops>
 
       </Container>
     </React.Fragment>
@@ -138,25 +166,19 @@ function Film( { movie_id }) {
 
 // Style 
 const BackDrop = styled.img`
-  position: absolute; 
-  opacity: .2;
-  left: 16%; 
-  top: 10%; 
+  position: absolute;
+  opacity: .2; 
 `; 
 
 const Container = styled.div`
-  margin: 0 auto;
-  width: 62%; 
-  height: max-content; 
-
-  // display: flex;
-  // flex-direction: column; 
-
-  //border: 2px solid blue; 
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: space-between; 
 `; 
 
 const TopContainer = styled.div`
-  margin-top: 20%; 
+  margin-top: 15%; 
   display: flex;
   flex-direction: row; 
   align-items: flex-start; 
@@ -167,10 +189,7 @@ const InfoContainer = styled.div`
   display: flex;
   flex-direction: column; 
   color: #e1e3e5; 
-
   width: 65%;
-
-  //border: 2px solid white; 
 `; 
 
 const Poster = styled.img`
@@ -244,7 +263,6 @@ const RatingContainer = styled.div`
   
 `;
 
-
 const TagLineRatingContainer = styled.div`
   z-index: 1;
   display: flex; 
@@ -281,28 +299,13 @@ const Overview = styled.div`
 `; 
 
 const TabsContainer = styled.div`
-  // border-left: 2px solid white; 
-  // border-right: 2px solid white; 
+  //border: 1px solid #a5a5a5; 
+  //z-index: 1; 
+  margin-top: 14.8%; 
 
-
-  border: 2px solid white; 
-  z-index: 1; 
-
-  //margin: 0 10% 0 10%; 
-
-  position: absolute; 
-  top: 84.3%; 
-  left: 26%; 
-
-  width: 43.5%; 
-  height: 38%; 
-`; 
-
-
-// TODO maybe 
-// const ViewBackdrops = styled.button`
-// `;
-
+  height: 350px; 
+  width: 830px; 
+`;
 
 export default Film; 
 
