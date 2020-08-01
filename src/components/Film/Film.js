@@ -61,8 +61,7 @@ function Film( { movie_id }) {
       data = await axios.get(release_dates);
 
       const found = data.data.results.find( (result) => result.iso_3166_1 === "US");
-      let certification = found.release_dates[0].certification || {}; 
-      certification = typeof certification != undefined ? certification : " ";  
+      let certification = found.release_dates[0].certification || "no  mpaa rating"; 
       set_rating(certification); 
     }
 
@@ -112,9 +111,6 @@ function Film( { movie_id }) {
     history.push(target, {credit: director_credit});
   }
 
-  const handle_backdrops = () => {
-
-  }
 
   return (
     <React.Fragment>

@@ -41,24 +41,33 @@ import styled from "styled-components";
   }
 
   function get_count(){
-    return <Counter>{`${current_index+1} / ${backdrops.length}`}</Counter> 
+    if(backdrops.length !== 0) return <Counter>{`${current_index+1} / ${backdrops.length}`}</Counter> 
+    else return <Counter>{"No Available Backdrops"}</Counter>
   }
 
 
   function get_backdrop(){
     const current = backdrops[current_index]; 
-    console.log(current_index); 
     if(current !== undefined) return <BackDrop src={`https://image.tmdb.org/t/p/original/${current.file_path}`} alt="backdrop"></BackDrop>
   }
 
+  function show(){
+    if(backdrops.length !== 0){
+      return (
+        <BackDropsContainer>
+        {get_count()}
+        <Arrow active={active.left} onClick={prev}>{"<"}</Arrow>
+        {get_backdrop()}
+        <Arrow active={active.right} onClick={next} right>{">"}</Arrow>
+        <Msg>OPEN IN NEW TAB TO VIEW IN ORIGINAL SIZE</Msg>
+      </BackDropsContainer>
+      )
+    }
+    else return <Msg>No Available Backdrops</Msg>; 
+  }
+
   return (
-    <BackDropsContainer>
-      {get_count()}
-      <Arrow active={active.left} onClick={prev}>{"<"}</Arrow>
-      {get_backdrop()}
-      <Arrow active={active.right} onClick={next} right>{">"}</Arrow>
-      <Msg>OPEN IN NEW TAB TO VIEW IN ORIGINAL SIZE</Msg>
-    </BackDropsContainer>
+    show()
   )
 }
 
