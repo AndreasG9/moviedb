@@ -8,7 +8,6 @@ function App() {
   return (
     <div>
       <Routes className="App"></Routes>
-      {/* <Footer></Footer> */}
     </div>
   );
 }

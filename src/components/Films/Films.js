@@ -62,7 +62,6 @@ function Films( {browseby, selected, genres} ) {
     next: true
   });
 
-
   useEffect( () => {
     let request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&vote_count.gte=40&page=${current_page}`; // base with some default query params 
     let query = ""; 
@@ -86,8 +85,6 @@ function Films( {browseby, selected, genres} ) {
       // Rating 
       else if(sort_by === "Highest First") query += "&sort_by=vote_average.desc&without_genres=10770&vote_count.gte=100&primary_release_date.lte=2020-01-01"; // fix later 
       else if(sort_by === "Lowest First") query += "&sort_by=vote_average.asc";
-      // else if(sort_by === "Highest This Year First") query += `&sort_by=vote_average.desc&primary_release_year=${new Date().getFullYear()}`;
-      // else if(sort_by === "Lowest This Year First") query += `&sort_by=vote_average.asc&primary_release_year=${new Date().getFullYear()}`;
 
       // Most popular today desc or asc  
       else if(sort_by === "Popularity Ascending") query += "&sort_by=popularity.asc"; 
@@ -95,7 +92,6 @@ function Films( {browseby, selected, genres} ) {
 
 
       // ------------------------------------YEAR----------------------------------------------------
-
       if(year.selected !== "All"){
         // narrow results to a decade or specific year 
 
@@ -104,7 +100,7 @@ function Films( {browseby, selected, genres} ) {
           if(year.selected === "Upcoming"){
             // upcoming (any release past current date)
             let date = new Date().toISOString().slice(0,10);  
-            query += `&primary_release_date.gte=${date}`; 
+            query += `&release_date.gte=${date}`; 
           }
           else{
             // show results for that decade (ex. 2000-01-01 - 2010-01-01);  
@@ -114,63 +110,50 @@ function Films( {browseby, selected, genres} ) {
           }
         }
 
-        else{
-          // specific year 
-          query += `&primary_release_year=${year.selected}`;
+        else query += `&primary_release_year=${year.selected}`;           // specific year 
+      }
+
+
+      // ------------------------------------GENRE-----------------------------------------------------
+      if(genre.id !== 0) { 
+        // get correct genre id to add to query 
+        query += `&with_genres=${genre.id}`;
+        //path += `/genre/genre.name`; 
         }
-      }
+      else set_genre({id: 0, name: "All"}); 
 
+      // finally get the requested data  
+      request += query; 
+      const res = await axios.get(request);    
+      set_results(res.data.results); // display 72 posts a page? maybe less 
+      set_total_results(res.data.total_results); 
+      set_loading(false); 
 
-      // SET YEAR TO NOT VISIBLE 
-     // else document.getElementById("years-id").style.transform = "scale(0)"; 
-
-      // FIX BREAKS 
-     // else set_year({ selected: "All", years: [], visible: false});// set year to not visible 
-
-
-    
-    // ------------------------------------GENRE-----------------------------------------------------
-    if(genre.id !== 0) { 
-      // get correct genre id to add to query 
-      query += `&with_genres=${genre.id}`;
-      //path += `/genre/genre.name`; 
-      }
-    else set_genre({id: 0, name: "All"}); 
-
-    // finally get the requested data  
-    request += query; 
-    const res = await axios.get(request); 
-    console.log(request);      
-    set_results(res.data.results); // display 72 posts a page? maybe less 
-    set_total_results(res.data.total_results); 
-    set_loading(false); 
-
-    // if new filter, reset current page 
-    if((query_params !== query) && (query_params !== "")) set_current_page(1); 
-    set_query_params(query); 
-    //console.log(`CURRENT PAGE: ${current_page}`); 
-  }
+      // if new filter, reset current page 
+      if((query_params !== query) && (query_params !== "")) set_current_page(1); 
+      set_query_params(query); 
+    }
 
     get_data();
 
-  }, [current_page, selected, genre.id, sort_by, query_params, year]); 
+  }, [current_page, selected, genre.id, sort_by, query_params, year.selected, year.years]); 
 
 
   // Funcs. 
   function show_years(){
     // horizontal list of buttons with a decade and its years 
-    let test = null; 
+    let res = null; 
  
-    if(year.visible === true){
-      test = 
+    if(year.selected !== "All"){
+      res = 
         <React.Fragment>{
           year.years.map( (year) => (
-            <Year key={year} onClick={(event) => handle_year(event, year)}>{year}</Year>
+            <Year key={year} onClick={(event) => handle_year(year)}>{year}</Year>
           ))}
         </React.Fragment>
     }
 
-    return test; 
+    return res; 
   }
 
   // re-render will new page request 
@@ -227,14 +210,11 @@ function Films( {browseby, selected, genres} ) {
 
   }
 
-  const handle_year = (event, selected_year) => {
+  const handle_year = (selected_year) => {
     // Specific year 
-
-    console.log(year); 
-
     let temp = {...year};
     temp.selected = selected_year; 
-    set_year(temp);  
+    set_year(temp);   
   }
 
   const reset = () => {
@@ -311,7 +291,7 @@ function Films( {browseby, selected, genres} ) {
 
 
 
-      <YearsContainer visible={year.visible} id="years-id">
+      <YearsContainer visible={year.visible}>
         {show_years()}
       </YearsContainer>
 
@@ -395,7 +375,6 @@ const Filters = styled.div`
 `;
 
 const ResetButton = styled.button`
-  
   padding: 5px; 
   color: #a5a5a5;
   border-radius: 4px; 
@@ -438,16 +417,9 @@ const Year = styled.button`
   }
 
   &:focus{
-    outline: none;
     color: #fff; 
     background-color: #6f7d89; 
   }
-
-  &:active{
-    color: #fff; 
-    background-color: #6f7d89; 
-  }
-
 `; 
 
 const ButtonsContainer = styled.div`

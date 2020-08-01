@@ -16,8 +16,7 @@ const Routes = () => (
       path="/search" 
       render = { (props) => 
         <SearchPage 
-          query={props.location.state.query} 
-        >
+          query={props.location.state.query}>
         </SearchPage>}>
     </Route>
 
@@ -25,10 +24,8 @@ const Routes = () => (
       path="/film"
       render = { (props) => 
         <FilmPage
-         movie_id={props.location.state.movie_id}
-        >
-        </FilmPage>}
-      >
+         movie_id={props.location.state.movie_id}>
+        </FilmPage>}>
     </Route>
 
     <Route
@@ -37,23 +34,19 @@ const Routes = () => (
         <FilmsPage
           browseby={props.location.state.browseby}
           selected={props.location.state.selected}
-          genres={props.location.state.genres}
-        >
-        </FilmsPage>
-      )}
-    >
+          genres={props.location.state.genres}>
+        </FilmsPage>)}>
     </Route>
 
     <Route
       path="/person"
       render = { (props) => (
         <PersonPage
-        credit={props.location.state.credit}
-        >
-        </PersonPage>
-      )}
-    >
+        credit={props.location.state.credit}>
+        </PersonPage>)}>
     </Route>
+
+    
 
     
 
