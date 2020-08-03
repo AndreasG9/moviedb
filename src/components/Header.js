@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components"; 
 import SearchBar from "./Search/SearchBar"; 
 import { useHistory } from "react-router-dom"; 
 import CreateAccount from "./auth/CreateAccount"; 
 import SignIn from "./auth/SignIn"; 
+import ProfileDropDown from "./Profile/ProfileDropDown"; 
+import { UserContext } from "../context/UserContext.js";
 
-function Header( props ){
+function Header(){
 
   const history = useHistory();
 
@@ -14,13 +16,13 @@ function Header( props ){
     window.location.reload(false); // will reset popular films this week pagination back to the start   
   }
 
+  // TODO 
   // go to lists page 
 
   const [show_overlay, set_show_overlay] = useState({
     sign_in: false,
     create_account: false 
   })
-
 
   const handle_create_account = () => set_show_overlay({create_account: true}); // overlay create account comp 
   const handle_sign_in = () => set_show_overlay({sign_in: true}); 
@@ -34,7 +36,22 @@ function Header( props ){
     if(show_overlay.create_account === true) return <CreateAccount close_create_act={close_create_act}></CreateAccount>
     if(show_overlay.sign_in === true) return <SignIn close_sign_in={close_sign_in}></SignIn>
   }
+  
+  
+  const user = useContext(UserContext); 
 
+  function display_context(){
+    // username w/ dropdown or sign in + create account 
+
+    if(user.signed_in === true) return <ProfileDropDown></ProfileDropDown>
+    else return (
+      <React.Fragment>
+        <NavButton onClick={() => handle_sign_in()}>SIGN IN</NavButton>
+        <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton>
+      </React.Fragment>
+    )
+
+  }
 
   return(
     <React.Fragment>
@@ -48,8 +65,7 @@ function Header( props ){
 
         <NavContainer>
           <NavButton onClick={go_home}>HOME</NavButton>
-          <NavButton onClick={() => handle_sign_in()}>SIGN IN</NavButton>
-          <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton>
+          {display_context()}
           <NavButton >LISTS</NavButton>
         </NavContainer>
 
@@ -68,7 +84,7 @@ const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
 
-  height: 90px;
+  height: 4.8vh;
 `;
 
 const H1 = styled.h1`
@@ -80,16 +96,16 @@ const H1 = styled.h1`
     cursor: pointer;
     color: #e1e3e5; 
   }
+
+  @media only screen and (max-width: 1500px) {
+    margin-left: 10%; 
+  }
 `;
 
 const NavContainer = styled.nav`
   margin-left: 15%;
   display: flex;
   justify-content: space-between;
-
-  width: 20%;
-  border: 1px solid white; 
-
 `;
 
 const NavButton = styled.button`

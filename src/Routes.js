@@ -5,7 +5,6 @@ import SearchPage from "./pages/SearchPage";
 import FilmPage from "./pages/FilmPage"; 
 import FilmsPage from "./pages/FilmsPage"; 
 import PersonPage from "./pages/PersonPage"; 
-// ... 
 
 const Routes = () => (
   <Router>
