@@ -17,19 +17,20 @@ function Header(){
   }
 
   // TODO 
-  // go to lists page 
+  // go to lists page
+
 
   const [show_overlay, set_show_overlay] = useState({
     sign_in: false,
     create_account: false 
   })
 
-  const handle_create_account = () => set_show_overlay({create_account: true}); // overlay create account comp 
+  // Overlay Component 
+  const handle_create_account = () => set_show_overlay({create_account: true}); // overlay create account component 
   const handle_sign_in = () => set_show_overlay({sign_in: true}); 
 
   const close_create_act = () => set_show_overlay({create_account: false}); // close overlay 
   const close_sign_in = () => set_show_overlay({sign_in: false}); 
-
 
   function display_overlay(){
     // display modal to sign in or create an account 
@@ -37,20 +38,20 @@ function Header(){
     if(show_overlay.sign_in === true) return <SignIn close_sign_in={close_sign_in}></SignIn>
   }
   
-  
+
+  // Context 
   const user = useContext(UserContext); 
 
   function display_context(){
     // username w/ dropdown or sign in + create account 
-
-    if(user.signed_in === true) return <ProfileDropDown></ProfileDropDown>
+    
+    if(user.auth === true) return <ProfileDropDown></ProfileDropDown>
     else return (
       <React.Fragment>
         <NavButton onClick={() => handle_sign_in()}>SIGN IN</NavButton>
         <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton>
       </React.Fragment>
     )
-
   }
 
   return(

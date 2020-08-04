@@ -1,10 +1,13 @@
-import React, { useState, createContext } from "react"; 
-
-export const UserContext = createContext(null); 
-export const DispatchUserContext = createContext(null); 
+// import React, { useState, createContext } from "react"; 
+import { useContext, createContext } from "react"; 
 
 
 // TESTING 
+/*
+
+// export const UserContext = createContext(null); 
+// export const DispatchUserContext = createContext(null); 
+
 export const UserProvider = (({ children }) => {
 
   const [state, set_state] = useState({
@@ -21,3 +24,13 @@ export const UserProvider = (({ children }) => {
     </UserContext.Provider>
   )
 }); 
+*/ 
+
+// session saved to state, able to be used throughout app (session info)
+export const UserContext = createContext(null);
+
+export function useUserContext(){
+  return useContext(UserContext); 
+}
+
+
