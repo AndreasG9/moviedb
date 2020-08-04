@@ -5,11 +5,26 @@ import { UserContext } from "./context/UserContext.js";
 
 function App() {
 
-  const [auth, set_auth] = useState(true); // testing  
+  let init = localStorage.getItem("session_id");
+  const active = init == null ? false : true;  
+  // init = localStorage.getItem("account"); 
+  // const active2 = init == null ? {details: [],fav_movies: [],rated_movies: [],watchlist: [],lists: [],} : init; 
+
+  // console.log(active2); 
+
+  const [auth, set_auth] = useState(false); // testing  
+  const [account, set_account] = useState({
+    details: [],
+    fav_movies: [],
+    rated_movies: [],
+    watchlist: [],
+    lists: [],
+  });
+  
   
   return (
     <div>
-      <UserContext.Provider value={{auth, set_auth}}>
+      <UserContext.Provider value={{auth, set_auth, account, set_account}}>
         <Routes className="App"></Routes>
       </UserContext.Provider>
     </div>
