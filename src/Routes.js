@@ -5,6 +5,7 @@ import SearchPage from "./pages/SearchPage";
 import FilmPage from "./pages/FilmPage"; 
 import FilmsPage from "./pages/FilmsPage"; 
 import PersonPage from "./pages/PersonPage"; 
+import ProfilePage from "./pages/ProfilePage.js"; 
 
 const Routes = () => (
   <Router>
@@ -44,7 +45,11 @@ const Routes = () => (
         credit={props.location.state.credit}>
         </PersonPage>)}>
     </Route>
-
+    
+    <Route
+      path="/:account"
+      component={ProfilePage}>
+    </Route>
     
 
     
