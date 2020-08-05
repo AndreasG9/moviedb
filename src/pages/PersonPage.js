@@ -9,7 +9,6 @@ import Person from "../components/Person/Person.js";
     <div>
       <Header></Header>
       <Person credit={credit}></Person>
-      
     </div>
   )
 }

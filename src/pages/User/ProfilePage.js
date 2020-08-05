@@ -1,8 +1,8 @@
 import React from "react"; 
-import Header from "../components/Header";
-import Profile from "../components/Profile/Profile.js"; 
+import Header from "../../components/Header";
+import Profile from "../../components/Profile/Profile.js"; 
 
-function ProfilePage() {
+function ProfilePage() { 
   return (
     <div>
       <Header></Header>

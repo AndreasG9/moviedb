@@ -5,6 +5,7 @@ import { UserContext } from "./context/UserContext.js";
 
 function App() {
 
+  // keep state page refresh, keep session id until signed out 
   let init = localStorage.getItem("session_id");
   const active = init == null ? false : true;  
   // init = localStorage.getItem("account"); 
@@ -12,7 +13,7 @@ function App() {
 
   // console.log(active2); 
 
-  const [auth, set_auth] = useState(false); // testing  
+  const [auth, set_auth] = useState(true); // testing  
   const [account, set_account] = useState({
     details: [],
     fav_movies: [],

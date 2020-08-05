@@ -16,9 +16,6 @@ function Header(){
     window.location.reload(false); // will reset popular films this week pagination back to the start   
   }
 
-  // TODO 
-  // go to lists page
-
 
   const [show_overlay, set_show_overlay] = useState({
     sign_in: false,
@@ -44,6 +41,7 @@ function Header(){
 
   function display_context(){
     // username w/ dropdown or sign in + create account 
+    //console.log(user); 
     
     if(user.auth === true) return <ProfileDropDown></ProfileDropDown>
     else return (
@@ -67,7 +65,7 @@ function Header(){
         <NavContainer>
           <NavButton onClick={go_home}>HOME</NavButton>
           {display_context()}
-          <NavButton >LISTS</NavButton>
+          {/* <NavButton >LISTS</NavButton> */}
         </NavContainer>
 
         <SearchBar></SearchBar>
@@ -85,7 +83,7 @@ const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
 
-  height: 4.8vh;
+  height: 80px; 
 `;
 
 const H1 = styled.h1`

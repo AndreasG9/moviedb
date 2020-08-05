@@ -5,7 +5,8 @@ import SearchPage from "./pages/SearchPage";
 import FilmPage from "./pages/FilmPage"; 
 import FilmsPage from "./pages/FilmsPage"; 
 import PersonPage from "./pages/PersonPage"; 
-import ProfilePage from "./pages/ProfilePage.js"; 
+import ProfilePage from "./pages/User/ProfilePage.js";
+import UserFilmsPage from "./pages/User/UserFilmsPage.js";  
 
 const Routes = () => (
   <Router>
@@ -47,10 +48,20 @@ const Routes = () => (
     </Route>
     
     <Route
-      path="/:account"
+      exact path="/:account"
       component={ProfilePage}>
     </Route>
-    
+
+    <Route
+      path="/:account/watchlist"
+      component={UserFilmsPage}>
+    </Route>
+
+    <Route
+      path="/:account/favorites"
+      component={UserFilmsPage}>
+    </Route>
+
 
     
 

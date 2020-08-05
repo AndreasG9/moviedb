@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
+import { Link, useLocation } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
+import {v4 as uuidv4} from "uuid"; 
 //import ReactTooltip from "react-tooltip";
 // import favorite films recent activity 
 // 
@@ -18,15 +20,17 @@ function Profile() {
     lists: false
   }); 
 
-  const handle_profile = () => {
-
-  }
 
   // function wathlist_preview(){
 
   // }
 
+  // function get_stats(){}
 
+
+  // testing 
+  const titles = ["ratings", "favorites", "todo", "watchlist", "lists"];
+  const values = [1234, 64, "0", 200, 2]; 
 
 
   // testing 
@@ -44,48 +48,48 @@ function Profile() {
         </User>
 
         <Stats>
-          {[...Array(5)].map( (stat) => ( 
-          <Stat>
-            <StatValue>1234</StatValue>
-            <StatHeader>Films</StatHeader>
+          {[...Array(5)].map( (stat, index) => ( 
+          <Stat key={uuidv4()}>
+            <StatValue>{values[index]}</StatValue>
+            <StatHeader>{titles[index]}</StatHeader>
           </Stat>
           ))}
         </Stats>
       </Header>
 
       <Nav>
-        <NavButton active_nav={active_nav.profile} onClick={handle_profile}>Profile</NavButton>
-        <NavButton active_nav={active_nav.favorites}>Favorites</NavButton>
-        <NavButton active_nav={active_nav.ratings}>Ratings</NavButton>
-        <NavButton active_nav={active_nav.watchlist}>Watchlist</NavButton>
-        <NavButton active_nav={active_nav.lists}>Lists</NavButton>
+        <NavLink active_nav={active_nav.profile.toString()} to="/:account">Profile</NavLink>
+        <NavLink active_nav={active_nav.favorites.toString()} to="/:account/favorites">Favorites</NavLink>
+        <NavLink active_nav={active_nav.ratings.toString()} to="/:account/ratings">Ratings</NavLink>
+        <NavLink active_nav={active_nav.watchlist.toString()} to="/:account/watchlist">Watchlist</NavLink>
+        <NavLink active_nav={active_nav.lists.toString()} to="/:account/lists">Lists</NavLink>
       </Nav>
       
 
-        <Grid>
-        <FavContainer>
-          <Title style={{display: "flex", justifyContent: "space-between"}} left>My Favorites <span>more</span></Title>
-          <Fav>
-            <MediumPoster src={temp2}></MediumPoster>
-            <MediumPoster src={temp2}></MediumPoster>
-            <MediumPoster src={temp2}></MediumPoster>
-            <MediumPoster src={temp2}></MediumPoster>
-          </Fav>
-        </FavContainer>  
+        <Body>
+          <FavContainer>
+            <Title style={{display: "flex", justifyContent: "space-between"}} left>My Favorites <span>more</span></Title>
+            <Fav>
+              <MediumPoster src={temp2}></MediumPoster>
+              <MediumPoster src={temp2}></MediumPoster>
+              <MediumPoster src={temp2}></MediumPoster>
+              <MediumPoster src={temp2}></MediumPoster>
+            </Fav>
+          </FavContainer>  
 
-        <RightInfo>
-          <Bio><div style={{borderBottom: "1px solid white", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
-          <WatchListPreviewContainer>
-            <Title>WATCHLIST</Title>
-            <WatchListPreview>
-              <MiniPoster src={temp} z={"4"}></MiniPoster>
-              <MiniPoster src={temp} z={"3"}></MiniPoster>
-              <MiniPoster src={temp} z={"2"}></MiniPoster>
-              <MiniPoster src={temp} z={"1"}></MiniPoster>
-            </WatchListPreview>
-          </WatchListPreviewContainer>
-        </RightInfo>
-        </Grid>
+          <RightInfo>
+            <Bio><div style={{borderBottom: "1px solid white", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
+            <WatchListPreviewContainer>
+              <Title watchlist>WATCHLIST</Title>
+              <WatchListPreview>
+                <MiniPoster src={temp} z={"4"}></MiniPoster>
+                <MiniPoster src={temp} z={"3"}></MiniPoster>
+                <MiniPoster src={temp} z={"2"}></MiniPoster>
+                <MiniPoster src={temp} z={"1"}></MiniPoster>
+              </WatchListPreview>
+            </WatchListPreviewContainer>
+          </RightInfo>
+        </Body>
         
 
     </Container>
@@ -110,9 +114,6 @@ const Container = styled.div`
 `; 
 
 const Header = styled.div`
-  //border: 2px solid white; 
-
-
   display: flex;
   justify-content: space-between; 
 `; 
@@ -142,7 +143,7 @@ const Edit = styled.button`
 const Stats = styled.div`
   display: flex;
   flex-direction: row;
-  border: 1px solid white;  
+  //border: 1px solid white;  
 `;
 
 const Stat = styled.div`
@@ -150,23 +151,24 @@ const Stat = styled.div`
   flex-direction: column; 
   padding: 10px; 
   border-left: 1px solid white; 
-  font-size: 1.25em; 
+
 
   &:hover{
     cursor: pointer; 
+    color: #adadff; 
   }
 `;
 
 const StatHeader = styled.div`
-
+  font-size: 1.1em; 
+  margin-top: 5%; 
 `; 
 
 const StatValue = styled.div`
-
+  font-size: 1.3em; 
 `; 
 
 const Nav = styled.nav`
-  width: 40%;
   width: 60%; 
   margin: 0 auto; 
   margin-top: 5%;  
@@ -176,10 +178,13 @@ const Nav = styled.nav`
   border: 1px solid #e1e3e5; 
 `; 
 
-const NavButton = styled.button`
+
+const NavLink = styled(Link)`
   background: none;
   border: none; 
-  font-size: 1.1em; 
+  text-decoration: none; 
+
+  font-size: 1.2em; 
   padding: 5px; 
 
   &:hover{
@@ -191,34 +196,22 @@ const NavButton = styled.button`
     outline: none; 
   }
 
-  //color: #e1e3e5;
-  // #adadff
-  color: ${(props) => props.active_nav ? "333" : "#e1e3e5"}; 
-  background-color: ${(props) => props.active_nav ? "#e1e3e5" : ""}; 
+  color: ${(props) => props.active_nav === "true" ? "#333" : "#e1e3e5"}; 
+  background-color: ${(props) => props.active_nav === "true" ? "#e1e3e5" : ""}; 
+`;
 
-
-`; 
-
-const Grid = styled.div`
-  border: 1px solid white; 
-  // display: grid;
-
-  // // grid-template-rows: repeat(4, 1fr);
-  // grid-template-columns: 2fr 1fr; 
-
+const Body = styled.div`
+  margin-top: 4.5%; 
   display: flex; 
   flex-direction: row; 
 
-
+  //border: 2px solid white; 
 `; 
-
 
 const FavContainer = styled.div`
   // temp
 
-  border: 2px solid blue;
   font-size: 1.25em; 
-  margin-top: 2.5%;
   flex: 1; 
 `;
 
@@ -231,13 +224,14 @@ const Fav = styled.div`
 `; 
 
 const RightInfo = styled.div`
-  margin-top: 2.5%;
+  @media only screen and (max-width: 1500px) {
+    margin-left: 3.5%; 
+  }
 `; 
 
 const Bio = styled.div`
   // temp 
-  border: 2px solid blue;
-  height: 500px;
+  height: 300px;
   word-wrap: break-word;
 `; 
 
@@ -247,13 +241,10 @@ const WatchListPreviewContainer = styled.div`
 
 const WatchListPreview = styled.div`
   margin-top: 2%; 
-  // display: flex;
-  // flex-direction: row; 
 
   // want slight overlap
   display: grid; 
   grid-template-columns: repeat(8, 47px); 
-
 
   border: 2px solid transparent;
   border-radius: 3%;
@@ -268,7 +259,7 @@ const WatchListPreview = styled.div`
 const Title = styled.div`
 
   margin-left: ${props => props.left ? "2%" : 0}; 
-  width: 86%; 
+  width: ${props => props.watchlist ? "98.5%" : "86%"}; 
   border-bottom: 1px solid white; 
   padding-bottom: 2px; 
 
