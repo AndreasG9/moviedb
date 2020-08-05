@@ -25,12 +25,14 @@ import { useUserContext } from "../../context/UserContext";
 
   return (
     <Container onMouseEnter={() => set_active(true)} onMouseLeave={() => set_active(false)}>
-      {/* <Username active={active}>{user.username.toUpperCase()}</Username> */}
-      <Username>WORKS</Username>
+      <Username active={active}>{"USERNAME TEST"}</Username>
+      {/* <Username>{user.account.details.username.toUpperCase()}</Username> */}
       <DropDown active={active}>
-        {/* <Link className="link-style">Profile</Link>
-        <Link className="link-style">Watchlist</Link>
-        <Link className="link-style">Lists</Link> */}
+      <Link className="link-style" to="/:account">Profile</Link>
+        <Link className="link-style" to="/:account/favorites">Favorites</Link>
+        <Link className="link-style" to="/:account/ratings">Ratings</Link>
+        <Link className="link-style" to="/:account/watchlist">Watchlist</Link>
+        <Link className="link-style" to="/:account/lists">Lists</Link>
         <div className="link-style" onClick={handle_sign_out}>Sign out</div>
       </DropDown>
     </Container>
@@ -58,7 +60,8 @@ const DropDown = styled.div`
   position: absolute; 
   display: ${(props => props.active ? "block" : "none")}; 
   background-color: #425566; 
-  width: 12%; 
+  // width: 7%; 
+  width: 100px; 
   z-index: 1;
 `; 
 

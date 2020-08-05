@@ -7,6 +7,7 @@ import FilmsPage from "./pages/FilmsPage";
 import PersonPage from "./pages/PersonPage"; 
 import ProfilePage from "./pages/User/ProfilePage.js";
 import UserFilmsPage from "./pages/User/UserFilmsPage.js";  
+import UserListsPage from "./pages/User/UserListsPage.js";  
 
 const Routes = () => (
   <Router>
@@ -58,8 +59,18 @@ const Routes = () => (
     </Route>
 
     <Route
+      path="/:account/ratings"
+      component={UserFilmsPage}>
+    </Route>
+
+    <Route
       path="/:account/favorites"
       component={UserFilmsPage}>
+    </Route>
+
+    <Route
+      path="/:account/lists"
+      component={UserListsPage}>
     </Route>
 
 

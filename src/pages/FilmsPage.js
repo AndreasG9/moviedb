@@ -9,9 +9,9 @@ function FilmsPage( {browseby, selected, genres} ) {
 
   return (
     <div>
-      <Header></Header>
-      <Films browseby={browseby} selected={selected} genres={genres}></Films>
-      {/* <Footer></Footer> */}
+    <Header></Header>
+    <Films browseby={browseby} selected={selected} genres={genres}></Films>
+    {/* <Footer></Footer> */}
     </div>
   )
 }

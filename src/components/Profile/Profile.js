@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom"; 
+import { Link } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import {v4 as uuidv4} from "uuid"; 
 //import ReactTooltip from "react-tooltip";
@@ -10,15 +10,15 @@ import {v4 as uuidv4} from "uuid";
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
-  const user = useContext(UserContext); 
+  //const user = useContext(UserContext); 
 
-  const [active_nav, set_active_nav] = useState({
-    profile: true,
-    favorites: false,
-    ratings: false,
-    watchlist: false,
-    lists: false
-  }); 
+  // const [active_nav, set_active_nav] = useState({
+  //   profile: true,
+  //   favorites: false,
+  //   ratings: false,
+  //   watchlist: false,
+  //   lists: false
+  // }); 
 
 
   // function wathlist_preview(){
@@ -58,11 +58,11 @@ function Profile() {
       </Header>
 
       <Nav>
-        <NavLink active_nav={active_nav.profile.toString()} to="/:account">Profile</NavLink>
-        <NavLink active_nav={active_nav.favorites.toString()} to="/:account/favorites">Favorites</NavLink>
-        <NavLink active_nav={active_nav.ratings.toString()} to="/:account/ratings">Ratings</NavLink>
-        <NavLink active_nav={active_nav.watchlist.toString()} to="/:account/watchlist">Watchlist</NavLink>
-        <NavLink active_nav={active_nav.lists.toString()} to="/:account/lists">Lists</NavLink>
+        <NavLink active_nav={"true"} to="/:account">Profile</NavLink>
+        <NavLink to="/:account/favorites">Favorites</NavLink>
+        <NavLink to="/:account/ratings">Ratings</NavLink>
+        <NavLink to="/:account/watchlist">Watchlist</NavLink>
+        <NavLink to="/:account/lists">Lists</NavLink>
       </Nav>
       
 
@@ -91,7 +91,6 @@ function Profile() {
           </RightInfo>
         </Body>
         
-
     </Container>
   )
 }
@@ -204,8 +203,6 @@ const Body = styled.div`
   margin-top: 4.5%; 
   display: flex; 
   flex-direction: row; 
-
-  //border: 2px solid white; 
 `; 
 
 const FavContainer = styled.div`
@@ -281,8 +278,6 @@ const MediumPoster = styled.img`
   &:hover{
     cursor: pointer; 
     border: 2px solid #98fb98; 
-    
-    
   }
 `;
 
@@ -292,10 +287,5 @@ const MiniPoster = styled.img`
   grid-column: span 2; 
   z-index: ${props => props.z}; 
 `; 
-
-
- 
-
-
 
 export default Profile; 
