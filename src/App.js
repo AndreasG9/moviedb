@@ -5,22 +5,15 @@ import { UserContext } from "./context/UserContext.js";
 
 function App() {
 
-  // keep state page refresh, keep session id until signed out 
-  let init = localStorage.getItem("session_id");
-  const active = init == null ? false : true;  
-  // init = localStorage.getItem("account"); 
-  // const active2 = init == null ? {details: [],fav_movies: [],rated_movies: [],watchlist: [],lists: [],} : init; 
+  // TEMP TEMP keep state page refresh, keep session id until signed out TEMP TEMP 
+  let init_id = localStorage.getItem("session_id");
+  init_id = init_id == null ? false : true; 
 
-  // console.log(active2); 
+  let init_acc = localStorage.getItem("account"); 
+  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [],} : JSON.parse(init_acc); 
 
-  const [auth, set_auth] = useState(true); // testing  
-  const [account, set_account] = useState({
-    details: [],
-    fav_movies: [],
-    rated_movies: [],
-    watchlist: [],
-    lists: [],
-  });
+  const [auth, set_auth] = useState(init_id); 
+  const [account, set_account] = useState(init_acc); 
   
   
   return (

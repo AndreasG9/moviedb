@@ -39,3 +39,72 @@ input{
       margin-left: 5%;  
     }
  }
+
+ .link-style{
+  text-decoration: none;
+  font-size: 1.2em;
+  color: #e1e3e5;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #6f797d;
+  padding: 10px; 
+ }
+
+ .link-style:hover{
+   cursor: pointer; 
+   color:#adadff;   
+ }
+
+
+.prev-next{  
+  color: #a5a5a5;
+  padding: 10px; 
+  background-color: #273038; 
+  width: 100px; 
+  text-align: center; 
+  border-radius: 5%; 
+  list-style: none; 
+  margin: 5%; 
+ }
+
+.prev-next:hover{
+  cursor: pointer; 
+  color: #e1e3e5;
+ }
+
+.active-page{
+  font-size: 1.2em; 
+  background-color: #e1e3e5; 
+  color: #333;
+ }
+
+.paginate-container{
+  margin: 0 auto; 
+  display: flex;
+  flex-direction: row; 
+  justify-content: center;
+  align-items: center; 
+  width: max-content; 
+ }
+
+.page{
+  list-style: none; 
+  padding: 5px; 
+ }
+
+.page:hover{
+  cursor: pointer; 
+  color: #e1e3e5;
+}
+
+.page-link{
+  color: #a5a5a5;
+}
+
+.page-link:focus{
+  outline: none; 
+}
+
+.break{
+  list-style: none;
+}

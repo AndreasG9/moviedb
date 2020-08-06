@@ -41,12 +41,11 @@ function Header(){
 
   function display_context(){
     // username w/ dropdown or sign in + create account 
-    //console.log(user); 
     
     if(user.auth === true) return <ProfileDropDown></ProfileDropDown>
     else return (
       <React.Fragment>
-        <NavButton onClick={() => handle_sign_in()}>SIGN IN</NavButton>
+        <NavButton onClick={() => handle_sign_in()}>SIGN IN TO VIEW PROFILE</NavButton>
         <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton>
       </React.Fragment>
     )
@@ -65,7 +64,6 @@ function Header(){
         <NavContainer>
           <NavButton onClick={go_home}>HOME</NavButton>
           {display_context()}
-          {/* <NavButton >LISTS</NavButton> */}
         </NavContainer>
 
         <SearchBar></SearchBar>

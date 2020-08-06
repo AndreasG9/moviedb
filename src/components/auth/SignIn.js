@@ -49,29 +49,30 @@ function SignIn( {close_sign_in} ) {
     localStorage.setItem("session_id", session.data.session_id);  // TEMP TEMP TEMP session id in local storage (sign out will DELETE req)
 
     const temp = {...account}; // get user details, rated and fav movies, for all comp to have acess to (other req, get in profile)
-    const account_id = 123; 
+
 
     // details 
     const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
     let res = await axios.get(detail).catch((error) => console.log(error)); 
     temp.details = res.data; 
 
+    const id = temp.details.id; 
+
     // ratings
-    const rated_movies = `https://api.themoviedb.org/3/account/${temp.details.id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&sort_by=created_at.asc`;
+    const rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&sort_by=created_at.asc`;
     res = await axios.get(rated_movies).catch((error) => console.log(error)); 
     temp.ratings= res.data.results; 
 
     // fav movies 
-    const fav = `https://api.themoviedb.org/3/account/${account_id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc&`;
+    const fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc`;
     res = await axios.get(fav).catch((error) => console.log(error)); 
     temp.favorites = res.data.results; 
 
     // watchlist
-    const watch_list = `https://api.themoviedb.org/3/account/${account_id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc&`; 
+    const watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc`; 
     res = await axios.get(watch_list).catch((error) => console.log(error)); 
     temp.watchlist = res.data.results; 
-
-
+    
     localStorage.setItem("account", JSON.stringify(temp)); // for testing 
     set_auth(true); // set auth to true, header will change to display profile w/ dropdown 
     close_sign_in(); 

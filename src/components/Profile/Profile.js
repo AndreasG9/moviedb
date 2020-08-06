@@ -1,59 +1,102 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom"; 
+import { Link, useHistory } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import {v4 as uuidv4} from "uuid"; 
-//import ReactTooltip from "react-tooltip";
+import ReactTooltip from "react-tooltip";
 // import favorite films recent activity 
-// 
+
 
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
-  //const user = useContext(UserContext); 
-
-  // const [active_nav, set_active_nav] = useState({
-  //   profile: true,
-  //   favorites: false,
-  //   ratings: false,
-  //   watchlist: false,
-  //   lists: false
-  // }); 
-
-
-  // function wathlist_preview(){
-
-  // }
-
-  // function get_stats(){}
-
-
   // testing 
   const titles = ["ratings", "favorites", "todo", "watchlist", "lists"];
   const values = [1234, 64, "0", 200, 2]; 
-
-
-  // testing 
   const temp = `https://image.tmdb.org/t/p/w92//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
   const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
+
+  const user = useContext(UserContext); 
+  console.log(user); 
+
+  const medium = `https://image.tmdb.org/t/p/w154/`; 
+
+  function favorites_preview(){
+    // TODO use data from users top 4, for now use 4 most recent additions favorites 
+
+    const four_favs = user.account.favorites.slice(0, 4);
+
+    return four_favs.map( (fav) => {
+
+      const year = fav.release_date !== undefined ? fav.release_date.substr(0, 4) : ""; 
+      const tool_tip = `${fav.title} (${year})`; 
+
+      return (
+        <React.Fragment>
+        <ReactTooltip></ReactTooltip>
+        <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} onClick={() => handle_film(fav.id, fav.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+        </React.Fragment>
+      )
+    }); 
+  }
+
+  function watchlist_preview(){
+    // use data from 4 more recent additions to watchlist 
+
+    const four_watchlist = user.account.watchlist.slice(0, 4);
+
+    return ( four_watchlist.map( (item, index) => {
+      index = 4 - index;
+      return <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id} z={index.toString()}></MiniPoster>
+    }));
+  }
+  
+  function get_username() {
+    if(user !== undefined) return user.account.details.username; 
+  }
+
+
+  const history = useHistory();
+
+  const handle_film = (id, title) => {
+    // redirect /film/movie-title, pass the movie id to retrieve its data 
+    const params = title.toString().toLowerCase().replace( / /g, "-"); 
+    const target = `/film/${params}`; // ex. search The Witch /film/the-witch
+    history.push(target, {movie_id: id});
+  }
+
+  const handle_watchlist = () => { 
+    history.push("/:account/watchlist"); 
+  }
 
   return (
     <Container>
 
       <Header>
         <User>
-          <Name>UserNameHere</Name>
+          <Name>{get_username()}</Name>
           <Location>Location: </Location>
           <Edit>Edit profile</Edit>
         </User>
 
         <Stats>
-          {[...Array(5)].map( (stat, index) => ( 
-          <Stat key={uuidv4()}>
-            <StatValue>{values[index]}</StatValue>
-            <StatHeader>{titles[index]}</StatHeader>
+          <Stat>
+            <StatValue>{user.account.ratings.length}</StatValue>
+            <StatHeader>{"Ratings"}</StatHeader>
           </Stat>
-          ))}
+          <Stat>
+            <StatValue>{user.account.favorites.length}</StatValue>
+            <StatHeader>{"Favorites"}</StatHeader>
+          </Stat>
+          <Stat>
+            <StatValue>{user.account.watchlist.length}</StatValue>
+            <StatHeader>{"Watchlist"}</StatHeader>
+          </Stat>
+          <Stat>
+            <StatValue>{user.account.lists.length}</StatValue>
+            <StatHeader>{"Lists"}</StatHeader>
+          </Stat>
+
         </Stats>
       </Header>
 
@@ -68,24 +111,18 @@ function Profile() {
 
         <Body>
           <FavContainer>
-            <Title style={{display: "flex", justifyContent: "space-between"}} left>My Favorites <span>more</span></Title>
+            <Title style={title_detail} left>My Favorites <span>more</span></Title>
             <Fav>
-              <MediumPoster src={temp2}></MediumPoster>
-              <MediumPoster src={temp2}></MediumPoster>
-              <MediumPoster src={temp2}></MediumPoster>
-              <MediumPoster src={temp2}></MediumPoster>
+              {favorites_preview()}
             </Fav>
           </FavContainer>  
 
           <RightInfo>
-            <Bio><div style={{borderBottom: "1px solid white", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
-            <WatchListPreviewContainer>
-              <Title watchlist>WATCHLIST</Title>
+            <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
+            <WatchListPreviewContainer onClick={handle_watchlist}>
+              <Title style={title_detail} watchlist>WATCHLIST <span>{user.account.watchlist.length}</span></Title>
               <WatchListPreview>
-                <MiniPoster src={temp} z={"4"}></MiniPoster>
-                <MiniPoster src={temp} z={"3"}></MiniPoster>
-                <MiniPoster src={temp} z={"2"}></MiniPoster>
-                <MiniPoster src={temp} z={"1"}></MiniPoster>
+                {watchlist_preview()}
               </WatchListPreview>
             </WatchListPreviewContainer>
           </RightInfo>
@@ -97,8 +134,7 @@ function Profile() {
 
 // Style
 const Container = styled.div`
-  //border: 2px solid white; 
-  margin-top: 5%; 
+  margin-top: 2%; 
   height: 100vh; 
   font-family: Roboto; 
   color: #a5a5a5; 
@@ -177,6 +213,10 @@ const Nav = styled.nav`
   border: 1px solid #e1e3e5; 
 `; 
 
+const title_detail = {
+  display: "flex", 
+  justifyContent: "space-between"
+}
 
 const NavLink = styled(Link)`
   background: none;
@@ -206,8 +246,6 @@ const Body = styled.div`
 `; 
 
 const FavContainer = styled.div`
-  // temp
-
   font-size: 1.25em; 
   flex: 1; 
 `;
@@ -257,7 +295,7 @@ const Title = styled.div`
 
   margin-left: ${props => props.left ? "2%" : 0}; 
   width: ${props => props.watchlist ? "98.5%" : "86%"}; 
-  border-bottom: 1px solid white; 
+  border-bottom: 1px solid #6f797d; 
   padding-bottom: 2px; 
 
   &:hover{
@@ -268,20 +306,16 @@ const Title = styled.div`
 `; 
 
 const MediumPoster = styled.img`
-
   border: 2px solid #a5a5a5;
   border-radius: 3%;
-
   margin: 1% 1% 0 0; 
-  
-
   &:hover{
     cursor: pointer; 
     border: 2px solid #98fb98; 
   }
 `;
 
-const MiniPoster = styled.img`
+export const MiniPoster = styled.img`
   border: 1px solid #a5a5a5;
   border-radius: 3%;
   grid-column: span 2; 

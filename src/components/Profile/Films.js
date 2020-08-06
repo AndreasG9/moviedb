@@ -1,22 +1,29 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useContext, useEffect } from "react"; 
 import styled from "styled-components"; 
 import { Link, useLocation } from "react-router-dom"; 
-import {v4 as uuidv4} from "uuid"; 
-//import ReactTooltip from "react-tooltip";
-// context, film data ... 
-import Pagination from "./Pagination"; 
+import { UserContext } from "../../context/UserContext"; 
+import ReactTooltip from "react-tooltip";
+import ReactPaginate from 'react-paginate';
+
 
 function Films() {
   // a users favorites, watchlist, or ratings  
   // w/ poster display date added (watchlist) or RATING (fav, rating) 
 
-
   const location = useLocation();
+  const user = useContext(UserContext); 
   // const w = location.pathname.includes("watchlist") ? "watchlist" : "favorites"; 
-
   console.log(location.pathname); 
 
-  const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
+
+  //const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
+
+
+  // easier to call 
+  const watchlist = user.account.watchlist;
+  const POSTS_PER_PAGE = 30;
+  const TOTAL_POSTS = watchlist.length; 
+
 
   const [active_nav, set_active_nav] = useState({
     profile: false,
@@ -26,34 +33,38 @@ function Films() {
     lists: false
   }); 
 
+  const [current_page, set_current_page] = useState(1); 
+  const [current, set_current] = useState([]); 
 
+  useEffect( () => {
 
-  // useEffect( () => {
+    const last = current_page * POSTS_PER_PAGE;
+    const first = last - POSTS_PER_PAGE; 
+    set_current(watchlist.slice(first, last));
+    console.log(watchlist.slice(first, last)); 
 
-
-  // }, []); 
-
-  // .... 
-  // const index_last = current times post 
-  // const index_first = last - posts 
-  // const current = slice first to last 
-
-
-
+  }, [current_page, watchlist]); 
 
   function get_header(){
     let msg = "";  
 
-    if(active_nav.watchlist === true) msg = `You Want to See ${"some ammount of films"}`; 
+    if(active_nav.watchlist === true) msg = `You Want to See ${user.account.watchlist.length} films`; 
     if(active_nav.favorites === true) msg = `You have ${"some amount"} of favorites`;
     
     return <Header>{msg}</Header>
   }
 
+  const handle_page_change = (page_num) => { 
+    set_current_page(page_num.selected+1); 
+  }
+
+
+
+
   return (
     <Container>
       <Nav>
-        <NavLink to="/:account" left={"true"}>USERNAME HERE</NavLink>
+        <NavLink to="/:account" left={"true"}>{user.account.details.username}</NavLink>
         <NavLink to="/:account/favorites">Favorites</NavLink>
         <NavLink to="/:account/ratings">Ratings</NavLink>
         <NavLink active_nav={active_nav.watchlist.toString()} to={{pathname: ":account.watchlist", state:{active_nav : active_nav.watchlist}}}>Watchlist</NavLink>
@@ -75,17 +86,41 @@ function Films() {
       </FiltersContainer>
 
       <FilmsContainer>
-        {[...Array(30)].map(test => (
-          <Poster src={temp2} key={uuidv4()}></Poster>
-        ))}
+      {current.map( film => {
+          const year = film.release_date !== undefined ? film.release_date.substr(0, 4) : ""; 
+          const tool_tip = `${film.title} (${year})`; 
+        return ( 
+          <React.Fragment key={film.id}>
+            <ReactTooltip></ReactTooltip>
+            <Poster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`}  data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
+          </React.Fragment>
+        )
+        })}
       </FilmsContainer>
+      
 
-      <Pagination total_posts={40} posts_per_page={20} page_neighbors={1}></Pagination>
+      <ReactPaginate
+        nextClassName = "prev-next"
+        previousClassName = "prev-next"
+        activeLinkClassName = "active-page"
+        breakClassName= "break"
+        containerClassName = "paginate-container"
+        pageClassName = "page"
+        pageLinkClassName = "page-link"
+
+
+        pageCount = {TOTAL_POSTS / POSTS_PER_PAGE}
+        pageRangeDisplayed = {4}
+        marginPagesDisplayed = {2}
+        onPageChange = {handle_page_change}>
+      </ReactPaginate>
+
 
 
     </Container>
   )
 }
+
 
 // Style 
 export const Container = styled.div`
@@ -104,12 +139,13 @@ export const Container = styled.div`
 `; 
 
 export const Nav = styled.nav`
-  width: 60%; 
+  width: 50%; 
   margin: 0 auto; 
   margin-top: 5%;  
   background-color: #425566; 
   display: flex;
   justify-content: center; 
+  justify-content: space-between; 
   align-items: center; 
   border: 1px solid #e1e3e5; 
 `;
@@ -124,30 +160,30 @@ export const NavLink = styled(Link)`
 
   &:hover{
     cursor: pointer;
-    color: #adadff
+    color: #adadff;
   }
 
   &:focus{
     outline: none; 
   }
 
-  color: ${(props) => props.active_nav ? "333" : "#e1e3e5"}; 
+  color: ${(props) => props.active_nav ? "#333" : "#e1e3e5"}; 
   background-color: ${(props) => props.active_nav ? "#e1e3e5" : ""}; 
   margin-right: ${props => props.test === "true" ? "5%" : "0"}; 
 `;
 
 const Header = styled.div`
-  border-bottom: 1px solid #e1e3e5; 
-  margin-top: 2%; 
+  //border-bottom: 1px solid #e1e3e5; 
+  margin-top: 2%;  
 `; 
 
-const FiltersContainer = styled.div`
-  border-top: 2px solid #a5a5a5;;
-  border-bottom: 2px solid #a5a5a5;;
-  margin: 2% 0; 
+export const FiltersContainer = styled.div`
+  border-top: 2px solid #a5a5a5;
+  border-bottom: 2px solid #a5a5a5;
+  //margin: 2% 0; 
 `; 
 
-const Select = styled.select`
+export const Select = styled.select`
   margin: 1%; 
   font-family: Roboto;
   background-color: #13181c; 
@@ -166,19 +202,20 @@ const Select = styled.select`
   }
 `; 
 
-const Option = styled.option`
+export const Option = styled.option`
   background-color: #8699aa; 
   color: #333; 
   font-size: 1.4em; 
 `; 
 
-const FilmsContainer = styled.div`
+export const FilmsContainer = styled.div`
   display: flex;  
   flex-wrap: wrap; 
   border: 1px solid green; 
+  width: 75%; 
 `; 
 
-const Poster = styled.img`
+export const Poster = styled.img`
   display: block; 
   border: 1px solid #a5a5a5;
   border-radius: 3%;
@@ -195,6 +232,11 @@ const Poster = styled.img`
   }
 
 `; 
+
+// testing 
+// {[...Array(50)].map(test => (
+//   <Poster src={temp2} key={uuidv4()}></Poster>
+// ))}
 
 
 
