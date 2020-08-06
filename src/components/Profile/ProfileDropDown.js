@@ -2,31 +2,39 @@ import React, { useState, useContext } from "react";
 import { UserContext } from "../../context/UserContext"; 
 import { Link } from "react-router-dom"; 
 import styled from "styled-components"; 
+import axios from "axios"
 
 import { useUserContext } from "../../context/UserContext"; 
 
-
  function ProfileDropDown() {
-   // a lot TODO 
 
   const user = useContext(UserContext);
   const { set_auth } = useUserContext();
 
-
   const [active, set_active] = useState(false); 
 
-  const handle_sign_out = () => {
+  const handle_sign_out =  async () => {
     // TODO (delete request w/ session id)
-    // https://api.themoviedb.org/3/authentication/session?api_key=<<api_key>>  body: session_id 
+    let id = localStorage.getItem("session_id").toString();
+    
+    await axios.delete(`https://api.themoviedb.org/3/authentication/session?api_key=${process.env.REACT_APP_API_KEY}`, {
+      data: {
+        "session_id": id
+      }
+    }).catch(error => console.log(error)); 
+
+    localStorage.clear();  
     set_auth(false); // logout
   }
 
-
+  function get_username() {
+    if(user !== undefined) return user.account.details.username; 
+  }
 
   return (
     <Container onMouseEnter={() => set_active(true)} onMouseLeave={() => set_active(false)}>
-      <Username active={active}>{"USERNAME TEST"}</Username>
-      {/* <Username>{user.account.details.username.toUpperCase()}</Username> */}
+      <Username active={active}> {get_username()}</Username>
+      <DownArr></DownArr>
       <DropDown active={active}>
       <Link className="link-style" to="/:account">Profile</Link>
         <Link className="link-style" to="/:account/favorites">Favorites</Link>
@@ -51,7 +59,6 @@ const Username = styled.button`
   font-size: 1.0rem; 
   padding: 5px; 
   position: relative; 
-  display: inline-block;
 
   color: ${(props) => props.active ? "#e1e3e5" : "#6f797d"}; 
 `; 
@@ -60,9 +67,18 @@ const DropDown = styled.div`
   position: absolute; 
   display: ${(props => props.active ? "block" : "none")}; 
   background-color: #425566; 
-  // width: 7%; 
   width: 100px; 
-  z-index: 1;
+  z-index: 9;
+`; 
+
+const DownArr = styled.span`  
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #e1e3e5;
+  display: inline-block; 
+  vertical-align: middle; 
 `; 
 
 export default ProfileDropDown; 
