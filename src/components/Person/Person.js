@@ -14,10 +14,12 @@ function Person( {credit}) {
   const [sort_by, set_sort_by] = useState("Popularity Descending"); 
   const [show_more, set_show_more] = useState(false); 
 
+  const[loading, set_loading] = useState(false); 
 
   useEffect( () => {
 
     const get_data = async () => {
+      set_loading(true); 
       const details = `https://api.themoviedb.org/3/person/${credit}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`; 
       const cr = `https://api.themoviedb.org/3/person/${credit}/movie_credits?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`
 
@@ -27,7 +29,6 @@ function Person( {credit}) {
 
       data = await axios.get(cr);
       set_credits(data.data);
-      console.log(data.data); 
 
       // Cast (if present)
       if(data.data.cast.length > 1){
@@ -51,6 +52,7 @@ function Person( {credit}) {
         });
         set_crew_depts(temp); 
       }
+      set_loading(false); 
     }
 
     get_data(); 
@@ -122,7 +124,7 @@ function Person( {credit}) {
 
     else current = cast; 
 
-    console.log(current);
+    
 
     // // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
    if(current !== undefined){
@@ -173,12 +175,13 @@ function Person( {credit}) {
           <Option>Release Date Descending</Option>
           <Option>Release Date Ascending</Option>
         </Select>
-
-
       </FiltersContainer>
 
+        {loading ? 
+          <p>TEST LOADING</p> : 
+          <Films credits={get_dept_credits()} dept={current_dept}></Films>
+        }
 
-        <Films credits={get_dept_credits()} dept={current_dept}></Films>
 
       </Container1>
       

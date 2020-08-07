@@ -3,20 +3,19 @@ import styled from "styled-components";
 import { Link, useLocation } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
-import ReactPaginate from 'react-paginate';
+import ReactPaginate from "react-paginate";
+import ProfileHeader from "./ProfileHeader"; 
 
 
 function Films() {
-  // a users favorites, watchlist, or ratings  
-  // w/ poster display date added (watchlist) or RATING (fav, rating) 
+  // a users favorites, watchlist, or ratings w/ poster display date added (watchlist) or RATING (fav, rating) 
+
+  //const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
 
   const location = useLocation();
   const user = useContext(UserContext); 
   // const w = location.pathname.includes("watchlist") ? "watchlist" : "favorites"; 
   console.log(location.pathname); 
-
-
-  //const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
 
 
   // easier to call 
@@ -49,10 +48,19 @@ function Films() {
     let msg = "";  
 
     if(active_nav.watchlist === true) msg = `You Want to See ${user.account.watchlist.length} films`; 
-    if(active_nav.favorites === true) msg = `You have ${"some amount"} of favorites`;
+    else if(active_nav.favorites === true) msg = `You have ${"some amount"} of favorites`;
+    if(active_nav.ratings === true) msg = `You have  rated ${"some amount"} films`;
+    if(active_nav.list === true) msg = `LIST TITLE HERE w/ short desc.`;
     
     return <Header>{msg}</Header>
   }
+
+  function get_films_context(){
+    // watchlist, ratings, or a specific list 
+
+
+  }
+
 
   const handle_page_change = (page_num) => { 
     set_current_page(page_num.selected+1); 
@@ -63,13 +71,8 @@ function Films() {
 
   return (
     <Container>
-      <Nav>
-        <NavLink to="/:account" left={"true"}>{user.account.details.username}</NavLink>
-        <NavLink to="/:account/favorites">Favorites</NavLink>
-        <NavLink to="/:account/ratings">Ratings</NavLink>
-        <NavLink active_nav={active_nav.watchlist.toString()} to={{pathname: ":account.watchlist", state:{active_nav : active_nav.watchlist}}}>Watchlist</NavLink>
-        <NavLink to="/:account/lists">Lists</NavLink>
-      </Nav>
+      
+      <ProfileHeader></ProfileHeader>
 
       {get_header()}
 
@@ -115,8 +118,6 @@ function Films() {
         onPageChange = {handle_page_change}>
       </ReactPaginate>
 
-
-
     </Container>
   )
 }
@@ -126,6 +127,7 @@ function Films() {
 export const Container = styled.div`
   font-family: Roboto; 
   color: #a5a5a5; 
+  margin-top: 2%; 
 
   width: 60%;
   margin-left: 22%; 
@@ -144,7 +146,6 @@ export const Nav = styled.nav`
   margin-top: 5%;  
   background-color: #425566; 
   display: flex;
-  justify-content: center; 
   justify-content: space-between; 
   align-items: center; 
   border: 1px solid #e1e3e5; 
@@ -170,6 +171,7 @@ export const NavLink = styled(Link)`
   color: ${(props) => props.active_nav ? "#333" : "#e1e3e5"}; 
   background-color: ${(props) => props.active_nav ? "#e1e3e5" : ""}; 
   margin-right: ${props => props.test === "true" ? "5%" : "0"}; 
+  pointer-events:  ${(props) => props.active_nav ? "none" : "auto"}; 
 `;
 
 const Header = styled.div`
@@ -180,17 +182,19 @@ const Header = styled.div`
 export const FiltersContainer = styled.div`
   border-top: 2px solid #a5a5a5;
   border-bottom: 2px solid #a5a5a5;
-  //margin: 2% 0; 
+
 `; 
 
 export const Select = styled.select`
-  margin: 1%; 
+  margin: 2%; 
   font-family: Roboto;
   background-color: #13181c; 
   color: #e1e3e5;
   padding: 5px; 
-  display: flex;
-  margin-left: 61.5%; 
+
+  position: relative;
+  left: 57%; 
+
 
   &:hover{
     color: #adadff;

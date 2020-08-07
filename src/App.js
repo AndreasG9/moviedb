@@ -10,21 +10,21 @@ function App() {
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
 
-  let init_acc = localStorage.getItem("account"); 
-  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true} : JSON.parse(init_acc); 
+  // let init_acc = localStorage.getItem("account"); 
+  // init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true} : JSON.parse(init_acc); 
 
 
   const [auth, set_auth] = useState(init_id); 
-  const [account, set_account] = useState(init_acc); 
+  const [account, set_account] = useState({details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true}); 
 
 
   useEffect( () => {
     // user just signed in, or updated something(rating, watchlist, etc...)
     console.log("CHANGE"); 
 
-    const update = async () => {
+    const update = async () => { 
 
-      let temp = {...account}; 
+      let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false}; 
 
       // details 
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
@@ -37,7 +37,7 @@ function App() {
       // only get 1 page at a time, want all pages for context .... (even w/ excluding page param)
 
       // ratings
-      let rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&sort_by=created_at.asc`;
+      let rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&sort_by=created_at.desc`;
       res = await axios.get(rated_movies).catch((error) => console.log(error)); 
       
       let arr = await get_data(res.data.total_pages, rated_movies);
@@ -45,27 +45,26 @@ function App() {
             
 
       // fav movies 
-      let fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.asc`;
+      let fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`;
       res = await axios.get(fav).catch((error) => console.log(error)); 
       
       arr = await get_data(res.data.total_pages, fav);
       temp.favorites= res.data.results.concat(arr); 
 
       // watchlist
-      let watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.asc`; 
+      let watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
       res = await axios.get(watch_list).catch((error) => console.log(error)); 
 
       arr = await get_data(res.data.total_pages, watch_list);
       temp.watchlist = res.data.results.concat(arr); 
 
       // lists
-
-      console.log(temp); 
+      set_account(temp);
   }
 
   update(); 
 
-  }, [account]);
+  }, [account.update]);
 
 
 

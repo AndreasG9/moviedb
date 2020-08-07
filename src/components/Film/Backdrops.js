@@ -36,7 +36,7 @@ import styled from "styled-components";
   const prev = () => {
     set_current_index(current_index - 1); 
 
-    if(current_index === 2) set_active({left: false, right: true}); 
+    if(current_index === 1) set_active({left: false, right: true}); 
     else set_active({left: true, right: true}); 
   }
 

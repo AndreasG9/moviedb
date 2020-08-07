@@ -10,7 +10,7 @@ function Profile() {
 
 
   const user = useContext(UserContext); 
-  console.log(user); 
+  
 
 
   function favorites_preview(){
@@ -32,7 +32,7 @@ function Profile() {
     }); 
   }
 
-  function ratings_preview(){
+  function ratings_preview(){ 
     const four_ratings = user.account.ratings.slice(0, 4);
 
     return four_ratings.map( (film) => {
@@ -61,12 +61,9 @@ function Profile() {
     }));
   }
 
-
-
   function lists_preview(){
     // similar to watchList_prevew, but three lists 
     if(user !== undefined){
-
       const three_lists = user.account.lists.slice(0, 3); 
 
       return ( three_lists.map( (list) => {
@@ -80,16 +77,13 @@ function Profile() {
       )})
       )
   }
-
   }
 
-  
   function get_count(){
     // not undefined, pass string 
 
     // .rating 
   }
-
 
 
   
@@ -103,6 +97,7 @@ function Profile() {
   }
 
   const handle_watchlist = () => { 
+    // click watchlist container 
     history.push("/:account/watchlist"); 
   }
 
@@ -112,7 +107,6 @@ function Profile() {
       <ProfileHeader></ProfileHeader>
       
       <Body>
-
         <Info>
           <PreviewContainer style={{fontSize: "1.2em"}}>
             <Title left>My Favorites <span>more</span></Title>
@@ -163,11 +157,8 @@ const Container = styled.div`
   margin-left: 22%; 
 
   @media only screen and (max-width: 1500px) {
-    width: 96%;
-    width: 99%; 
-    //margin-left: 1%;
-    margin: 0;  
-    margin-top: 2%; 
+    width: 97.5%; 
+    margin: 2% 0 0 0; 
   }
 `; 
 
@@ -193,17 +184,12 @@ const Preview = styled.div`
 `; 
 
 const Info = styled.div`
-  @media only screen and (max-width: 1500px) {
-    margin-left: 3.5%; 
-  }
 
   display: flex;
   flex-direction: column; 
 
   //marign-left: ${props => props.right ? "20%" : "0"}; 
   width: ${props => props.right ? "34vw" : "66vw"}; 
-
-
 `; 
 
 const Bio = styled.div`
@@ -252,7 +238,6 @@ const Title = styled.div`
 const MediumPoster = styled.img`
   border: 2px solid #a5a5a5;
   border-radius: 3%;
-  //margin: 0 1% 0 0; 
   &:hover{
     cursor: pointer; 
     border: 2px solid #98fb98; 
@@ -286,12 +271,5 @@ const Rating = styled.div`
   color: #e1e3e5;
   margin-top: 5%; 
 `; 
-
-
-
-const title_detail = {
-  display: "flex", 
-  justifyContent: "space-between"
-}
 
 export default Profile; 

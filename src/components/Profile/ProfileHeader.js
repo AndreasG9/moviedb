@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react"; 
 import { UserContext } from "../../context/UserContext"; 
-import { Link } from "react-router-dom"; 
+import { NavLink } from "react-router-dom"; 
 import styled from "styled-components";
 
 
@@ -8,17 +8,7 @@ import styled from "styled-components";
 
   const user = useContext(UserContext); 
 
-  // user active tab: 
-   
-  // const [active_nav, set_active_nav] = useState({
-  //   profile: false,
-  //   favorites: false,
-  //   ratings: false,
-  //   watchlist: false,
-  //   lists: false
-  // }); 
-
-  const [active, set_active] = useState(""); 
+  
 
   function get_username() {
     if(user !== undefined) return user.account.details.username; 
@@ -58,11 +48,11 @@ import styled from "styled-components";
 
 
       <Nav>
-        <NavLink to="/:account" active_nav={"true"}>Profile</NavLink>
-        <NavLink to="/:account/favorites">Favorites</NavLink>
-        <NavLink to="/:account/ratings">Ratings</NavLink>
-        <NavLink to="/:account.watchlist">Watchlist</NavLink>
-        <NavLink to="/:account/lists">Lists</NavLink>
+        <Link to="/:account" activeStyle={active} exact={true}>Profile</Link>
+        <Link to="/:account/favorites" activeStyle={active}>Favorites</Link>
+        <Link to="/:account/ratings" activeStyle={active}>Ratings</Link>
+        <Link to="/:account/watchlist" activeStyle={active}>Watchlist</Link>
+        <Link to="/:account/lists" activeStyle={active}>Lists</Link>
       </Nav>
 
     </React.Fragment>
@@ -78,9 +68,7 @@ const Header = styled.div`
 const User = styled.div`
   display: flex;
   flex-direction: column;
-
   margin-left: 2%; 
-  //border: 2px solid white; 
 `; 
 
 const Name = styled.div`
@@ -94,7 +82,7 @@ const Location = styled.div`
 `;
 
 const Edit = styled.button`
-
+  // todo 
 ; `
 
 const Stats = styled.div`
@@ -135,7 +123,7 @@ export const Nav = styled.nav`
   border: 1px solid #e1e3e5; 
 `;
 
-export const NavLink = styled(Link)`
+export const Link = styled(NavLink)`
   background: none;
   border: none; 
   text-decoration: none; 
@@ -152,10 +140,17 @@ export const NavLink = styled(Link)`
     outline: none; 
   }
 
-  color: ${(props) => props.active_nav ? "#333" : "#e1e3e5"}; 
-  background-color: ${(props) => props.active_nav ? "#e1e3e5" : ""}; 
-  margin-right: ${props => props.test === "true" ? "5%" : "0"}; 
-  pointer-events:  ${(props) => props.active_nav ? "none" : "auto"}; 
+  &:active{
+    color: green; 
+  }
+
+  color: #e1e3e5;
 `;
+
+const active = {
+  color: "#333",
+  backgroundColor: "#e1e3e5",
+  pointerEvents: "none"
+}
 
 export default ProfileHeader; 
