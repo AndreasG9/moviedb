@@ -14,7 +14,6 @@ import { useUserContext } from "../../context/UserContext";
   const [active, set_active] = useState(false); 
 
   const handle_sign_out =  async () => {
-    // TODO (delete request w/ session id)
     let id = localStorage.getItem("session_id").toString();
     
     await axios.delete(`https://api.themoviedb.org/3/authentication/session?api_key=${process.env.REACT_APP_API_KEY}`, {

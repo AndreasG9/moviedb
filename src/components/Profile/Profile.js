@@ -1,25 +1,17 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { Link, useHistory } from "react-router-dom"; 
+import { useHistory } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
-import {v4 as uuidv4} from "uuid"; 
 import ReactTooltip from "react-tooltip";
-// import favorite films recent activity 
-
+import ProfileHeader from "./ProfileHeader"; 
 
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
-  // testing 
-  const titles = ["ratings", "favorites", "todo", "watchlist", "lists"];
-  const values = [1234, 64, "0", 200, 2]; 
-  const temp = `https://image.tmdb.org/t/p/w92//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
-  const temp2 =  `https://image.tmdb.org/t/p/w154//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
 
   const user = useContext(UserContext); 
   console.log(user); 
 
-  const medium = `https://image.tmdb.org/t/p/w154/`; 
 
   function favorites_preview(){
     // TODO use data from users top 4, for now use 4 most recent additions favorites 
@@ -32,12 +24,30 @@ function Profile() {
       const tool_tip = `${fav.title} (${year})`; 
 
       return (
-        <React.Fragment>
-        <ReactTooltip></ReactTooltip>
-        <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} onClick={() => handle_film(fav.id, fav.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+        <React.Fragment key={fav.id}>
+          <ReactTooltip></ReactTooltip>
+          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} onClick={() => handle_film(fav.id, fav.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
         </React.Fragment>
       )
     }); 
+  }
+
+  function ratings_preview(){
+    const four_ratings = user.account.ratings.slice(0, 4);
+
+    return four_ratings.map( (film) => {
+
+      const year = film.release_date !== undefined ? film.release_date.substr(0, 4) : ""; 
+      const tool_tip = `${film.title} (${year})`; 
+
+      return (
+        <div style={{display: "flex", flexDirection: "column"}} key={film.id}>
+          <ReactTooltip></ReactTooltip>
+          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`} key={film.id} onClick={() => handle_film(film.id, film.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+          <Rating>{film.rating}</Rating>
+        </div>
+      )
+    });
   }
 
   function watchlist_preview(){
@@ -50,12 +60,39 @@ function Profile() {
       return <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id} z={index.toString()}></MiniPoster>
     }));
   }
+
+
+
+  function lists_preview(){
+    // similar to watchList_prevew, but three lists 
+    if(user !== undefined){
+
+      const three_lists = user.account.lists.slice(0, 3); 
+
+      return ( three_lists.map( (list) => {
+
+        return (
+        <Preview> 
+          {list.map((film) => (
+            <MiniPoster src={`https://image.tmdb.org/t/p/w92/${film.poster_path}`} key={film.id}></MiniPoster>
+          ))}
+        </Preview>
+      )})
+      )
+  }
+
+  }
+
   
-  function get_username() {
-    if(user !== undefined) return user.account.details.username; 
+  function get_count(){
+    // not undefined, pass string 
+
+    // .rating 
   }
 
 
+
+  
   const history = useHistory();
 
   const handle_film = (id, title) => {
@@ -72,65 +109,49 @@ function Profile() {
   return (
     <Container>
 
-      <Header>
-        <User>
-          <Name>{get_username()}</Name>
-          <Location>Location: </Location>
-          <Edit>Edit profile</Edit>
-        </User>
-
-        <Stats>
-          <Stat>
-            <StatValue>{user.account.ratings.length}</StatValue>
-            <StatHeader>{"Ratings"}</StatHeader>
-          </Stat>
-          <Stat>
-            <StatValue>{user.account.favorites.length}</StatValue>
-            <StatHeader>{"Favorites"}</StatHeader>
-          </Stat>
-          <Stat>
-            <StatValue>{user.account.watchlist.length}</StatValue>
-            <StatHeader>{"Watchlist"}</StatHeader>
-          </Stat>
-          <Stat>
-            <StatValue>{user.account.lists.length}</StatValue>
-            <StatHeader>{"Lists"}</StatHeader>
-          </Stat>
-
-        </Stats>
-      </Header>
-
-      <Nav>
-        <NavLink active_nav={"true"} to="/:account">Profile</NavLink>
-        <NavLink to="/:account/favorites">Favorites</NavLink>
-        <NavLink to="/:account/ratings">Ratings</NavLink>
-        <NavLink to="/:account/watchlist">Watchlist</NavLink>
-        <NavLink to="/:account/lists">Lists</NavLink>
-      </Nav>
+      <ProfileHeader></ProfileHeader>
       
+      <Body>
 
-        <Body>
-          <FavContainer>
-            <Title style={title_detail} left>My Favorites <span>more</span></Title>
-            <Fav>
-              {favorites_preview()}
-            </Fav>
-          </FavContainer>  
+        <Info>
+          <PreviewContainer style={{fontSize: "1.2em"}}>
+            <Title left>My Favorites <span>more</span></Title>
+              <Preview>
+                {favorites_preview()}
+              </Preview>
+          </PreviewContainer>  
 
-          <RightInfo>
-            <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
-            <WatchListPreviewContainer onClick={handle_watchlist}>
-              <Title style={title_detail} watchlist>WATCHLIST <span>{user.account.watchlist.length}</span></Title>
-              <WatchListPreview>
-                {watchlist_preview()}
-              </WatchListPreview>
-            </WatchListPreviewContainer>
-          </RightInfo>
-        </Body>
-        
+          <PreviewContainer style={{fontSize: "1.2em", marginTop: "5%"}}>
+            <Title left>Recent Ratings <span>more</span></Title>
+              <Preview>
+                {ratings_preview()}
+              </Preview>
+          </PreviewContainer>      
+        </Info>
+
+        <Info right>
+          <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
+
+          <WatchListPreviewContainer onClick={handle_watchlist}>
+            <Title>WATCHLIST <span>{user.account.watchlist.length}</span></Title>
+            <PreviewRight>
+              {watchlist_preview()}
+            </PreviewRight>
+          </WatchListPreviewContainer>
+
+          <ListsPreviewContainer>
+          <Title>RECENT LISTS <span>length</span></Title>
+            <ListPreview>
+              {lists_preview()}
+            </ListPreview>
+          </ListsPreviewContainer>    
+        </Info>
+      </Body>
+      
     </Container>
   )
 }
+
 
 // Style
 const Container = styled.div`
@@ -138,130 +159,51 @@ const Container = styled.div`
   height: 100vh; 
   font-family: Roboto; 
   color: #a5a5a5; 
-
   width: 60%;
   margin-left: 22%; 
 
   @media only screen and (max-width: 1500px) {
     width: 96%;
-    margin-left: 1%; 
- }
+    width: 99%; 
+    //margin-left: 1%;
+    margin: 0;  
+    margin-top: 2%; 
+  }
 `; 
 
-const Header = styled.div`
-  display: flex;
+const Body = styled.div`
+  margin-top: 3.5%; 
+  display: flex; 
+  flex-direction: row; 
   justify-content: space-between; 
 `; 
 
-const User = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  margin-left: 2%; 
-  //border: 2px solid white; 
-`; 
-
-const Name = styled.div`
-  font-size: 1.6em; 
-  color: #e1e3e5;
-  margin-bottom: 10%; 
-`; 
-
-const Location = styled.div`
-  margin-bottom: 5%; 
-`;
-
-const Edit = styled.button`
-
-; `
-
-const Stats = styled.div`
-  display: flex;
-  flex-direction: row;
-  //border: 1px solid white;  
-`;
-
-const Stat = styled.div`
+const PreviewContainer = styled.div`
   display: flex;
   flex-direction: column; 
-  padding: 10px; 
-  border-left: 1px solid white; 
-
-
-  &:hover{
-    cursor: pointer; 
-    color: #adadff; 
-  }
-`;
-
-const StatHeader = styled.div`
-  font-size: 1.1em; 
-  margin-top: 5%; 
 `; 
 
-const StatValue = styled.div`
-  font-size: 1.3em; 
-`; 
-
-const Nav = styled.nav`
-  width: 60%; 
-  margin: 0 auto; 
-  margin-top: 5%;  
-  background-color: #425566; 
-  display: flex;
-  justify-content: center; 
-  border: 1px solid #e1e3e5; 
-`; 
-
-const title_detail = {
-  display: "flex", 
-  justifyContent: "space-between"
-}
-
-const NavLink = styled(Link)`
-  background: none;
-  border: none; 
-  text-decoration: none; 
-
-  font-size: 1.2em; 
-  padding: 5px; 
-
-  &:hover{
-    cursor: pointer;
-    color: #adadff
-  }
-
-  &:focus{
-    outline: none; 
-  }
-
-  color: ${(props) => props.active_nav === "true" ? "#333" : "#e1e3e5"}; 
-  background-color: ${(props) => props.active_nav === "true" ? "#e1e3e5" : ""}; 
-`;
-
-const Body = styled.div`
-  margin-top: 4.5%; 
-  display: flex; 
-  flex-direction: row; 
-`; 
-
-const FavContainer = styled.div`
-  font-size: 1.25em; 
-  flex: 1; 
-`;
-
-const Fav = styled.div`
+const Preview = styled.div`
   margin: 2%; 
   display: flex;
   flex-direction: row; 
+  justify-content: space-between; 
   border-radius: 3%;
-  width: max-content; 
+  width: 35vw; 
 `; 
 
-const RightInfo = styled.div`
+const Info = styled.div`
   @media only screen and (max-width: 1500px) {
     margin-left: 3.5%; 
   }
+
+  display: flex;
+  flex-direction: column; 
+
+  //marign-left: ${props => props.right ? "20%" : "0"}; 
+  width: ${props => props.right ? "34vw" : "66vw"}; 
+
+
 `; 
 
 const Bio = styled.div`
@@ -271,13 +213,12 @@ const Bio = styled.div`
 `; 
 
 const WatchListPreviewContainer = styled.div`
-  margin-top: 10%; 
+  margin-top: 12.7vh;  
 `;
 
-const WatchListPreview = styled.div`
+const PreviewRight = styled.div`
   margin-top: 2%; 
 
-  // want slight overlap
   display: grid; 
   grid-template-columns: repeat(8, 47px); 
 
@@ -292,23 +233,26 @@ const WatchListPreview = styled.div`
 `; 
 
 const Title = styled.div`
+  margin-left: ${props => props.left ? "2%" : "0"}; 
+  width: ${props => props.left ? "35vw" : "19.6vw"}; 
 
-  margin-left: ${props => props.left ? "2%" : 0}; 
-  width: ${props => props.watchlist ? "98.5%" : "86%"}; 
   border-bottom: 1px solid #6f797d; 
-  padding-bottom: 2px; 
+  padding-bottom: 2px;  
 
   &:hover{
     cursor: pointer; 
     color: #adadff; 
   }
 
+  display: flex;
+  justify-content: space-between;
 `; 
+
 
 const MediumPoster = styled.img`
   border: 2px solid #a5a5a5;
   border-radius: 3%;
-  margin: 1% 1% 0 0; 
+  //margin: 0 1% 0 0; 
   &:hover{
     cursor: pointer; 
     border: 2px solid #98fb98; 
@@ -321,5 +265,33 @@ export const MiniPoster = styled.img`
   grid-column: span 2; 
   z-index: ${props => props.z}; 
 `; 
+
+
+const ListsPreviewContainer = styled.div`
+  margin-top: 10%; 
+`;
+
+const ListPreview = styled.div`
+  display: flex;
+  flex-direction: column; 
+  border: 1px solid white; 
+`; 
+
+
+const Rating = styled.div`
+  width: 156px; 
+  color: #13181c; 
+  border-radius: 3%;
+  text-align: center; 
+  color: #e1e3e5;
+  margin-top: 5%; 
+`; 
+
+
+
+const title_detail = {
+  display: "flex", 
+  justifyContent: "space-between"
+}
 
 export default Profile; 
