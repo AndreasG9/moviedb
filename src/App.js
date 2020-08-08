@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Routes from "./Routes";
 import { UserContext } from "./context/UserContext.js";
@@ -6,7 +6,7 @@ import axios from "axios";
 
 function App() {
 
-  // TEMP TEMP keep state page refresh, keep session id until signed out TEMP TEMP 
+  // TEMP TEMP keep state page refresh, keep session id until signed out
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
 
@@ -15,7 +15,9 @@ function App() {
 
 
   const [auth, set_auth] = useState(init_id); 
-  const [account, set_account] = useState({details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true}); 
+  const [account, set_account] = useState({details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true, active_nav: ""}); 
+
+  //const is_initial_mount = useRef(true); .current true set false useeffect after first render 
 
 
   useEffect( () => {
@@ -24,7 +26,7 @@ function App() {
 
     const update = async () => { 
 
-      let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false}; 
+      let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
 
       // details 
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
@@ -43,7 +45,6 @@ function App() {
       let arr = await get_data(res.data.total_pages, rated_movies);
       temp.ratings = res.data.results.concat(arr); 
             
-
       // fav movies 
       let fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`;
       res = await axios.get(fav).catch((error) => console.log(error)); 
@@ -58,13 +59,17 @@ function App() {
       arr = await get_data(res.data.total_pages, watch_list);
       temp.watchlist = res.data.results.concat(arr); 
 
+      
+      localStorage.setItem("account", JSON.stringify(temp));
+
       // lists
       set_account(temp);
   }
 
-  update(); 
+    if(init_id) update(); // only if signed in do we update 
 
-  }, [account.update]);
+
+  }, [account.update, init_id]);
 
 
 
@@ -85,9 +90,6 @@ function App() {
   }
 
 
-  
-  // **
-  
   
   return (
     <div>

@@ -1,17 +1,25 @@
-import React, { useState, useContext } from "react"; 
-import { UserContext } from "../../context/UserContext"; 
+import React, { useContext } from "react"; 
+import { useUserContext, UserContext } from "../../context/UserContext"; 
 import { NavLink } from "react-router-dom"; 
 import styled from "styled-components";
 
 
- function ProfileHeader() {
+function ProfileHeader() {
 
   const user = useContext(UserContext); 
-
-  
+  const { set_account } = useUserContext(); 
+  const { account } = useContext(UserContext); 
 
   function get_username() {
     if(user !== undefined) return user.account.details.username; 
+  }
+
+  const handle_active = (selected) => {
+    // reuse film comp. for 4 pages, want to know the active page (update context)
+    const temp = {...account};
+    temp.active_nav = selected; 
+    set_account(temp);
+    localStorage.setItem("account", JSON.stringify(temp)); 
   }
 
 
@@ -48,11 +56,11 @@ import styled from "styled-components";
 
 
       <Nav>
-        <Link to="/:account" activeStyle={active} exact={true}>Profile</Link>
-        <Link to="/:account/favorites" activeStyle={active}>Favorites</Link>
-        <Link to="/:account/ratings" activeStyle={active}>Ratings</Link>
-        <Link to="/:account/watchlist" activeStyle={active}>Watchlist</Link>
-        <Link to="/:account/lists" activeStyle={active}>Lists</Link>
+        <Link to="/:account" activeStyle={active} exact={true} onClick={() => handle_active("profile")}>Profile</Link>
+        <Link to="/:account/favorites" activeStyle={active} onClick={() => handle_active("favorites")}>Favorites</Link>
+        <Link to="/:account/ratings" activeStyle={active} onClick={() => handle_active("ratings")}>Ratings</Link>
+        <Link to="/:account/watchlist" activeStyle={active} onClick={() => handle_active("watchlist")}>Watchlist</Link>
+        <Link to="/:account/lists" activeStyle={active} onClick={() => handle_active("lists")}>Lists</Link>
       </Nav>
 
     </React.Fragment>
