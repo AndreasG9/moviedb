@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import styled from "styled-components"; 
 import axios from "axios"; 
 import { UserContext, useUserContext, } from "../../context/UserContext.js";
-
+import ReactTooltip from "react-tooltip";
 
 function AccountLog( {result} ) {
   // if logged in can mark as watched/logged, give it a rating, and add film to the list 
@@ -15,97 +15,148 @@ function AccountLog( {result} ) {
   const user = useContext(UserContext); 
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
+  
+  let found; 
 
-  const found = user.account.ratings.find((movie) => movie.id === result.id);
-  let rated = found !== undefined ? found.rating : 0; 
+  // is rated
+  found = user.account.ratings.find((movie) => movie.id === result.id);
+  let is_rated = found !== undefined ? found.rating : "";  
 
-  const [rating, set_rating] = useState(rated); 
-  const [update, set_update] = useState(false); 
+  // is favorite 
+  found = user.account.favorites.find((movie) => movie.id === result.id);
+  let is_favorite = found !== undefined ? true : false; 
+
+  // is on watchlist
+  found = user.account.watchlist.find((movie) => movie.id === result.id);
+  let is_on_watchlist = found !== undefined ? true : false; 
+
+  const SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+
+  // State 
+  // const [favorite, set_favorite] = useState(is_favorite); 
+  // const [watchlist, set_watchlist] = useState(is_on_watchlist); 
+  //const [rating, set_rating] = useState(is_rated); 
 
 
+  function display_favorite_context(){
+    // is this film added to your favorites 
+    // regardless, clicking the fav region will result in the opposite reaction 
 
+    let msg; 
 
-  // const [log, set_log] = useState({
-  //   is_favorite: false,
-  //   is_rated: false,
-  //   is_watchlist: false
-  // }); 
+    if(is_favorite) msg = "click to remove from favorites"; // already added 
+    else msg = "click to add to favorites"; // not added 
 
+    return (
+      <React.Fragment>
+        <ReactTooltip></ReactTooltip>
+        <Favorite 
+          onClick={() => handle_fav(!is_favorite)}
+          data-tip={msg}  
+          data-effect="solid"
+          data-background-color="#425566" 
+          data-text-color="#e1e3e5" 
+          data-delay-show="100">
+          <Heart active_fav={is_favorite} >&#x2764;</Heart>
+          <Title>Favorite</Title>
+        </Favorite>
+      </React.Fragment>
+    )
+  }
 
-  function display_context(){
+  function display_watchlist_context(){
+
+    let msg; 
+
+    if(is_on_watchlist) msg = "click to remove from watchlist";
+    else msg = "click to add to watchlist";
+
+    return (
+      <React.Fragment>
+        <ReactTooltip></ReactTooltip>
+        <WatchList
+          onClick={() => handle_watchlist(!is_on_watchlist)}
+          data-tip={msg}  
+          data-effect="solid"
+          data-background-color="#425566" 
+          data-text-color="#e1e3e5" 
+          data-delay-show="200">
+          <Clock active={is_on_watchlist}></Clock>
+          <Title>Watchlist</Title>
+        </WatchList>
+      </React.Fragment>
+    )
+  }
+
+  function display_rating_context(){
     // have you already logged this film?  
 
-    if(rated && !update){
-      // to update rating, have to click X 
+    let title; 
+
+    if(!is_rated) title = "Set Rating";
+    else title = "Rated"
+
       return (
-        <React.Fragment>
-          <Title>Rated</Title>
-          <form style={{display: "flex"}}>
-            <ResetRating onClick={() => set_update(true)}>X</ResetRating>
-              <span>{rated}</span>
-            <Rating style={{pointerEvents: "none"}}>
-              {[...Array(5)].map( (cirlce, i) => (
-                <Circle 
-                  key={i+1}
-                  value={i+1}
-                  rating={rated/2}>
-                </Circle>
+        <div>
+          <Rating>
+            <Title>{title}</Title>
+            <Select onChange={handle_rating}>
+              <Option hidden>{is_rated}</Option>
+              {SCALE.map(val => (
+                <Option key={val}>{val}</Option>
               ))}
-            </Rating>
-        </form>
-      </React.Fragment>
+            </Select>
+          </Rating>
+        </div>
       )
-    }
-
-
-    else if(update === true || !rated){ 
-      // update existing or new rating
-      return (
-        <React.Fragment>
-          <Title>Set Rating</Title>
-          <form>
-            <Rating onMouseLeave={() => set_rating(0)}>
-              {[...Array(5)].map( (cirlce, i) => (
-                <Circle 
-                  key={i+1} 
-                  rating={rating} 
-                  value={i+1} 
-                  onMouseEnter={() => set_rating(i+1)}
-                  onClick={handle_rating}>
-                </Circle>
-              ))}
-            </Rating>
-        </form>
-      </React.Fragment>
-      )
-    }
 
   }
 
-  const handle_fav = () => {
-    // POST mark as favorite or REMOVE 
 
-   // const fav = `ttps://api.themoviedb.org/3/account/${account_id}/favorite?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`; 
-   // body: media_type: movie media_id:  favorite: true 
+  const handle_fav = async (status) => {
+    // POST fav: true or false 
+    const fav = `https://api.themoviedb.org/3/account/${user.id}/favorite?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`; 
 
+    await axios.post(fav, {
+      "media_type": "movie",
+      "media_id": result.id,
+      "favorite": status
+    }, header).catch( (error) => console.log(error));  
+
+
+    //set_favorite(status); 
+    let temp = {...account};
+    temp.update = true; 
+    set_account(temp); 
   }
 
-  const handle_watchlist = () => {
-    // POST 
-    //const watchlist = `ttps://api.themoviedb.org/3/account/${account_id}/watchlist?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`; 
-    // body media_type: movie media_id:  watchlist: true
+  const handle_watchlist = async (status) => {
+    const wl= `https://api.themoviedb.org/3/account/${user.id}/watchlist?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`; 
+
+    await axios.post(wl, {
+      "media_type": "movie",
+      "media_id": result.id,
+      "watchlist": status
+    }, header).catch( (error) => console.log(error));  
+    
+
+
+    //set_watchlist(status); 
+    let temp = {...account};
+    temp.update = true; 
+    set_account(temp);
   }
 
 
-  const handle_rating = async () => {
-    set_update(false);
-
+  const handle_rating = async (event) => {
+    
     // POST rating to user's account 
     let session_id = localStorage.getItem("session_id");  
     const post_rating = `https://api.themoviedb.org/3/movie/${result.id}/rating?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`;
-    const scale_rating = rating * 2; 
+    const scale_rating = event.target.value; 
+
     // add auth header w/ bearer token  TODO 
-    const res = await axios.post(post_rating, 
+    await axios.post(post_rating, 
       {
         "value": scale_rating 
       }, 
@@ -115,32 +166,54 @@ function AccountLog( {result} ) {
 
     // tell app update context 
     let temp = {...account};
-    set_account(temp); 
     temp.update = true; 
+    set_account(temp); 
   }
+
+  const handle_list = async (event) => {
+    const id = event.target.value; 
+
+    const get_list = `https://api.themoviedb.org/3/list/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
+
+    // check if already added to that specific list 
+    const res = await axios.get(get_list); 
+    const found = res.data.items.find(item => item.id === result.id); 
+
+    if(found) alert("film already added to that list"); 
+
+    else{
+      const add_to_list = `https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
+
+      await axios.post(add_to_list, {
+        "media_id": result.id
+      }, 
+      header).catch( (error) => console.log(error));  
+
+    window.location.reload(false); 
+    }
+  }
+
 
   return (
     <Container>
 
       <Row>
-        <Favorite onClick={handle_fav}>
-          <Heart>&#x2764;</Heart>
-          <Title>favorite</Title>
-        </Favorite>
-
-        <WatchList onClick={handle_watchlist}>
-          <Clock></Clock>
-          <Title>watchlist</Title>
-        </WatchList>
+        {display_favorite_context()}
+        {display_watchlist_context()}
       </Row>
 
       <Col> 
-        {display_context()}
+        {display_rating_context()}
       </Col>
 
-      <Row>
-        Add to a list...
-      </Row>
+      <AddList>
+        <Select smaller onChange={handle_list}>
+          <Option hidden value="title">Add to a list...</Option>
+          {user.account.lists.map(list => (
+            <Option value={list.id} key={list.id}>{list.name}</Option>
+          ))}
+        </Select>
+      </AddList>
 
     </Container>
   )
@@ -162,15 +235,17 @@ const Container = styled.div`
   margin-right: 2%; 
 
   width: 350px;
-  height: 200px; 
+  height: 230px; 
 
   color: #a5a5a5; 
+  border: 1px solid white; 
 `;
 
 const Row = styled.div`
   display: flex;
   flex-direction: row; 
   justify-content: center;
+  align-items: center; 
   border-bottom: 1px solid #333;  
 `; 
 
@@ -179,15 +254,13 @@ const Col = styled.div`
   flex-direction: column; 
   justify-content: center;
   align-items: center; 
-  
-
   border-bottom: 1px solid #333;  
 `; 
 
 const Title = styled.div`
   padding: 5px;  
 `; 
-
+ 
 const Favorite = styled.div`
   margin-right: 20%; 
   display: flex;
@@ -202,38 +275,31 @@ const Favorite = styled.div`
 `; 
 
 const Heart = styled.div`
-  // red if favorited  
-
   margin-top: 10%; 
   font-size: 3em; 
- // color: transparent; // FIX 
-  opacity: .1; 
 
-  &:hover{
-    color: red;  
-    opacity: 1; 
-  }
+  // red if favorited  
+  color: ${props => props.active_fav ? "#FF0000" : "#e1e3e5"};
+  opacity: ${props => props.active_fav ? "1" : ".1"}; 
 `; 
 
 const WatchList = styled.div`
   display: flex;
   flex-direction: column; 
-  justify-content: center; 
+  justify-content: space-between; 
   align-items: center; 
-  margin-top: 1%; 
+  height: 80%;
+  margin-top: 8.5%;  
 
   &:hover{
     cursor: pointer; 
     color: #e1e3e5; 
   }
-
 `;
 
 const Clock = styled.div`
   width: 40px;
   height: 40px; 
-  background-color: transparent; // FIX  light blue if added 
-  
   border-radius: 50%;  
   border: 1px solid #e1e3e5;
 
@@ -253,54 +319,74 @@ const Clock = styled.div`
     content: "";
     height: 10px;
     width: 1px;
-    background-color: #e1e3e5;
+    background-color: #e1e3e5; 
     position: absolute;
     top: 37.8%; 
     left: 64%;  
     transform: rotate(90deg);
   }
-`;
 
-const ResetRating = styled.div`
-  padding: 8px; 
-  font-size: 1.4em; 
-  
-  &:hover{
-    cursor: pointer;
-    color: #fff;   
-  }
-  
-`; 
+  background-color: ${props => props.active === true ? "#003366" : ""}; 
+`;
 
 const Rating = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between; 
+  flex-direction: column;
+  justify-content: center; 
   align-items: center; 
-  margin-bottom: 6%; 
-  margin-top: 3%; 
-
-  width: 165px;
+  margin-bottom: 5%; 
 `; 
 
-const Circle = styled.div`
-  height: 25px;
-  width: 25px; 
-  border: 2px solid #e1e3e5;
+const AddList = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+`; 
+const Select = styled.select`
+  font-family: Roboto; 
+  font-size: 1.0rem; 
+  background-color: #13181c; 
+  color: #e1e3e5;
+  padding: 8px;  
+  font-size: ${props => props.smaller ? ".9em" : "1.2em"}; 
+  border-radius: 4px;
+  border: 1px solid black; 
 
-  // border-right: ${(props) => props.left ? "none" : "2px solid #e1e3e5"};
-  // border-left:  ${(props) => props.left ? "2px solid #e1e3e5" : "none"};
-  // border-radius: ${(props) => props.left ? "50% 0 0 50%" : "0 50% 50% 0"}; 
-  // margin-right: ${(props) => props.left ? "" : "1.5%"}; 
-
-  border-radius: 50%; 
-  transition: 150ms; 
-  
   &:hover{
+    color: #adadff;
     cursor: pointer; 
   }
 
-  background-color: ${(props) => props.rating >= props.value ? "#CCAC00" : ""}; // based on state 
+  &:focus{
+    outline: none; 
+  }
+`;
+
+const Option = styled.option`
+  background-color: #8699aa; 
+  color: #333; 
+  font-size: 1.3rem; 
 `; 
+
+// const Circle = styled.div`
+//   height: 25px;
+//   width: 25px; 
+//   border: 2px solid #e1e3e5;
+
+//   border-right: ${(props) => props.left ? "none" : "2px solid #e1e3e5"};
+//   border-left:  ${(props) => props.left ? "2px solid #e1e3e5" : "none"};
+//   border-radius: ${(props) => props.left ? "50% 0 0 50%" : "0 50% 50% 0"}; 
+//   margin-right: ${(props) => props.left ? "" : "1.5%"}; 
+
+//  // border-radius: 50%; 
+//   transition: 150ms; 
+  
+//   &:hover{
+//     cursor: pointer; 
+//   }
+
+//   background-color: ${(props) => props.rating >= props.value ? "#CCAC00" : ""}; // based on state 
+// `; 
 
 export default AccountLog; 
