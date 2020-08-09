@@ -8,11 +8,8 @@ import ProfileHeader from "./ProfileHeader";
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
-
   const user = useContext(UserContext); 
   
-
-
   function favorites_preview(){
     // TODO use data from users top 4, for now use 4 most recent additions favorites 
 
@@ -41,7 +38,7 @@ function Profile() {
       const tool_tip = `${film.title} (${year})`; 
 
       return (
-        <div style={{display: "flex", flexDirection: "column"}} key={film.id}>
+        <div style={{display: "flex", flexDirection: "column", alignItems:"center"}} key={film.id}>
           <ReactTooltip></ReactTooltip>
           <MediumPoster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`} key={film.id} onClick={() => handle_film(film.id, film.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
           <Rating>{film.rating}</Rating>
@@ -79,12 +76,11 @@ function Profile() {
   }
   }
 
-  function get_count(){
-    // not undefined, pass string 
+  // function get_count(){
+  //   // not undefined, pass string 
 
-    // .rating 
-  }
-
+  //   // .rating 
+  // }
 
   
   const history = useHistory();
@@ -96,10 +92,6 @@ function Profile() {
     history.push(target, {movie_id: id});
   }
 
-  const handle_watchlist = () => { 
-    // click watchlist container 
-    history.push("/:account/watchlist"); 
-  }
 
   return (
     <Container>
@@ -108,14 +100,14 @@ function Profile() {
       
       <Body>
         <Info>
-          <PreviewContainer style={{fontSize: "1.2em"}}>
+          <PreviewContainer style={{fontSize: "1.2em"}} onClick={() => history.push(`/user/${user.account.details.username}/favorites`) }>
             <Title left>My Favorites <span>more</span></Title>
               <Preview>
                 {favorites_preview()}
               </Preview>
           </PreviewContainer>  
 
-          <PreviewContainer style={{fontSize: "1.2em", marginTop: "5%"}}>
+          <PreviewContainer style={{fontSize: "1.2em", marginTop: "5%"}} onClick={() => history.push(`/user/${user.account.details.username}/ratings`)}>
             <Title left>Recent Ratings <span>more</span></Title>
               <Preview>
                 {ratings_preview()}
@@ -126,7 +118,7 @@ function Profile() {
         <Info right>
           <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
 
-          <WatchListPreviewContainer onClick={handle_watchlist}>
+          <WatchListPreviewContainer onClick={() => history.push(`/user/${user.account.details.username}/watchlist`)}>
             <Title>WATCHLIST <span>{user.account.watchlist.length}</span></Title>
             <PreviewRight>
               {watchlist_preview()}
@@ -264,12 +256,14 @@ const ListPreview = styled.div`
 
 
 const Rating = styled.div`
-  width: 156px; 
-  color: #13181c; 
-  border-radius: 3%;
+  border-radius: 50%; 
+  height: 20px;
+  width: 20px; 
+  background-color: #425566; 
+  color: #e1e3e5; 
   text-align: center; 
-  color: #e1e3e5;
-  margin-top: 5%; 
+  margin-top: 3%;  
+  padding: 6px;  
 `; 
 
 export default Profile; 

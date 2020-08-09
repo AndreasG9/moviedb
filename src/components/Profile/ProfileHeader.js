@@ -1,6 +1,6 @@
 import React, { useContext } from "react"; 
 import { useUserContext, UserContext } from "../../context/UserContext"; 
-import { NavLink } from "react-router-dom"; 
+import { NavLink, useHistory } from "react-router-dom"; 
 import styled from "styled-components";
 
 
@@ -9,6 +9,7 @@ function ProfileHeader() {
   const user = useContext(UserContext); 
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
+  const history = useHistory(); 
 
   function get_username() {
     if(user !== undefined) return user.account.details.username; 
@@ -34,19 +35,19 @@ function ProfileHeader() {
         </User>
 
         <Stats>
-          <Stat>
+          <Stat onClick={() => history.push(`/user/${user.account.details.username}/ratings`)}>
             <StatValue>{user.account.ratings.length}</StatValue>
             <StatHeader>{"Ratings"}</StatHeader>
           </Stat>
-          <Stat>
+          <Stat onClick={() => history.push(`/user/${user.account.details.username}/favorites`)}>
             <StatValue>{user.account.favorites.length}</StatValue>
             <StatHeader>{"Favorites"}</StatHeader>
           </Stat>
-          <Stat>
+          <Stat onClick={() => history.push(`/user/${user.account.details.username}/watchlist`)}>
             <StatValue>{user.account.watchlist.length}</StatValue>
             <StatHeader>{"Watchlist"}</StatHeader>
           </Stat>
-          <Stat>
+          <Stat onClick={() => history.push(`/user/${user.account.details.username}/lists`)}>
             <StatValue>{user.account.lists.length}</StatValue>
             <StatHeader>{"Lists"}</StatHeader>
           </Stat>
@@ -56,11 +57,11 @@ function ProfileHeader() {
 
 
       <Nav>
-        <Link to="/:account" activeStyle={active} exact={true} onClick={() => handle_active("profile")}>Profile</Link>
-        <Link to="/:account/favorites" activeStyle={active} onClick={() => handle_active("favorites")}>Favorites</Link>
-        <Link to="/:account/ratings" activeStyle={active} onClick={() => handle_active("ratings")}>Ratings</Link>
-        <Link to="/:account/watchlist" activeStyle={active} onClick={() => handle_active("watchlist")}>Watchlist</Link>
-        <Link to="/:account/lists" activeStyle={active} onClick={() => handle_active("lists")}>Lists</Link>
+        <Link to={`/user/${user.account.details.username}`} activeStyle={active} exact={true} onClick={() => handle_active("profile")}>Profile</Link>
+        <Link to={`/user/${user.account.details.username}/ratings`} activeStyle={active} onClick={() => handle_active("ratings")}>Ratings</Link>
+        <Link to={`/user/${user.account.details.username}/favorites`} activeStyle={active} onClick={() => handle_active("favorites")}>Favorites</Link>
+        <Link to={`/user/${user.account.details.username}/watchlist`} activeStyle={active} onClick={() => handle_active("watchlist")}>Watchlist</Link>
+        <Link to={`/user/${user.account.details.username}/lists`} activeStyle={active} onClick={() => handle_active("lists")}>Lists</Link>
       </Nav>
 
     </React.Fragment>

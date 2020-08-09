@@ -24,6 +24,7 @@ import { useUserContext } from "../../context/UserContext";
 
     localStorage.clear();  
     set_auth(false); // logout
+    // go back to home ??? 
   }
 
   function get_username() {
@@ -35,11 +36,11 @@ import { useUserContext } from "../../context/UserContext";
       <Username active={active}> {get_username()}</Username>
       <DownArr></DownArr>
       <DropDown active={active}>
-      <Link className="link-style" to="/:account">Profile</Link>
-        <Link className="link-style" to="/:account/favorites">Favorites</Link>
-        <Link className="link-style" to="/:account/ratings">Ratings</Link>
-        <Link className="link-style" to="/:account/watchlist">Watchlist</Link>
-        <Link className="link-style" to="/:account/lists">Lists</Link>
+        <Link className="link-style" to={`/user/${user.account.details.username}`}>Profile</Link>
+        <Link className="link-style" to={`/user/${user.account.details.username}/favorites`}>Favorites</Link>
+        <Link className="link-style" to={`/user/${user.account.details.username}/ratings`}>Ratings</Link>
+        <Link className="link-style" to={`/user/${user.account.details.username}/watchlist`}>Watchlist</Link>
+        <Link className="link-style" to={`/user/${user.account.details.username}/lists`}>Lists</Link>
         <div className="link-style" onClick={handle_sign_out}>Sign out</div>
       </DropDown>
     </Container>

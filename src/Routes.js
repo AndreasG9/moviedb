@@ -48,29 +48,29 @@ const Routes = () => (
           credit={props.location.state.credit}>
           </PersonPage>)}>
       </Route>
-      
+ 
       <Route
-        path="/user/"
+        exact path="/user/:username"
         component={ProfilePage}>
       </Route>
 
       <Route
-        path="/:account/watchlist"
+        path="/user/:username/watchlist"
         component={UserFilmsPage}>
       </Route>
 
       <Route
-        path="/:account/ratings"
+        path="/user/:username/ratings"
         component={UserFilmsPage}>
       </Route>
 
       <Route
-        path="/:account/favorites"
+        path="/user/:username/favorites"
         component={UserFilmsPage}>
       </Route>
 
       <Route
-        path="/:account/lists"
+        path="/user/:username/lists"
         component={UserListsPage}>
       </Route>
 

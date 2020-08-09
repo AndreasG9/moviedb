@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Header from "../components/Header"; 
-import backdrop from "../the_new_world.jpg"; 
+import backdrop from "../assets/the_new_world.jpg"; 
 
 function Page404() {
   return (
