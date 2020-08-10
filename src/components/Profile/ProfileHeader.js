@@ -12,7 +12,11 @@ function ProfileHeader() {
   const history = useHistory(); 
 
   function get_username() {
-    if(user !== undefined) return user.account.details.username; 
+    if(user.account.details.length !== 0) return user.account.details.username; 
+  }
+
+  function get_img(){
+    if(user.account.details.length !== 0) return user.account.details.avatar.gravatar.hash;
   }
 
   const handle_active = (selected) => {
@@ -29,9 +33,12 @@ function ProfileHeader() {
 
       <Header>
         <User>
-          <Name>{get_username()}</Name>
-          <Location>Location: </Location>
-          <Edit>Edit profile</Edit>
+          <Image src={`https://www.gravatar.com/avatar/${get_img()}?s=150`}></Image>
+          <div style={{display: "flex", flexDirection: "column", marginLeft: "5%", justifyContent: "space-between"}}>
+            <Name>{get_username()}</Name>
+            <Location>Location: </Location>
+            <Edit>Edit profile</Edit>
+          </div>
         </User>
 
         <Stats>
@@ -76,8 +83,9 @@ const Header = styled.div`
 
 const User = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin-left: 2%; 
+  padding: 10px; 
 `; 
 
 const Name = styled.div`
@@ -86,8 +94,13 @@ const Name = styled.div`
   margin-bottom: 10%; 
 `; 
 
+const Image = styled.img`
+  border-radius: 50%; 
+`;  
+
 const Location = styled.div`
-  margin-bottom: 5%; 
+  // todo 
+ //margin: 5% 0;  
 `;
 
 const Edit = styled.button`
@@ -97,6 +110,8 @@ const Edit = styled.button`
 const Stats = styled.div`
   display: flex;
   flex-direction: row;
+  height: 80px; 
+  padding: 10px; 
 `;
 
 const Stat = styled.div`
@@ -104,7 +119,6 @@ const Stat = styled.div`
   flex-direction: column; 
   padding: 10px; 
   border-left: 1px solid white; 
-
 
   &:hover{
     cursor: pointer; 
