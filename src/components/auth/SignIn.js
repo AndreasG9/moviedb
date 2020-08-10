@@ -48,36 +48,15 @@ function SignIn( {close_sign_in} ) {
 
     localStorage.setItem("session_id", session.data.session_id);  // TEMP TEMP TEMP session id in local storage (sign out will DELETE req)
 
-    const temp = {...account}; // get user details, rated and fav movies, for all comp to have acess to (other req, get in profile)
+    const temp = {...account}; 
 
+    temp.update = true; // updated context with user account (watchlist, ratings, favs, ...)
 
-    // details 
-    const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
-    let res = await axios.get(detail).catch((error) => console.log(error)); 
-    temp.details = res.data; 
-
-    const id = temp.details.id; 
-
-    // ratings
-    const rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&sort_by=created_at.asc`;
-    res = await axios.get(rated_movies).catch((error) => console.log(error)); 
-    temp.ratings= res.data.results; 
-
-    // fav movies 
-    const fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc`;
-    res = await axios.get(fav).catch((error) => console.log(error)); 
-    temp.favorites = res.data.results; 
-
-    // watchlist
-    const watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&language=en-US&sort_by=created_at.asc`; 
-    res = await axios.get(watch_list).catch((error) => console.log(error)); 
-    temp.watchlist = res.data.results; 
-    
     localStorage.setItem("account", JSON.stringify(temp)); // for testing 
+
     set_auth(true); // set auth to true, header will change to display profile w/ dropdown 
     close_sign_in(); 
     set_account(temp); // update context 
-    // set_loading(false); 
   }
 
 
@@ -88,34 +67,35 @@ function SignIn( {close_sign_in} ) {
     <Background></Background>
 
     <Container>
-    <form action="/" onSubmit={handle_sign_in}>
-      <HeaderContainer>
-        <h2>Sign in</h2>
-        <CloseBtn onClick={close_sign_in}>X</CloseBtn>
-      </HeaderContainer>
+      <form action="/" onSubmit={handle_sign_in}>
+        <HeaderContainer>
+          <h2>Sign in</h2>
+          <CloseBtn onClick={close_sign_in}>X</CloseBtn>
+        </HeaderContainer>
 
-      <Group>
-        <Label htmlFor="text">Username</Label>
-        <Input type="text" longer onChange={(event) => set_username(event.target.value)}></Input>
-      </Group>
+        <Group>
+          <Label htmlFor="text">Username</Label>
+          <Input type="text" longer onChange={(event) => set_username(event.target.value)}></Input>
+        </Group>
 
-      <Group>
-        <Label htmlFor="password">Password</Label>
-        <Input type="password" onChange={(event) => set_password(event.target.value)}></Input>
-      </Group>
+        <Group>
+          <Label htmlFor="password">Password</Label>
+          <Input type="password" onChange={(event) => set_password(event.target.value)}></Input>
+        </Group>
 
-      TODO forgotten 
+        TODO forgotten 
 
-      <Group more_margin>
-        <SignInButton type="submit" >SIGN IN</SignInButton>
-      </Group>
+        <Group more_margin>
+          <SignInButton type="submit" >SIGN IN</SignInButton>
+        </Group>
 
-    </form>
+      </form>
    </Container >
 
   </React.Fragment>
   )
 }
+
 
 // Style 
 const Background = styled.div`
@@ -212,9 +192,5 @@ const SignInButton = styled.button`
   }
 
 `;
-
-
-
-
 
 export default SignIn; 

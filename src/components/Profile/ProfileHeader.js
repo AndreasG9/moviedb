@@ -81,6 +81,8 @@ const Header = styled.div`
   justify-content: space-between; 
 `; 
 
+
+
 const User = styled.div`
   display: flex;
   flex-direction: row;
@@ -136,14 +138,16 @@ const StatValue = styled.div`
 `; 
 
 export const Nav = styled.nav`
-  width: 50%; 
-  margin: 0 auto; 
+  width: 97.8%; 
+  margin-left: 2%; 
   margin-top: 5%;  
   background-color: #425566; 
   display: flex;
   justify-content: space-between; 
   align-items: center; 
   border: 1px solid #e1e3e5; 
+
+
 `;
 
 export const Link = styled(NavLink)`

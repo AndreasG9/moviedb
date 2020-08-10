@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Routes from "./Routes";
 import { UserContext } from "./context/UserContext.js";
@@ -6,26 +6,23 @@ import axios from "axios";
 
 function App() {
 
-  // TEMP TEMP keep state page refresh, keep session id until signed out
+  // INIT state 
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
 
-  // let init_acc = localStorage.getItem("account"); 
-  // init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true} : JSON.parse(init_acc); 
-
+  let init_acc = localStorage.getItem("account"); 
+  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nacv: ""} : JSON.parse(init_acc); 
 
   const [auth, set_auth] = useState(init_id); 
-  const [account, set_account] = useState({details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: true, active_nav: ""}); 
-
-  //const is_initial_mount = useRef(true); .current true set false useeffect after first render 
+  const [account, set_account] = useState(init_acc); 
 
 
   useEffect( () => {
     // user just signed in, or updated something(rating, watchlist, etc...)
-    console.log("CHANGE"); 
 
-    const update = async () => { 
-
+    const update = async () => {
+       
+      console.log("CHANGE"); 
       let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
 
       // details 
@@ -59,17 +56,20 @@ function App() {
       arr = await get_data(res.data.total_pages, watch_list);
       temp.watchlist = res.data.results.concat(arr); 
 
-      
-      localStorage.setItem("account", JSON.stringify(temp));
+      // lists 
+      let created_lists = `https://api.themoviedb.org/3/account/${id}/lists?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
+      res = await axios.get(created_lists).catch(error => console.log(error)); 
 
-      // lists
+      arr = await get_data(res.data.total_pages, created_lists);
+      temp.lists = res.data.results.concat(arr); 
+
+      localStorage.setItem("account", JSON.stringify(temp));
       set_account(temp);
   }
 
-    if(init_id) update(); // only if signed in do we update 
+    if(account.update) update(); // update when sign in, or make change 
 
-
-  }, [account.update, init_id]);
+  }, [account.update]);
 
 
 

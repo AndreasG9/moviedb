@@ -48,8 +48,10 @@ import { useUserContext } from "../../context/UserContext";
 }
 
 // Style 
+
 const Container = styled.div`
   padding: 8px; 
+  font-family: Roboto;   
 `; 
 
 const Username = styled.button`

@@ -38,11 +38,11 @@ function Profile() {
       const tool_tip = `${film.title} (${year})`; 
 
       return (
-        <div style={{display: "flex", flexDirection: "column", alignItems:"center"}} key={film.id}>
+        <Film key={film.id}>
           <ReactTooltip></ReactTooltip>
           <MediumPoster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`} key={film.id} onClick={() => handle_film(film.id, film.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
-          <Rating>{film.rating}</Rating>
-        </div>
+          <YourRating>{film.rating}</YourRating>
+        </Film>
       )
     });
   }
@@ -61,26 +61,22 @@ function Profile() {
   function lists_preview(){
     // similar to watchList_prevew, but three lists 
     if(user !== undefined){
-      const three_lists = user.account.lists.slice(0, 3); 
+     // const three_lists = user.account.lists.slice(0, 3); 
 
-      return ( three_lists.map( (list) => {
+      
 
-        return (
-        <Preview> 
-          {list.map((film) => (
-            <MiniPoster src={`https://image.tmdb.org/t/p/w92/${film.poster_path}`} key={film.id}></MiniPoster>
-          ))}
-        </Preview>
-      )})
-      )
+      // return ( three_lists.map( (list) => {
+
+      //   return (
+      //   <Preview> 
+      //     {list.map((film) => (
+      //       <MiniPoster src={`https://image.tmdb.org/t/p/w92/${film.poster_path}`} key={film.id}></MiniPoster>
+      //     ))}
+      //   </Preview>
+      // )})
+      // )
+    }
   }
-  }
-
-  // function get_count(){
-  //   // not undefined, pass string 
-
-  //   // .rating 
-  // }
 
   
   const history = useHistory();
@@ -141,7 +137,7 @@ function Profile() {
 
 // Style
 const Container = styled.div`
-  margin-top: 2%; 
+  margin-top: 1%; 
   height: 100vh; 
   font-family: Roboto; 
   color: #a5a5a5; 
@@ -152,6 +148,8 @@ const Container = styled.div`
     width: 97.5%; 
     margin: 2% 0 0 0; 
   }
+
+  //border: 1px solid white; 
 `; 
 
 const Body = styled.div`
@@ -229,7 +227,8 @@ const Title = styled.div`
 
 const MediumPoster = styled.img`
   border: 2px solid #a5a5a5;
-  border-radius: 3%;
+  border-radius: 3%;  
+
   &:hover{
     cursor: pointer; 
     border: 2px solid #98fb98; 
@@ -243,7 +242,6 @@ export const MiniPoster = styled.img`
   z-index: ${props => props.z}; 
 `; 
 
-
 const ListsPreviewContainer = styled.div`
   margin-top: 10%; 
 `;
@@ -254,16 +252,19 @@ const ListPreview = styled.div`
   border: 1px solid white; 
 `; 
 
+export const Film = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  margin-bottom: 2%; 
+  border-radius: 3%;
+`;
 
-const Rating = styled.div`
-  border-radius: 50%; 
-  height: 20px;
-  width: 20px; 
-  background-color: #425566; 
-  color: #e1e3e5; 
+const YourRating = styled.div`
+  margin-top: 4%; 
+  width: 154px; 
   text-align: center; 
-  margin-top: 3%;  
-  padding: 6px;  
+  background-color: rgba(66, 85, 102, 1); 
 `; 
 
 export default Profile; 
