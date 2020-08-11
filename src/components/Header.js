@@ -2,10 +2,11 @@ import React, { useState, useContext } from "react";
 import styled from "styled-components"; 
 import SearchBar from "./Search/SearchBar"; 
 import { useHistory } from "react-router-dom"; 
-import CreateAccount from "./auth/CreateAccount"; 
-import SignIn from "./auth/SignIn"; 
+// import CreateAccount from "./auth/CreateAccount"; 
+// import SignIn from "./auth/SignIn"; 
 import ProfileDropDown from "./Profile/ProfileDropDown"; 
 import { UserContext } from "../context/UserContext.js";
+import axios from "axios"; 
 
 function Header(){
 
@@ -17,23 +18,24 @@ function Header(){
   }
 
 
-  const [show_overlay, set_show_overlay] = useState({
-    sign_in: false,
-    create_account: false 
-  })
+  // const [show_overlay, set_show_overlay] = useState({
+  //   sign_in: false,
+  //   create_account: false 
+  // })
 
   // Overlay Component 
-  const handle_create_account = () => set_show_overlay({create_account: true}); // overlay create account component 
-  const handle_sign_in = () => set_show_overlay({sign_in: true}); 
+  // const handle_create_account = () => set_show_overlay({create_account: true}); // overlay create account component 
+  // const handle_sign_in = () => set_show_overlay({sign_in: true}); 
 
-  const close_create_act = () => set_show_overlay({create_account: false}); // close overlay 
-  const close_sign_in = () => set_show_overlay({sign_in: false}); 
+  // const close_create_act = () => set_show_overlay({create_account: false}); // close overlay 
+  // const close_sign_in = () => set_show_overlay({sign_in: false}); 
 
-  function display_overlay(){
-    // display modal to sign in or create an account 
-    if(show_overlay.create_account === true) return <CreateAccount close_create_act={close_create_act}></CreateAccount>
-    if(show_overlay.sign_in === true) return <SignIn close_sign_in={close_sign_in}></SignIn>
-  }
+  // function display_overlay(){
+  //   // display modal to sign in or create an account 
+  //   if(show_overlay.create_account === true) return <CreateAccount close_create_act={close_create_act}></CreateAccount>
+  //   if(show_overlay.sign_in === true) return <SignIn close_sign_in={close_sign_in}></SignIn>
+  // }
+
   
 
   // Context 
@@ -45,11 +47,29 @@ function Header(){
     if(user.auth === true) return <ProfileDropDown></ProfileDropDown>
     else return (
       <React.Fragment>
-        <NavButton onClick={() => handle_sign_in()}>SIGN IN TO VIEW PROFILE</NavButton>
-        <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton>
+        <NavButton onClick={handle_auth}>SIGN IN OR CREATE ACCOUNT w/ TMDB</NavButton>
+        <a id="tmdb-auth" href="/#" target="__blank" style={{transform: "scale(0)"}}>temp</a>   
+        {/* <NavButton onClick={() => handle_create_account()}>CREATE ACCOUNT</NavButton> */}
       </React.Fragment>
     )
   }
+
+
+  const handle_auth = async () => {
+    // get req token, redirect to tmdb to approve req token 
+    const req_token = await axios.get(`https://api.themoviedb.org/3/authentication/token/new?api_key=${process.env.REACT_APP_API_KEY}`).catch(error => console.log(error)); 
+
+    if(req_token.data.success === true){
+      // redirect to tmdb auth 
+
+      const redirect = document.getElementById("tmdb-auth");
+      redirect.href = `https://www.themoviedb.org/authenticate/${req_token.data.request_token}?redirect_to=http://localhost:3000/`;  // TODO 
+      redirect.click(); // trigger 
+
+      localStorage.setItem("temp_access_token", req_token.data.request_token); 
+    } 
+  }
+
 
   return(
     <React.Fragment>
@@ -69,7 +89,7 @@ function Header(){
         <SearchBar></SearchBar>
       </HeaderContainer>
 
-      {display_overlay()}
+      {/* {display_overlay()} */}
     </React.Fragment>
   );
 }
@@ -123,5 +143,4 @@ const NavButton = styled.button`
   }
   
 `;
-
 export default Header; 
