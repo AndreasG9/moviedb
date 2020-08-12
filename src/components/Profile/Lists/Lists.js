@@ -117,8 +117,8 @@ import { useHistory } from "react-router-dom";
   function handle_list(list){
     // go to list (use film comp to display)
 
-    const path =  list.name.replace(/\s/g , "-"); 
-    history.push(`/user/${user.account.details.username}/lists/${path}`, {list: list});
+    const path = list.name.replace(/\s/g , "-"); 
+    history.push(`/user/${user.account.details.username}/list/${path}`, {list: list});
   }
 
 
@@ -126,6 +126,8 @@ import { useHistory } from "react-router-dom";
     // create a new list 
     // go to create list! 
     // /user/username/list/new 
+
+    history.push(`/user/${user.account.details.username}/list/new`);
   }
 
 

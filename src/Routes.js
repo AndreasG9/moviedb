@@ -9,6 +9,7 @@ import ProfilePage from "./pages/User/ProfilePage.js";
 import UserFilmsPage from "./pages/User/UserFilmsPage.js";  
 import UserListsPage from "./pages/User/UserListsPage.js";  
 import Error from "./pages/Page404"; 
+import NewList from "./components/Profile/Lists/NewList"; 
 
 const Routes = () => (
     <Router>
@@ -69,20 +70,26 @@ const Routes = () => (
         component={UserFilmsPage}>
       </Route>
 
+      <Route
+        path="/user/:username/list/new"
+        component={NewList}>
+      </Route>
       
       <Route 
-        path="/user/:username/lists/:list" 
+        path="/user/:username/list/:list" 
         render = { props => (
           <UserFilmsPage
             list={props.location.state.list}>
           </UserFilmsPage>
-        )}
-        />
+        )}/>
+
+    
 
       <Route
         path="/user/:username/lists"
         component={UserListsPage}>
       </Route>
+
 
       <Route
         path="/404"
