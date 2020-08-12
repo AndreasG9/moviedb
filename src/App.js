@@ -6,25 +6,65 @@ import axios from "axios";
 
 function App() {
 
+
   // INIT state 
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
 
   let init_acc = localStorage.getItem("account"); 
-  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nacv: ""} : JSON.parse(init_acc); 
+  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""} : JSON.parse(init_acc); 
 
   const [auth, set_auth] = useState(init_id); 
   const [account, set_account] = useState(init_acc); 
 
 
   useEffect( () => {
+
+    const get_session = async () => {
+      // only called when log in for the first time, will trigger context update to get all of a users data 
+      // get approved req. token from url
+
+      const q_string = new URLSearchParams(window.location.search);
+      const success = q_string.get("approved");
+
+      if(success){
+        // get session_id 
+        const approved_req_token = q_string.get("request_token");
+
+        const res = await axios.post(`https://api.themoviedb.org/3/authentication/session/new?api_key=${process.env.REACT_APP_API_KEY}`, {"request_token" : approved_req_token})
+        .catch(error => console.log(error));
+        
+
+        if(res.data.success){
+          console.log("logged in"); 
+          localStorage.setItem("session_id", res.data.session_id); // persist if reload page          
+          const temp = {...account};
+          temp.update = true; 
+          set_account(temp); 
+          set_auth(true);
+          
+          
+          
+          //window.location.reload(false); // will reset popular films this week pagination back to the start   
+        }
+      }
+    }
+
+    get_session();
+
+  }, [account]); 
+
+
+  useEffect( () => {
     // user just signed in, or updated something(rating, watchlist, etc...)
 
     const update = async () => {
-       
       console.log("CHANGE"); 
+
       let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
 
+      
+       
       // details 
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
       let res = await axios.get(detail).catch((error) => console.log(error)); 
@@ -38,6 +78,7 @@ function App() {
       // ratings
       let rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&sort_by=created_at.desc`;
       res = await axios.get(rated_movies).catch((error) => console.log(error)); 
+
       
       let arr = await get_data(res.data.total_pages, rated_movies);
       temp.ratings = res.data.results.concat(arr); 
@@ -65,6 +106,8 @@ function App() {
 
       localStorage.setItem("account", JSON.stringify(temp));
       set_account(temp);
+
+      console.log(temp); 
   }
 
     if(account.update) update(); // update when sign in, or make change 

@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
 import ProfileHeader from "./ProfileHeader"; 
+//import axios from "axios"; 
 
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
@@ -61,21 +62,31 @@ function Profile() {
   function lists_preview(){
     // similar to watchList_prevew, but three lists 
     if(user !== undefined){
-     // const three_lists = user.account.lists.slice(0, 3); 
+     const three_lists = user.account.lists.slice(0, 3); 
 
-      
+    
+    // POSTER PATH (selected when create list)
 
-      // return ( three_lists.map( (list) => {
-
-      //   return (
-      //   <Preview> 
-      //     {list.map((film) => (
-      //       <MiniPoster src={`https://image.tmdb.org/t/p/w92/${film.poster_path}`} key={film.id}></MiniPoster>
-      //     ))}
-      //   </Preview>
-      // )})
-      // )
+     if(three_lists.length > 0){
+        return (
+          three_lists.map( list => (
+            <div key={list.id} style={{margin: "3% 0", display: "flex", border: "1px solid white", padding: "2px"}} onClick={() => handle_list(list)}>
+              <ListTitle>{list.name}</ListTitle>
+              <ListTitle smaller>{list.item_count} {film_or_films(list.item_count)}</ListTitle>
+            </div>
+          ))
+        )
+      }
     }
+  }
+
+  function film_or_films(count){
+    let res = ""; 
+
+    if(count === 1) res = "film"; 
+    else res = "films";
+
+    return res; 
   }
 
   
@@ -86,6 +97,10 @@ function Profile() {
     const params = title.toString().toLowerCase().replace( / /g, "-"); 
     const target = `/film/${params}`; // ex. search The Witch /film/the-witch
     history.push(target, {movie_id: id});
+  }
+
+  const handle_list = (list) => {
+    // go to specific list 
   }
 
 
@@ -115,14 +130,14 @@ function Profile() {
           <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
 
           <WatchListPreviewContainer onClick={() => history.push(`/user/${user.account.details.username}/watchlist`)}>
-            <Title>WATCHLIST <span>{user.account.watchlist.length}</span></Title>
+            <Title>Watchlist<span>{user.account.watchlist.length}</span></Title>
             <PreviewRight>
               {watchlist_preview()}
             </PreviewRight>
           </WatchListPreviewContainer>
 
-          <ListsPreviewContainer>
-          <Title>RECENT LISTS <span>length</span></Title>
+          <ListsPreviewContainer >
+            <Title>Recent Lists <span>{user.account.lists.length}</span></Title>
             <ListPreview>
               {lists_preview()}
             </ListPreview>
@@ -148,8 +163,6 @@ const Container = styled.div`
     width: 97.5%; 
     margin: 2% 0 0 0; 
   }
-
-  //border: 1px solid white; 
 `; 
 
 const Body = styled.div`
@@ -174,17 +187,18 @@ const Preview = styled.div`
 `; 
 
 const Info = styled.div`
-
   display: flex;
   flex-direction: column; 
+  width: ${props => props.right ? "20vw" : "80vw"}; 
 
-  //marign-left: ${props => props.right ? "20%" : "0"}; 
-  width: ${props => props.right ? "34vw" : "66vw"}; 
+  @media only screen and (max-width: 1500px) {
+    width: ${props => props.right ? "33vw" : "67vw"}; 
+  }
 `; 
 
 const Bio = styled.div`
   // temp 
-  height: 300px;
+  height: 240px;
   word-wrap: break-word;
 `; 
 
@@ -243,13 +257,20 @@ export const MiniPoster = styled.img`
 `; 
 
 const ListsPreviewContainer = styled.div`
-  margin-top: 10%; 
+  margin-top: 20%; 
 `;
 
 const ListPreview = styled.div`
   display: flex;
   flex-direction: column; 
-  border: 1px solid white; 
+`; 
+
+const ListTitle = styled.div`
+  font-size: 1.1em; 
+  margin-left: ${props => props.smaller ? "3%" : ""}; 
+  opacity: ${props => props.smaller ? ".3" : ""}; 
+  color: ${props => props.smaller ? "" : "#e1e3e5"}; 
+  
 `; 
 
 export const Film = styled.div`
