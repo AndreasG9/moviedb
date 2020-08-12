@@ -2,11 +2,12 @@ import React from "react";
 import Header from "../../components/Header";
 import Films from "../../components/Profile/Films.js"; 
 
-function UserFilmsPage() {
+function UserFilmsPage( { list } ) {
+
   return (
     <div>
       <Header></Header>
-      <Films></Films>
+      <Films list={list}></Films>
     </div>
   )
 }

@@ -45,7 +45,7 @@ const Routes = () => (
         path="/person"
         render = { (props) => (
           <PersonPage
-          credit={props.location.state.credit}>
+            credit={props.location.state.credit}>
           </PersonPage>)}>
       </Route>
  
@@ -68,6 +68,16 @@ const Routes = () => (
         path="/user/:username/favorites"
         component={UserFilmsPage}>
       </Route>
+
+      
+      <Route 
+        path="/user/:username/lists/:list" 
+        render = { props => (
+          <UserFilmsPage
+            list={props.location.state.list}>
+          </UserFilmsPage>
+        )}
+        />
 
       <Route
         path="/user/:username/lists"

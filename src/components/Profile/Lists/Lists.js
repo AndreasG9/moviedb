@@ -3,14 +3,17 @@ import styled from "styled-components";
 import { Container, Header, FiltersContainer, Select, Option } from "../Films"; 
 import ReactPaginate from 'react-paginate';
 import axios from "axios"; 
-import { UserContext } from "../../../context/UserContext"; 
+import { UserContext, useUserContext } from "../../../context/UserContext"; 
 import ProfileHeader from "../ProfileHeader"; 
+import { useHistory } from "react-router-dom"; 
 
  function Lists() {
   // other User pages link to film comp., lists goes here first to preview lists, them to films comp.  
 
   const user = useContext(UserContext); 
-  console.log(user.account.details); 
+  const history = useHistory(); 
+  const { set_account } = useUserContext(); 
+  const { account } = useContext(UserContext); 
 
   // easier to call 
   let lists = user.account.lists.length !== 0 ? user.account.lists : []; 
@@ -21,6 +24,28 @@ import ProfileHeader from "../ProfileHeader";
   const [results, set_results] = useState(lists); 
   const [current, set_current] = useState([]); 
   const [sort, set_sort] = useState("When Updated"); 
+  const [lists_data, set_lists_data] = useState([]); 
+
+
+  useEffect( () => {
+    // lists with all their content 
+
+    const get_lists = async () => {
+
+      let temp = []; 
+
+      for(let i=0; i<lists.length; ++i){
+        const res = await axios.get(`https://api.themoviedb.org/3/list/${lists[i].id}?api_key=${process.env.REACT_APP_API_KEY}`).catch(error => console.log(error)); 
+        temp = temp.concat(res.data);
+      }
+
+      set_lists_data(temp); 
+      set_results(temp);
+    }
+
+    get_lists(); 
+
+  }, [lists, account, set_account]);
 
 
   useEffect( () => {
@@ -54,17 +79,48 @@ import ProfileHeader from "../ProfileHeader";
 
 
 
-  // function list_preview(){
+  function get_list_preview(list){
+    // preview 3 items for each list 
+    
 
-  // }
+    if(list.length > 0){
+      return (
+        <React.Fragment key={list.id}>
+          {list.map( item => (
+            <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id}></MiniPoster>
+          ))}
+        </React.Fragment>
+      )
+    }
+  }
 
-  // function handle_list(){
-  //   // go to list (use film comp to display)
-  // }
+  function film_or_films(count){
+    let res = ""; 
+
+    if(count === 1) res = "film"; 
+    else res = "films";
+
+    return count + " " + res; 
+  }
+
+
+  function get_short_desc(list){
+    if(list.description.length < 50) return list.description;
+    else return (list.description.slice(1, 50) + "..."); 
+  }
+
 
   const handle_page_change = (page_num) => { 
     set_current_page(page_num.selected+1); 
   }
+
+  function handle_list(list){
+    // go to list (use film comp to display)
+
+    const path =  list.name.replace(/\s/g , "-"); 
+    history.push(`/user/${user.account.details.username}/lists/${path}`, {list: list});
+  }
+
 
   const handle_new_list = () => {
     // create a new list 
@@ -74,7 +130,7 @@ import ProfileHeader from "../ProfileHeader";
 
 
   // testing 
-  const temp = `https://image.tmdb.org/t/p/w92//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
+  //const temp = `https://image.tmdb.org/t/p/w92//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
 
   return (
     <Container>
@@ -97,22 +153,19 @@ import ProfileHeader from "../ProfileHeader";
       <ListsContainer>
 
 
+        {lists_data.map(list => (
+          <List key={list.id}>
+            <ListPreview onClick={() => handle_list(list)}>
+              {get_list_preview(list.items)}
+            </ListPreview>
 
-        {/* { [...Array(10)].map(element => (
-          <List>
-          <ListPreview>
-            <MiniPoster src={temp}></MiniPoster>
-            <MiniPoster src={temp}></MiniPoster>
-            <MiniPoster src={temp}></MiniPoster>
-            <MiniPoster src={temp}></MiniPoster>
-          </ListPreview>
-
-          <div style={{display: "flex", flexDirection: "column", paddingLeft: "5px"}}>
-            <ListTitle>List of Cleo from 5 to 7</ListTitle>
-            <ListItemCount> 40 films</ListItemCount>
-          </div>
-        </List>
-        ))} */}
+            <div style={{display: "flex", flexDirection: "column", paddingLeft: "5px"}}>
+            <ListTitle>{list.name}</ListTitle>
+            <ListItemCount>{film_or_films(list.item_count)}</ListItemCount>
+            <ListShortDesc>{get_short_desc(list)}</ListShortDesc>
+            </div>
+          </List>
+        ))}
       </ListsContainer>
      
 
@@ -124,7 +177,6 @@ import ProfileHeader from "../ProfileHeader";
         containerClassName = "paginate-container"
         pageClassName = "page"
         pageLinkClassName = "page-link"
-
 
         pageCount = {TOTAL_POSTS / POSTS_PER_PAGE}
         pageRangeDisplayed = {4}
@@ -181,6 +233,12 @@ const ListTitle = styled.div`
 
 const ListItemCount = styled.div`
   font-size: .8em; 
+  opacity: .4; 
+`; 
+
+const ListShortDesc = styled.div`
+  font-size: .9em;
+  margin-top: 5%; 
 `; 
 
 const NewListBtn = styled.button`

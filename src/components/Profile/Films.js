@@ -6,14 +6,17 @@ import ReactTooltip from "react-tooltip";
 import ReactPaginate from "react-paginate";
 import ProfileHeader from "./ProfileHeader"; 
 
-function Films() {
+function Films( {list} ) {
   // a users favorites, watchlist, or ratings w/ poster display date added (watchlist) or RATING (fav, rating) 
 
   const user = useContext(UserContext);  
+  
   const ACTIVE_NAV = user.account.details.length !== 0 ? user.account.active_nav : "";  // get active nav/ to display proper results 
 
   // easier to call 
   let init_results = user.account.details.length !== 0 ? user.account[ACTIVE_NAV] : ""; 
+  if(ACTIVE_NAV === "lists") init_results = list.items; 
+
 
   const POSTS_PER_PAGE = 30;
   const TOTAL_POSTS = user.account.details.length !== 0  ? user.account[ACTIVE_NAV].length : ""; 
@@ -56,31 +59,40 @@ function Films() {
 
   function get_header(){
     let msg = "";  
+    console.log(list); 
 
     if(ACTIVE_NAV === "watchlist") msg = `You Want to See ${user.account.watchlist.length} films`; 
     else if(ACTIVE_NAV === "favorites") msg = `You have ${user.account.favorites.length} of favorites`;
     else if(ACTIVE_NAV === "ratings") msg = `You Have Rated ${user.account.ratings.length} Films`;
-    else if(ACTIVE_NAV === "list") msg = `LIST NAME`;
+    else if(ACTIVE_NAV === "lists") msg = `${list.name}`;
 
     return <Header>{msg}</Header>
   }
 
-  
+  function include_desc(){
+    // only iff a list 
+
+    if(ACTIVE_NAV === "lists"){
+      return (
+        <Description>
+          {list.description}
+        </Description>
+      )
+    }
+
+  }
+ 
   function get_films_context(film){
     // watchlist, ratings, or a specific list 
-
 
     if(ACTIVE_NAV === "watchlist"){
       const found = user.account.ratings.find(item => item.id === film.id); // maybe you seen the film, but want to remind yourself to re-watch 
 
-      if(found) return <Rating>{found.rating}</Rating>
-      else return <Rating>No rating found</Rating>
+      if(found) return <Rating>{found.rating}</Rating>;
+      else return <Rating>No rating found</Rating>;
     }
 
-    else if(ACTIVE_NAV === "favorites" || ACTIVE_NAV === "ratings") return <Rating>{film.rating}</Rating>
-    else if(ACTIVE_NAV === "list"){
-
-    }
+    else if(ACTIVE_NAV === "favorites" || ACTIVE_NAV === "ratings") return <Rating>{film.rating}</Rating>; 
   }
 
   const handle_sorting = (event) => {
@@ -131,6 +143,8 @@ function Films() {
 
           </Select>
       </FiltersContainer>
+
+      {include_desc()}
 
       <FilmsContainer>
       {current.map( film => {
@@ -227,7 +241,7 @@ export const NavLink = styled(Link)`
   pointer-events:  ${(props) => props.active_nav ? "none" : "auto"}; 
 `;
 
-const Header = styled.div`
+export const Header = styled.div`
   margin-top: 4%;  
   margin-left: 2%; 
 `; 
@@ -314,6 +328,18 @@ const Rating = styled.div`
   width: 154px; 
   text-align: center; 
   background-color: rgba(66, 85, 102, 1); 
+`; 
+
+const Description = styled.div`
+  width: 72%;
+  margin: 3% 2%; 
+  padding-bottom: 5px; 
+  border-bottom: 2px dotted #a5a5a5;
+
+  @media only screen and (max-width: 1100px) {
+    width: 86%;
+ }
+
 `; 
 
 export default Films; 

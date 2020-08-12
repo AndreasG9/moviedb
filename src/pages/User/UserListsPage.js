@@ -1,6 +1,6 @@
 import React from "react"; 
 import Header from "../../components/Header";
-import Lists from "../../components/Profile/Lists"; 
+import Lists from "../../components/Profile/Lists/Lists"; 
 
 function UserListsPage() {
   return (
