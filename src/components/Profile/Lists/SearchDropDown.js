@@ -4,20 +4,20 @@ import { Input } from "../../Search/SearchBar";
 import axios from "axios"; 
 
 
-function SearchDropDown() {
+function SearchDropDown( {add_film} ) {
 
-
-  const [query, set_query] = useState("");
   const [results, set_results] = useState([]);
   const [active, set_active] = useState(false); 
 
   const get_search = async (event) => {
     // just page 1 results 
 
-    const search = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&query=${event.target.value}&page=1`; 
-    const res = await axios.get(search); 
-    set_results(res.data.results); 
-    set_active(true); 
+    if(event.target.value !== ""){
+      const search = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&query=${event.target.value}&page=1`; 
+      const res = await axios.get(search); 
+      set_results(res.data.results); 
+      set_active(true); 
+    }
   }
 
   function get_year(result){
@@ -25,26 +25,29 @@ function SearchDropDown() {
     return year; 
   }
 
-  // onMouseLeave={() => set_active(false)}
+
+  const add_result = async (result) => {
+    // relay selected film to form, to be added 
+    add_film(result); 
+    set_active(false); 
+    document.getElementById("add-film").value=""; // clear 
+  }
 
   return (
     <Container>
 
       <div style={{display: "flex", flexDirection:"column", position: "relative", }}>
         <Label>ADD FILMS</Label>
-        <Input placeholder="Enter the name of a film..." style={{width: "45%", fontSize: ".8em"}} onChange={get_search} ></Input>
+        <Input placeholder="Enter the name of a film..." style={{width: "45%", fontSize: ".8em"}} onChange={get_search} id="add-film"></Input>
       </div>
 
-      <DropDown active={active}>
+      <DropDown active={active} >
       {
         results.map( result => (
-          <DropDownItem>{result.title + " (" + get_year(result) + ")"}</DropDownItem>
+          <DropDownItem onClick={() => add_result(result)} key={result.id}>{result.title + " (" + get_year(result) + ")"}</DropDownItem>
         ))
       }
       </DropDown>
-
-
-
       
     </Container>
   )
@@ -64,14 +67,12 @@ const DropDown = styled.div`
   position: absolute; 
 
   display: ${(props => props.active ? "block" : "none")}; 
-  display: block; 
   background-color: #425566; 
   width: 527px;  
   height: 200px; 
   z-index: 9;
   border: 1px solid white; 
   overflow: auto; 
-
 `; 
 
 const DropDownItem = styled.div`
@@ -85,28 +86,17 @@ const DropDownItem = styled.div`
 
 `; 
 
-
 const Label = styled.label`
-  background-color:  #00B200; 
+  background-color: #58a9b6; 
   padding: 5px; 
   text-align: center; 
   font-size: .8em; 
-  margin-bottom: 2%; 
-  opacity: .8; 
+  margin: 2% 0; 
 `; 
 
 const Results = styled.div`
   border: 1px solid white;
   font-size: .5em ;
-
 `;
-
-const Result = styled.div`
-
-`; 
-
-
-
-
 
 export default SearchDropDown; 
