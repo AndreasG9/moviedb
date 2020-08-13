@@ -1,33 +1,29 @@
-import React, {  useEffect, useState, useContext } from "react";
+import React, {  useState, useContext, } from "react";
 import styled from "styled-components"; 
 import axios from "axios"; 
 import { Input } from "../../Search/SearchBar"; 
 import Header from "../../Header"; 
 import SearchDropDown from "./SearchDropDown"; 
-import { UserContext } from "../../../context/UserContext"; 
-import { useHistory } from "react-router-dom"; 
+import { useHistory, } from "react-router-dom"; 
+import { useUserContext, UserContext } from "../../../context/UserContext"; 
 
 
-function NewList() {
+function NewList() {  
 
   // ONE PAGE ONE PAGE
 
-  // INPUT: NAME LIST, DESC. 
-  // private -- NEEDS access token 
-  // (SEARCH DROP DOWN COMP) (POSTER, MOVIE TITLE, and YEAR)
-  // CHOOSE IMAGE
+
 
   const history = useHistory(); 
   const user = useContext(UserContext); 
 
+  const { set_account } = useUserContext(); 
+  const { account } = useContext(UserContext); 
+
   const [list_name, set_list_name] = useState("");
   const [list_desc, set_list_desc] = useState(""); 
   const [added_films, set_added_films] = useState([]); 
-
-  const header = {
-    "Content-Type" : "application/json;charset=utf-8"
-  }
-
+ // const [block, set_block] = useState(true);
 
 
   function get_year(result){
@@ -43,7 +39,7 @@ function NewList() {
     temp = temp.concat(film);
 
     set_added_films(temp); 
-    console.log(temp); 
+    //console.log(temp); 
   }
 
   const handle_cancel = () => {
@@ -61,16 +57,50 @@ function NewList() {
     set_added_films(temp); 
   }
 
-  const handle_submit = (event) => {
-    // create LIST, add each Item in added_films arr 
+  const handle_submit = async (event) => {
+    // create LIST, add each item in the added_films arr 
 
     event.preventDefault(); 
 
 
-    const new_list = `https://api.themoviedb.org/3/list?api_key=${process.env.REACT_APP_API_KEY}`; 
+    if(list_name.trim() === "") {
+      // only required input 
+      alert("Name of List required"); 
+      return; 
+    }
 
-    // body: name, desc, language, 
-    // header 
+
+    let res = await axios.post(`https://api.themoviedb.org/3/list?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+      {
+        "name": list_name,
+        "description": list_desc,
+        "language": "en"
+      }).catch(error => console.log(error)); 
+
+    if(res === undefined) return; 
+
+    if(res.data.success){
+      // add items to recently created list 
+
+     const list_id = res.data.list_id; 
+
+      for(let i=0; i<added_films.length; ++i){
+
+        res = await axios.post(`https://api.themoviedb.org/3/list/${list_id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+          {
+            media_id: added_films[i].id
+          }).catch(error => console.log(error));  
+      }
+    }
+
+    
+    //UPDATE CONTEXT FOR APP 
+    let temp = {...account};
+    temp.update = true;
+    set_account(temp);
+
+    // go to user lists to see update 
+    history.push(`/user/${user.account.details.username}/lists`);
   }
 
 
@@ -78,6 +108,8 @@ function NewList() {
   return (
     <React.Fragment>
       <Header></Header>
+
+
 
       <Container>
 
@@ -137,17 +169,17 @@ export const Container = styled.div`
   font-family: Roboto;
 `; 
 
-const Group = styled.div`
+export const Group = styled.div`
   display: flex;
   flex-direction: column; 
   margin-bottom: 3%;  
 `;
 
-const Label = styled.label`
+export const Label = styled.label`
   padding-bottom: 2px; 
 `; 
 
-const TextArea = styled.textarea`
+export const TextArea = styled.textarea`
   background-color: #2b3440;
   border: none;  
   font-size: 1em;
@@ -160,21 +192,23 @@ const TextArea = styled.textarea`
   }
 `; 
 
-const AddedItems = styled.div`
-
+export const AddedItems = styled.div`
   border: 1px solid blue;
-
   margin-top: 1%; 
 `; 
 
-export const Btn = styled.div`
+export const Btn = styled.button`
   background-color: ${props => props.cancel ? "#273038" : "#00B200"}; 
   border-radius: 8%;
   padding: 5px;
-  //font-size: 1.0em;  
+  font-family: Roboto; 
+  font-size: 1.0em;  
+  border: none;
+  outline: none; 
   text-align: center; 
   margin-right: 3px; 
   width: 110px; 
+   
 
   &:hover{
     cursor: pointer;
