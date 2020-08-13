@@ -1,13 +1,30 @@
-import React, { useState, useEffect} from "react"; 
+import React, { useState, useEffect, useContext } from "react"; 
 import axios from "axios"; 
 import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 import Tabs from "./Tabs/Tabs.js";
 import Backdrops from "./Backdrops";
+import AccountLog from "./AccountLog"; 
+import { UserContext } from "../../context/UserContext.js";
 
 
 function Film( { movie_id }) {    
   // ex. /film/the-thing
+
+  let id;
+
+  if(movie_id === undefined){
+    // linked in a new tab, state not carried over, read from URL 
+
+    const q_string = new URLSearchParams(window.location.search);
+    let success = q_string.get("movie_id");
+    if(success) id = success; 
+  }
+
+  else id = movie_id; 
+
+
+  const user = useContext(UserContext); 
 
   const [result, set_result] = useState([]);
   const [year, set_year] = useState(""); 
@@ -28,9 +45,10 @@ function Film( { movie_id }) {
     // bunch of diff state vars  
 
     const fetch_data = async () => {
-      const movie = `https://api.themoviedb.org/3/movie/${movie_id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
-      const credits = `https://api.themoviedb.org/3/movie/${movie_id}/credits?api_key=${process.env.REACT_APP_API_KEY}`;
-      const release_dates = `https://api.themoviedb.org/3/movie/${movie_id}/release_dates?api_key=${process.env.REACT_APP_API_KEY}`;  
+
+      const movie = `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
+      const credits = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.REACT_APP_API_KEY}`;
+      const release_dates = `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${process.env.REACT_APP_API_KEY}`;  
 
       // movie data 
       let data = await axios.get(movie); 
@@ -61,15 +79,15 @@ function Film( { movie_id }) {
       data = await axios.get(release_dates);
 
       const found = data.data.results.find( (result) => result.iso_3166_1 === "US");
-      let certification = found.release_dates[0].certification || "no  mpaa rating"; 
+      let certification; 
+      
+      certification = found.release_dates[0].certification || "no  mpaa rating"; 
       set_rating(certification); 
     }
 
     fetch_data(); 
 
-  }, [movie_id]); 
-
-
+  }, [id]); 
 
   function display_directors(){
     // if more than 2, link to full list 
@@ -111,6 +129,11 @@ function Film( { movie_id }) {
     history.push(target, {credit: director_credit});
   }
 
+  function display_context(){
+    // Comp that allows user to rate, fav, add to watchlist ... 
+    if(user.auth === true) return <AccountLog result={result}></AccountLog>;
+    else return <NoLog><Msg>sign in to log, rate, ...</Msg></NoLog>;
+  }
 
   return (
     <React.Fragment>
@@ -142,8 +165,8 @@ function Film( { movie_id }) {
             <Overview>{result.overview}</Overview>
           </InfoContainer> 
 
-          <RatingContainer>
-          </RatingContainer> 
+          {display_context()}
+
           
         </TopContainer>
 
@@ -153,7 +176,7 @@ function Film( { movie_id }) {
           </TabsContainer>
         </div>
 
-        <Backdrops movie_id={movie_id}></Backdrops>
+        <Backdrops movie_id={id}></Backdrops>
 
       </Container>
     </React.Fragment>
@@ -178,7 +201,6 @@ const TopContainer = styled.div`
   display: flex;
   flex-direction: row; 
   align-items: flex-start; 
-  //border: 2px solid white; 
 `;
 
 const InfoContainer = styled.div`
@@ -201,7 +223,7 @@ const TitleYearContainer = styled.div`
   display: flex;
   align-items: center; 
   flex-wrap: wrap;
-  margin-left: 5%; 
+  margin-left: 4%; 
 `; 
 
 const Title = styled.div`
@@ -248,21 +270,12 @@ const Director = styled.h3`
   }
 `;
 
-// PLACEHOLDER for component 
-const RatingContainer = styled.div`
-  border: 2px solid green; 
-  // margin-top: 20%; 
-  // margin-right: 2%; 
-
-  width: 250px; 
-  height: 300px; 
-  
-`;
-
 const TagLineRatingContainer = styled.div`
   z-index: 1;
   display: flex; 
   flex-direction: row; 
+  //flex-wrap: wrap; 
+  width: 90%; 
 `;
 
 const TagLine = styled.div`
@@ -302,6 +315,29 @@ const TabsContainer = styled.div`
   height: 350px; 
   width: 830px; 
 `;
+
+
+const NoLog = styled.div`
+  font-family: Roboto; 
+  background-color: #425566; 
+  
+  border-radius: 3%;
+  z-index: 1; 
+  margin-right: 2%; 
+
+  width: 300px;
+  height: 200px; 
+
+  font-size: 1.2em; 
+
+  color: #a5a5a5; 
+`; 
+
+const Msg = styled.div`
+  color: #e1e3e5; 
+  text-align: center; 
+  margin-top: 30%; 
+`; 
 
 export default Film; 
 
