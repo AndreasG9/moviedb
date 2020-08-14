@@ -1,15 +1,17 @@
 import React, { useState, useContext } from "react";
-import { UserContext } from "../../context/UserContext"; 
-import { Link } from "react-router-dom"; 
+import { useUserContext, UserContext } from "../../context/UserContext"; 
+import { useHistory, Link } from "react-router-dom"; 
 import styled from "styled-components"; 
 import axios from "axios"
-
-import { useUserContext } from "../../context/UserContext"; 
 
  function ProfileDropDown() {
 
   const user = useContext(UserContext);
+  const { set_account } = useUserContext(); 
+  const { account } = useContext(UserContext); 
   const { set_auth } = useUserContext();
+
+  const history = useHistory(); 
 
   const [active, set_active] = useState(false); 
 
@@ -24,11 +26,19 @@ import { useUserContext } from "../../context/UserContext";
 
     localStorage.clear();  
     set_auth(false); // logout
-    // go back to home ??? 
+    history.push("/");  // go back to home ??? maybe change 
   }
 
   function get_username() {
     if(user !== undefined) return user.account.details.username; 
+  }
+
+  const handle_active = (selected) => {
+    // reuse film comp. for 4 pages, want to know the active page (update context), but might just parse the url path if open link in new tab ... 
+    const temp = {...account};
+    temp.active_nav = selected; 
+    set_account(temp);
+    localStorage.setItem("account", JSON.stringify(temp)); 
   }
 
   return (
@@ -36,11 +46,42 @@ import { useUserContext } from "../../context/UserContext";
       <Username active={active}> {get_username()}</Username>
       <DownArr></DownArr>
       <DropDown active={active}>
-        <Link className="link-style" to={`/user/${user.account.details.username}`}>Profile</Link>
-        <Link className="link-style" to={`/user/${user.account.details.username}/favorites`}>Favorites</Link>
-        <Link className="link-style" to={`/user/${user.account.details.username}/ratings`}>Ratings</Link>
-        <Link className="link-style" to={`/user/${user.account.details.username}/watchlist`}>Watchlist</Link>
-        <Link className="link-style" to={`/user/${user.account.details.username}/lists`}>Lists</Link>
+
+        <Link 
+          className="link-style"
+          to={`/user/${user.account.details.username}`}
+          onClick={() => handle_active("profile")}>
+          Profile
+        </Link>
+
+        <Link 
+          className="link-style" 
+          to={`/user/${user.account.details.username}/ratings`}  
+          onClick={() => handle_active("ratings")}>
+          Ratings
+        </Link>
+
+        <Link 
+          className="link-style" 
+          to={`/user/${user.account.details.username}/favorites`} 
+          onClick={() => handle_active("favorites")}>
+          Favorites
+        </Link>
+
+        <Link 
+          className="link-style" 
+          to={`/user/${user.account.details.username}/watchlist`}
+          onClick={() => handle_active("watchlist")}>
+          Watchlist
+        </Link>
+
+        <Link 
+          className="link-style" 
+          to={`/user/${user.account.details.username}/lists`} 
+          onClick={() => handle_active("lists")}>
+          Lists
+        </Link>
+
         <div className="link-style" onClick={handle_sign_out}>Sign out</div>
       </DropDown>
     </Container>

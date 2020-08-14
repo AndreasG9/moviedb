@@ -102,20 +102,15 @@ function NewList( { list } ) {
 
     let redo = false; 
 
-
     if(list !== undefined && ((init_name !== list_name) || (init_desc !== list_desc))){
       // // have to CREATE a new list, w/ existing data + updated data b/c you changed the title or desc of the list 
 
-      console.log("new list"); 
-      // if(list.name !== list_name) redo = true; 
-      // else if(list.desc !== list_desc) redo = true; 
+      // delete list
 
-      // const res = await axios.delete(`https://api.themoviedb.org/3/list/${list.id}?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`).catch(error => console.log(error)); 
-      // console.log(res); 
-      // //if(res.data.status_code !== 12) return; 
-      // update(); 
-      // history.push(`/user/${user.account.details.username}/lists`); // success 
-      // return; 
+      //set redo to true; 
+      alert("TODO ! ");
+      return; 
+      
     }
 
     let res; 
@@ -135,16 +130,9 @@ function NewList( { list } ) {
     
       if(res.data.success){
         id = res.data.list_id; 
-
-        for(let i=0; i<added_films.length; ++i){
-          res = await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-            {
-              media_id: added_films[i].id
-            }).catch(error => console.log(error));  
-        }
+        add_films(id); 
       }
     }
-
 
     else {
       // easiest way to only update items is to clear the list and just add added_films, 
@@ -176,12 +164,6 @@ function NewList( { list } ) {
     }
 
   }
-
-  // function update(){
-  //   let temp = {...account};
-  //   temp.update = true;
-  //   set_account(temp);
-  // }
 
 
   return (

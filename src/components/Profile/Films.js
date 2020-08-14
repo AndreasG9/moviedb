@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react"; 
 import styled from "styled-components"; 
-import { Link, useHistory } from "react-router-dom"; 
+import { Link, useHistory, useLocation } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
 import ReactPaginate from "react-paginate";
@@ -9,18 +9,32 @@ import ProfileHeader from "./ProfileHeader";
 function Films( {list} ) {
   // a users favorites, watchlist, or ratings w/ poster display date added (watchlist) or RATING (fav, rating) 
 
-  const user = useContext(UserContext);  
+  const user = useContext(UserContext);
+  const location = useLocation();  
+  const history = useHistory(); 
+
+  // init 
+  let ACTIVE_NAV; 
+  let init_results; 
+  let TOTAL_POSTS; 
+
+  // get ACTIVE_NAV from path 
+  const temp = location.pathname.split("/")[3];
+  console.log(temp); 
+  if(temp === "profile" || temp === "ratings" || temp === "favorites" || temp === "watchlist" || temp === "lists" || temp === "list") ACTIVE_NAV = temp;
+  else history.push("/404"); // url manually entered path and its not recognized/ invalid  
   
-  const ACTIVE_NAV = user.account.details.length !== 0 ? user.account.active_nav : "";  // get active nav/ to display proper results 
-
   // easier to call 
-  let init_results = user.account.details.length !== 0 ? user.account[ACTIVE_NAV] : ""; 
-  if(ACTIVE_NAV === "lists") init_results = list.items; 
-
-
-  const POSTS_PER_PAGE = 30;
-  const TOTAL_POSTS = user.account.details.length !== 0  ? user.account[ACTIVE_NAV].length : ""; 
-
+  if(ACTIVE_NAV === "list") {
+    init_results = list.items; 
+    TOTAL_POSTS = list.item_count; 
+  }
+  else {
+    init_results = Object.keys(user.account.details).length !== 0 ? user.account[ACTIVE_NAV] : ""; 
+    TOTAL_POSTS = Object.keys(user.account.details).length !== 0  ? user.account[ACTIVE_NAV].length : ""; 
+  }
+  
+  const POSTS_PER_PAGE = 30; 
   const [current_page, set_current_page] = useState(1); 
   const [results, set_results] = useState(init_results); 
   const [current, set_current] = useState([]); 
@@ -59,7 +73,6 @@ function Films( {list} ) {
 
   function get_header(){
     let msg = "";  
-    console.log(list); 
 
     if(ACTIVE_NAV === "watchlist") msg = `You Want to See ${user.account.watchlist.length} films`; 
     else if(ACTIVE_NAV === "favorites") msg = `You have ${user.account.favorites.length} of favorites`;
@@ -75,24 +88,24 @@ function Films( {list} ) {
     if(ACTIVE_NAV === "lists"){
       return (
         <Description>
-          {list.description}
+          {list.description || "no description"}
+          <Button onClick={handle_list_edit}>Edit or Delete This List...</Button>
         </Description>
       )
     }
-
   }
  
   function get_films_context(film){
     // watchlist, ratings, or a specific list 
 
-    if(ACTIVE_NAV === "watchlist"){
+    if(ACTIVE_NAV === "watchlist" || ACTIVE_NAV === "lists"){
       const found = user.account.ratings.find(item => item.id === film.id); // maybe you seen the film, but want to remind yourself to re-watch 
 
       if(found) return <Rating>{found.rating}</Rating>;
       else return <Rating>No rating found</Rating>;
     }
 
-    else if(ACTIVE_NAV === "favorites" || ACTIVE_NAV === "ratings") return <Rating>{film.rating}</Rating>; 
+    else if(ACTIVE_NAV === "ratings") return <Rating>{film.rating}</Rating>; 
   }
 
   const handle_sorting = (event) => {
@@ -104,11 +117,15 @@ function Films( {list} ) {
     set_current_page(page_num.selected+1); 
   }
 
-  const history = useHistory();
+  const handle_list_edit = () => {
+    const params = list.name.toString().toLowerCase().replace( / /g, "-"); 
+    history.push(`/user/${user.account.details.username}/list/${params}/edit`, {list: list});
+  }
+
 
   const handle_film = (film) => {
-    const params = film.title.toString().toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/film/${params}`; // ex. search The Witch /film/the-witch
+    const params = film.title.toString().toLowerCase().replace( / /g, "-"); 
+    const target = `/film/${params}`; 
     history.push(target, {movie_id: film.id});
   } 
 
@@ -310,7 +327,6 @@ export const Film = styled.div`
   border-radius: 3%;
 `;
 
-
 export const Poster = styled.img`
   display: block; 
   border: 1px solid #a5a5a5;
@@ -335,11 +351,32 @@ const Description = styled.div`
   margin: 3% 2%; 
   padding-bottom: 5px; 
   border-bottom: 2px dotted #a5a5a5;
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-between; 
 
   @media only screen and (max-width: 1100px) {
     width: 86%;
  }
 
+`; 
+
+const Button = styled.button`
+  background-color: #00B200;
+
+  color: #333;  
+  border-radius: 8%;
+  padding: 8px;
+  font-family: Roboto; 
+  font-size: 1.1em;  
+  border: none;
+  outline: none; 
+  text-align: center; 
+
+  &:hover{
+    cursor: pointer;
+    color: #e1e3e5;
+  }
 `; 
 
 export default Films; 

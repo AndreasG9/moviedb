@@ -1,9 +1,10 @@
-import React, {useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components"; 
-import { Container, Header, FiltersContainer, Select, Option } from "../Films"; 
+import { Container, Header, FiltersContainer, Select, Option} from "../Films"; 
+import { StyledLink } from "../Profile"; 
 import ReactPaginate from 'react-paginate';
 import axios from "axios"; 
-import { UserContext, useUserContext } from "../../../context/UserContext"; 
+import { UserContext} from "../../../context/UserContext"; 
 import ProfileHeader from "../ProfileHeader"; 
 import { useHistory } from "react-router-dom"; 
 
@@ -11,19 +12,15 @@ import { useHistory } from "react-router-dom";
   // other User pages link to film comp., lists goes here first to preview lists, them to films comp.  
 
   const user = useContext(UserContext); 
-  const history = useHistory(); 
-  const { set_account } = useUserContext(); 
-  const { account } = useContext(UserContext); 
+  const history = useHistory();  
 
   // easier to call 
   let lists = user.account.lists.length !== 0 ? user.account.lists : []; 
-  const POSTS_PER_PAGE = 2;
+  const POSTS_PER_PAGE = 10;
   const TOTAL_POSTS = user.account.lists.length !== 0  ? user.account.lists.length : 0; 
 
   const [current_page, set_current_page] = useState(1); 
-  const [results, set_results] = useState(lists); 
   const [current, set_current] = useState([]); 
-  const [sort, set_sort] = useState("When Updated"); 
   const [lists_data, set_lists_data] = useState([]); 
 
 
@@ -31,6 +28,7 @@ import { useHistory } from "react-router-dom";
     // lists with all their content 
 
     const get_lists = async () => {
+      console.log("get lists"); 
 
       let temp = []; 
 
@@ -41,56 +39,37 @@ import { useHistory } from "react-router-dom";
       }
 
       set_lists_data(temp); 
-      set_results(temp);
     }
 
     get_lists(); 
 
-  }, [lists, account, set_account]);
+  }, [lists]);
 
 
   useEffect( () => {
     // show 30 of the results a page 
 
     if(lists.length > 0){
-      //console.log(lists); 
       const last = current_page * POSTS_PER_PAGE;
       const first = last - POSTS_PER_PAGE;
-      set_current(results.slice(first, last)); 
+      set_current(lists_data.slice(first, last)); 
     }
 
-  }, [current_page, lists, results]); 
-
-  useEffect( () => {
-    // sorting method 
-
-    let temp = [...lists];  
-
-    if(sort === "Popularity Descending") temp.sort((a, b) => (a.popularity > b.popularity) ? -1 : 1);
-    else if(sort === "Popularity Ascending") temp.sort((a, b) => (a.popularity > b.popularity) ? 1 : -1);
-    else if(sort === "Highest First") temp.sort((a, b) => (a.rating > b.rating) ? -1 : 1);
-    else if(sort === "Lowest First") temp.sort((a, b) => (a.rating > b.rating) ? 1 : -1);
-    else if(sort === "Release Date Descending") temp.sort((a, b) => (a.release_date > b.release_date) ? -1 : 1);
-    else if(sort === "Release Date Ascending") temp.sort((a, b) => (a.release_date > b.release_date) ? 1 : -1);
-    else temp = lists; // "when updated"
-
-    set_results(temp); 
-
-  }, [sort, lists]); 
-
+  }, [current_page, lists, lists_data]); 
 
 
   function get_list_preview(list){
-    // preview 3 items for each list 
+    // preview 4 items for each list 
 
-    const three_lists = list.slice(0, 4); 
+    const four_films = list.slice(0, 4);  
 
     if(list.length > 0){
       return (
         <React.Fragment key={list.id}>
-          {three_lists.map( item => (
-            <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id}></MiniPoster>
-          ))}
+          {four_films.map( item => {
+
+            return <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id}></MiniPoster>
+          })}
         </React.Fragment>
       )
     }
@@ -112,7 +91,6 @@ import { useHistory } from "react-router-dom";
     else return (list.description.slice(1, 50) + "..."); 
   }
 
-
   const handle_page_change = (page_num) => { 
     set_current_page(page_num.selected+1); 
   }
@@ -124,12 +102,8 @@ import { useHistory } from "react-router-dom";
     history.push(`/user/${user.account.details.username}/list/${path}`, {list: list});
   }
 
-
   const handle_new_list = () => {
-    // create a new list 
-    // go to create list! 
-    // /user/username/list/new 
-
+    // create a new list .../user/username/list/new 
     history.push(`/user/${user.account.details.username}/list/new`);
   }
 
@@ -146,7 +120,6 @@ import { useHistory } from "react-router-dom";
           <label>Sort by</label>
           <Select>
             <Option>When Updated</Option>
-            <Option>When Added</Option>
           </Select>
         </FiltersContainer>
         <NewListBtn onClick={handle_new_list}>Start a new list...</NewListBtn>
@@ -154,19 +127,23 @@ import { useHistory } from "react-router-dom";
 
       <ListsContainer>
 
-
-        {lists_data.map(list => (
+      
+        {
+        current.map(list => (
           <List key={list.id}>
-            <ListPreview onClick={() => handle_list(list)}>
-              {get_list_preview(list.items)}
-            </ListPreview>
 
-            <div style={{display: "flex", flexDirection: "column", paddingLeft: "5px"}}>
-            <ListTitle>{list.name}</ListTitle>
-            <ListItemCount>{film_or_films(list.item_count)}</ListItemCount>
-            <ListShortDesc>{get_short_desc(list)}</ListShortDesc>
-            </div>
+          <ListPreview onClick={() => handle_list(list)}>
+            {get_list_preview(list.items)}
+          </ListPreview>
+
+          <div style={{display: "flex", flexDirection: "column", paddingLeft: "5px"}} onClick={() => handle_list(list)}>
+              <ListTitle>{list.name}</ListTitle>
+              <ListItemCount>{film_or_films(list.item_count)}</ListItemCount>
+              <ListShortDesc>{get_short_desc(list)}</ListShortDesc>
+          </div>
+
           </List>
+
         ))}
       </ListsContainer>
      
