@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import PopularThisWeekResults from "./PopularThisWeekResults";
+import { StyledLink } from ".././Profile/Profile"; 
+import { Link} from "react-router-dom"; 
 
  function PopularThisWeek() {
   // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 
-  // Pagination w/ arrows to traverse the 18 trending films this week 
+  // Pagination w/ arrows to traverse the 20 trending films this week 
 
   // State 
   const [results, setResults] = useState([]); 

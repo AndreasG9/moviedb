@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { useHistory } from "react-router-dom"; 
 import ReactTooltip from "react-tooltip";
+import { StyledLink } from ".././Profile/Profile"; 
 
 function PopularThisWeekFilm( {result} ) {
   // props will include poster path, movie id (to link to film if clicked), title, and year 
@@ -9,22 +9,18 @@ function PopularThisWeekFilm( {result} ) {
   const poster = `https://image.tmdb.org/t/p/w400/${result.poster_path}`; 
   const date= result.release_date !== undefined ? result.release_date.substr(0, 4) : " ";
   const tool_tip = `${result.title} (${date})`; 
-
-  const history = useHistory();
-  
-  const handle_film = () => {
-    // redirect to film/film-name
-    const params = result.title.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/film/${params}`; 
-    history.push(target, {movie_id: result.id});
-  }
-
+  const path = result.id + "-" + result.title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
 
   return (
-    <div onClick={handle_film}>
+    <StyledLink key={result.id} to={
+      {
+        pathname: `/film/${path}`,
+        state: {movie_id: result.id}
+      }
+    }>
       <ReactTooltip></ReactTooltip>
       <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
-    </div>
+    </StyledLink>
   )
 }
 
@@ -42,6 +38,5 @@ const Poster = styled.img`
     margin: 4px; 
   }
 `;
-
 
 export default PopularThisWeekFilm; 
