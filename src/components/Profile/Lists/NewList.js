@@ -8,11 +8,14 @@ import { useHistory, } from "react-router-dom";
 import { useUserContext, UserContext } from "../../../context/UserContext"; 
 
 
-function NewList() {  
+function NewList( { list } ) {  
+  // if passed an existing list, you are in "edit" mode
+  // otherwise blank slate 
 
-  // ONE PAGE ONE PAGE
-
-
+  // init, are you editing an existing list or creating a new a list (both from dif. nav points)
+  let init_name = list !== undefined ? list.name : "";
+  let init_desc = list !== undefined ? list.description : "";
+  let init_films = list !== undefined ? list.items : [];
 
   const history = useHistory(); 
   const user = useContext(UserContext); 
@@ -20,11 +23,16 @@ function NewList() {
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
 
-  const [list_name, set_list_name] = useState("");
-  const [list_desc, set_list_desc] = useState(""); 
-  const [added_films, set_added_films] = useState([]); 
+  const [list_name, set_list_name] = useState(init_name);
+  const [list_desc, set_list_desc] = useState(init_desc); 
+  const [added_films, set_added_films] = useState(init_films); 
  // const [block, set_block] = useState(true);
 
+  
+  function context_button(){
+    // option to delete the existing list 
+    if(list !== undefined) return <Btn onClick={handle_delete} type="button">Delete</Btn>; 
+  }
 
   function get_year(result){
     const year = result.release_date !== undefined ? result.release_date.substr(0, 4) : ""; 
@@ -34,6 +42,8 @@ function NewList() {
   const add_film = (film) => {
     // modify state, once form submits, add one by one 
     // no duplicated, must be a data set 
+
+    if(added_films.find(item => item.id === film.id) !== undefined) return; 
 
     let temp = [...added_films];
     temp = temp.concat(film);
@@ -47,6 +57,30 @@ function NewList() {
     history.push(`/user/${user.account.details.username}/lists`);
   }
 
+  const handle_delete = async () => {
+    let res = window.confirm("Are you sure you want to delete this list"); 
+
+    if(res){
+      // delete list 
+
+      // FIX you fucking idiot 
+
+      // console.log(res); 
+      const retval = await axios.delete(`https://api.themoviedb.org/3/list/${list.id}?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`);
+      console.log(retval);
+       
+
+      // let temp = {...account};
+      // temp.update = true;
+      // set_account(temp);
+
+      //update(); 
+      history.push(`/user/${user.account.details.username}/lists`); // success 
+      //if(retval.data.status_code === 12) history.push(`/user/${user.account.details.username}/lists`); // success 
+    }
+
+  }
+
   const handle_remove_film = (film) => {
     // remove film from added_films arr 
     
@@ -58,10 +92,7 @@ function NewList() {
   }
 
   const handle_submit = async (event) => {
-    // create LIST, add each item in the added_films arr 
-
     event.preventDefault(); 
-
 
     if(list_name.trim() === "") {
       // only required input 
@@ -69,31 +100,62 @@ function NewList() {
       return; 
     }
 
+    let redo = false; 
 
-    let res = await axios.post(`https://api.themoviedb.org/3/list?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-      {
-        "name": list_name,
-        "description": list_desc,
-        "language": "en"
-      }).catch(error => console.log(error)); 
 
-    if(res === undefined) return; 
+    if(list !== undefined && ((init_name !== list_name) || (init_desc !== list_desc))){
+      // // have to CREATE a new list, w/ existing data + updated data b/c you changed the title or desc of the list 
 
-    if(res.data.success){
-      // add items to recently created list 
+      console.log("new list"); 
+      // if(list.name !== list_name) redo = true; 
+      // else if(list.desc !== list_desc) redo = true; 
 
-     const list_id = res.data.list_id; 
+      // const res = await axios.delete(`https://api.themoviedb.org/3/list/${list.id}?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`).catch(error => console.log(error)); 
+      // console.log(res); 
+      // //if(res.data.status_code !== 12) return; 
+      // update(); 
+      // history.push(`/user/${user.account.details.username}/lists`); // success 
+      // return; 
+    }
 
-      for(let i=0; i<added_films.length; ++i){
+    let res; 
+    let id; 
 
-        res = await axios.post(`https://api.themoviedb.org/3/list/${list_id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-          {
-            media_id: added_films[i].id
-          }).catch(error => console.log(error));  
+    if(list === undefined || redo){
+      // create NEW LIST, add each movie.  (same path if you update an existing list and change the Name of the list or Desc, have to start fresh)
+    
+      res = await axios.post(`https://api.themoviedb.org/3/list?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+        {
+          "name": list_name,
+          "description": list_desc,
+          "language": "en"
+        }).catch(error => console.log(error)); 
+
+      if(res === undefined) return; 
+    
+      if(res.data.success){
+        id = res.data.list_id; 
+
+        for(let i=0; i<added_films.length; ++i){
+          res = await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+            {
+              media_id: added_films[i].id
+            }).catch(error => console.log(error));  
+        }
       }
     }
 
-    
+
+    else {
+      // easiest way to only update items is to clear the list and just add added_films, 
+      // rather than comparing init list and added_films and adding and removing appropriately
+      id = list.id; // use existing list id 
+
+      res = await axios.post(`https://api.themoviedb.org/3/list/${id}/clear?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&confirm=true`); // clear list
+      if(res.data.success) add_films(id); 
+    }
+
+ 
     //UPDATE CONTEXT FOR APP 
     let temp = {...account};
     temp.update = true;
@@ -103,33 +165,49 @@ function NewList() {
     history.push(`/user/${user.account.details.username}/lists`);
   }
 
+  const add_films = async (id) => {
+    // helper func. 
+
+    for(let i=0; i<added_films.length; ++i){
+      await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+        {
+          media_id: added_films[i].id
+        }).catch(error => console.log(error));  
+    }
+
+  }
+
+  // function update(){
+  //   let temp = {...account};
+  //   temp.update = true;
+  //   set_account(temp);
+  // }
 
 
   return (
     <React.Fragment>
       <Header></Header>
 
-
-
       <Container>
 
         <form onSubmit={handle_submit}>
           <Group>
             <Label>Name of the List</Label>
-            <Input style={{width: "50%"}} onChange={(event) => set_list_name(event.target.value)}></Input>
+            <Input style={{width: "50%"}} onChange={(event) => set_list_name(event.target.value)} value={list_name}></Input>
           </Group>
 
           <Group>
             <Label>Description</Label>
-            <TextArea rows="6" onChange={(event) => set_list_desc(event.target.value)}></TextArea>
+            <TextArea rows="6" onChange={(event) => set_list_desc(event.target.value)} value={list_desc}></TextArea>
           </Group>
 
 
         <AddContainer>
 
           <div style={{display: "flex", marginLeft: "70%"}}>
-            <Btn cancel onClick={handle_cancel}>Cancel</Btn>
-            <Btn type="submit">Save</Btn>
+            {context_button()}
+            <Btn  type="button" onClick={handle_cancel} color={"#273038"}>Cancel</Btn>
+            <Btn type="submit" color={"#00B200"}>Save</Btn>
           </div>
 
           <SearchDropDown add_film={add_film}></SearchDropDown>
@@ -198,7 +276,8 @@ export const AddedItems = styled.div`
 `; 
 
 export const Btn = styled.button`
-  background-color: ${props => props.cancel ? "#273038" : "#00B200"}; 
+  //background-color: ${props => props.cancel ? "#273038" : "#00B200"}; 
+  background-color: ${props => props.color}; 
   border-radius: 8%;
   padding: 5px;
   font-family: Roboto; 
