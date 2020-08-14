@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react"; 
 import axios from "axios"; 
-import { useHistory } from "react-router-dom"; 
+import { useHistory, useLocation } from "react-router-dom"; 
 import styled from "styled-components"; 
 import Tabs from "./Tabs/Tabs.js";
 import Backdrops from "./Backdrops";
@@ -12,13 +12,16 @@ function Film( { movie_id }) {
   // ex. /film/the-thing
 
   let id;
+  const location = useLocation(); 
 
   if(movie_id === undefined){
-    // linked in a new tab, state not carried over, read from URL 
+    // linked in a new tab, state not carried over, read from URL (split at hypen, first index is the id)
+    // ../film/id-name-of-the-movie ... want the id 
 
-    const q_string = new URLSearchParams(window.location.search);
-    let success = q_string.get("movie_id");
-    if(success) id = success; 
+    const temp = location.pathname.split("/");
+    const path_id = temp[2].split("-")[0]; 
+
+    id = path_id; 
   }
 
   else id = movie_id; 

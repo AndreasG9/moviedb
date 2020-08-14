@@ -36,6 +36,7 @@ import { useHistory } from "react-router-dom";
 
       for(let i=0; i<lists.length; ++i){
         const res = await axios.get(`https://api.themoviedb.org/3/list/${lists[i].id}?api_key=${process.env.REACT_APP_API_KEY}`).catch(error => console.log(error)); 
+        if(res === undefined) return; 
         temp = temp.concat(res.data);
       }
 
@@ -81,18 +82,20 @@ import { useHistory } from "react-router-dom";
 
   function get_list_preview(list){
     // preview 3 items for each list 
-    
+
+    const three_lists = list.slice(0, 4); 
 
     if(list.length > 0){
       return (
         <React.Fragment key={list.id}>
-          {list.map( item => (
+          {three_lists.map( item => (
             <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id}></MiniPoster>
           ))}
         </React.Fragment>
       )
     }
   }
+  
 
   function film_or_films(count){
     let res = ""; 
@@ -130,9 +133,6 @@ import { useHistory } from "react-router-dom";
     history.push(`/user/${user.account.details.username}/list/new`);
   }
 
-
-  // testing 
-  //const temp = `https://image.tmdb.org/t/p/w92//hvprnfDDRE4boZjH6x9xF9Q8NJV.jpg`;
 
   return (
     <Container>
@@ -207,6 +207,7 @@ const List = styled.div`
 
 const ListPreview = styled.div`
   margin-top: 2%;  
+  margin-right: 1%; 
 
   // want slight overlap
   display: grid; 

@@ -10,6 +10,7 @@ import UserFilmsPage from "./pages/User/UserFilmsPage.js";
 import UserListsPage from "./pages/User/UserListsPage.js";  
 import Error from "./pages/Page404"; 
 import NewList from "./components/Profile/Lists/NewList"; 
+import EditList from "./components/Profile/Lists/EditList"; 
 
 const Routes = () => (
     <Router>
@@ -25,11 +26,11 @@ const Routes = () => (
       </Route>
 
       <Route
-        path="/film"
-        render = { (props) => 
-          <FilmPage
-          movie_id={props.location.state.movie_id}>
-          </FilmPage>}>
+        path="/film/:film_id"
+        render = { (props) => {
+          if(props.location.state !== undefined) return <FilmPage movie_id={props.location.state.movie_id}></FilmPage>
+          else return <FilmPage movie_id={undefined}></FilmPage> // opened Link in new tab, read from URL q_string 
+        }}> 
       </Route>
 
       <Route
@@ -74,6 +75,14 @@ const Routes = () => (
         path="/user/:username/list/new"
         component={NewList}>
       </Route>
+
+      <Route 
+        path="/user/:username/list/:list/edit" 
+        render = { props => (
+          <NewList
+            list={props.location.state.list}>
+          </NewList>
+        )}/>
       
       <Route 
         path="/user/:username/list/:list" 
@@ -83,7 +92,6 @@ const Routes = () => (
           </UserFilmsPage>
         )}/>
 
-    
 
       <Route
         path="/user/:username/lists"

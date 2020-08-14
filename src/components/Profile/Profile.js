@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { useHistory } from "react-router-dom"; 
+import { useHistory, Link } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
 import ProfileHeader from "./ProfileHeader"; 
@@ -20,12 +20,19 @@ function Profile() {
 
       const year = fav.release_date !== undefined ? fav.release_date.substr(0, 4) : ""; 
       const tool_tip = `${fav.title} (${year})`; 
+      const path = fav.id + "-" + fav.title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
+      
 
       return (
-        <React.Fragment key={fav.id}>
+        <StyledLink key={fav.id} to={
+          {
+            pathname: `/film/${path}`,
+            state: {movie_id: fav.id}
+          }
+        }>
           <ReactTooltip></ReactTooltip>
-          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} onClick={() => handle_film(fav.id, fav.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
-        </React.Fragment>
+          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+        </StyledLink>
       )
     }); 
   }
@@ -37,13 +44,21 @@ function Profile() {
 
       const year = film.release_date !== undefined ? film.release_date.substr(0, 4) : ""; 
       const tool_tip = `${film.title} (${year})`; 
+      const path = film.id + "-" + film.title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
 
       return (
-        <Film key={film.id}>
-          <ReactTooltip></ReactTooltip>
-          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`} key={film.id} onClick={() => handle_film(film.id, film.title)} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
-          <YourRating>{film.rating}</YourRating>
-        </Film>
+        <StyledLink key={film.id} to={
+          {
+            pathname: `/film/${path}`,
+            state: {movie_id: film.id}
+          }
+        }>
+          <Film >
+            <ReactTooltip></ReactTooltip>
+            <MediumPoster src={`https://image.tmdb.org/t/p/w154/${film.poster_path}`} key={film.id} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+            <YourRating>{film.rating}</YourRating>
+          </Film>
+        </StyledLink>
       )
     });
   }
@@ -64,13 +79,10 @@ function Profile() {
     if(user !== undefined){
      const three_lists = user.account.lists.slice(0, 3); 
 
-    
-    // POSTER PATH (selected when create list)
-
      if(three_lists.length > 0){
         return (
           three_lists.map( list => (
-            <div key={list.id} style={{margin: "3% 0", display: "flex", border: "1px solid white", padding: "2px"}} onClick={() => handle_list(list)}>
+            <div key={list.id} style={{margin: "2% 0", display: "flex", padding: "2px", alignItems:"baseline"}} onClick={() => handle_list(list)}>
               <ListTitle>{list.name}</ListTitle>
               <ListTitle smaller>{list.item_count} {film_or_films(list.item_count)}</ListTitle>
             </div>
@@ -111,33 +123,42 @@ function Profile() {
       
       <Body>
         <Info>
-          <PreviewContainer style={{fontSize: "1.2em"}} onClick={() => history.push(`/user/${user.account.details.username}/favorites`) }>
-            <Title left>My Favorites <span>more</span></Title>
-              <Preview>
-                {favorites_preview()}
-              </Preview>
+          <PreviewContainer style={{fontSize: "1.2em"}}>
+            <StyledLink to={`/user/${user.account.details.username}/favorites`}>
+              <Title left>My Favorites <span>more</span></Title>
+            </StyledLink>
+            <Preview>
+              {favorites_preview()}
+            </Preview>
           </PreviewContainer>  
 
-          <PreviewContainer style={{fontSize: "1.2em", marginTop: "5%"}} onClick={() => history.push(`/user/${user.account.details.username}/ratings`)}>
-            <Title left>Recent Ratings <span>more</span></Title>
-              <Preview>
-                {ratings_preview()}
-              </Preview>
+          <PreviewContainer style={{fontSize: "1.2em", marginTop: "5%"}}>
+            <StyledLink to={`/user/${user.account.details.username}/ratings`}>
+              <Title left>Recent Ratings <span>more</span></Title>
+            </StyledLink>
+            <Preview>
+              {ratings_preview()}
+            </Preview>
           </PreviewContainer>      
         </Info>
 
         <Info right>
           <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
 
-          <WatchListPreviewContainer onClick={() => history.push(`/user/${user.account.details.username}/watchlist`)}>
-            <Title>Watchlist<span>{user.account.watchlist.length}</span></Title>
-            <PreviewRight>
-              {watchlist_preview()}
-            </PreviewRight>
+          <WatchListPreviewContainer >
+            <StyledLink to={`/user/${user.account.details.username}/watchlist`}>
+              <Title>Watchlist<span>{user.account.watchlist.length}</span></Title>
+              <PreviewRight>
+                {watchlist_preview()}
+              </PreviewRight>
+            </StyledLink>
           </WatchListPreviewContainer>
+          
 
-          <ListsPreviewContainer >
-            <Title>Recent Lists <span>{user.account.lists.length}</span></Title>
+          <ListsPreviewContainer>
+            <StyledLink to={`/user/${user.account.details.username}/lists`}>
+              <Title>Recent Lists <span>{user.account.lists.length}</span></Title>
+            </StyledLink>
             <ListPreview>
               {lists_preview()}
             </ListPreview>
@@ -238,7 +259,6 @@ const Title = styled.div`
   justify-content: space-between;
 `; 
 
-
 const MediumPoster = styled.img`
   border: 2px solid #a5a5a5;
   border-radius: 3%;  
@@ -266,11 +286,10 @@ const ListPreview = styled.div`
 `; 
 
 const ListTitle = styled.div`
-  font-size: 1.1em; 
+  font-size:${props => props.smaller ? ".7em" : "1.1em"}; 
   margin-left: ${props => props.smaller ? "3%" : ""}; 
   opacity: ${props => props.smaller ? ".3" : ""}; 
   color: ${props => props.smaller ? "" : "#e1e3e5"}; 
-  
 `; 
 
 export const Film = styled.div`
@@ -286,6 +305,15 @@ const YourRating = styled.div`
   width: 154px; 
   text-align: center; 
   background-color: rgba(66, 85, 102, 1); 
+`; 
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: #a5a5a5; 
+
+  &:focus, &:hover, &:visited, &:link, &:active {
+      text-decoration: none;
+  }
 `; 
 
 export default Profile; 
