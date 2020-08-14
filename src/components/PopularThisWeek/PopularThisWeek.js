@@ -3,7 +3,6 @@ import styled from "styled-components";
 import axios from "axios";
 import PopularThisWeekResults from "./PopularThisWeekResults";
 import { StyledLink } from ".././Profile/Profile"; 
-import { Link} from "react-router-dom"; 
 
  function PopularThisWeek() {
   // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 
@@ -46,23 +45,13 @@ import { Link} from "react-router-dom";
   const index_first = index_last - posts_per_page;
   const current = results.slice(index_first, index_last); 
 
-
   // Funcs 
   const next = () => {
     setCurrentPage(currentPage + 1); 
 
-    if(currentPage === 4){
-      // disable pointer event, change opacity 
-      setActive({left: true, right: false}); 
-    }
-
-    else{
-      // gets called multiple times but its fine 
-      setActive({left: true,right: true})
-    }
-
+    if(currentPage === 4) setActive({left: true, right: false}); // disable pointer event, change opacity 
+    else  setActive({left: true,right: true}) // gets called multiple times but its fine 
   }
-
 
   const prev = () => {
     setCurrentPage(currentPage - 1); 
@@ -73,14 +62,14 @@ import { Link} from "react-router-dom";
 
 
   return (
-    <Container className="media-width-55">
+    <Container>
 
       <Header>
         <Span>POPULAR FILMS THIS WEEK</Span>
         <SpanMore>MORE</SpanMore>
       </Header>
 
-      <BrowseContainer className="position-a-bit">
+      <BrowseContainer>
         <Arrow onClick={prev} active={active.left}>{"<"}</Arrow>
         <PopularThisWeekResults results={current}></PopularThisWeekResults>
         <Arrow onClick={next} active={active.right}>{">"}</Arrow>
@@ -94,20 +83,30 @@ import { Link} from "react-router-dom";
 // Style 
 const Container = styled.div`
   margin-top: 2%; 
+  font-family: Roboto; 
   
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
+  width: 54%; 
+  margin-left: 24%; 
+ 
+ @media only screen and (max-width: 1500px) {
+    width: 90%; 
+    margin-left: 5%;  
+ }
+
 `;
 
-const Header = styled.h2`
+const Header = styled.div`
   font-size: 1.0rem; 
   color: #6f797d;
   padding-bottom: 4px; 
   border-bottom: 1px solid #6f797d; 
-  font-style: bold;
-  width: 92%; 
+  width: 92%;
+  margin: 5% 0 1% 0; 
 `;
 
 const Span = styled.span`
@@ -118,10 +117,9 @@ const Span = styled.span`
 `;
 
 const SpanMore = styled.span`
-
   font-size: .8rem; 
   position: relative; 
-  left: 72%; 
+  left: 74.9%; 
 
   &:hover{
     cursor: pointer; 
@@ -133,6 +131,9 @@ const BrowseContainer = styled.div`
   display: flex; 
   flex-direction: row; 
   align-items: center; 
+
+  position: relative;
+  right: 4%; 
 `;
 
 const Arrow = styled.span`

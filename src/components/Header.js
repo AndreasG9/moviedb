@@ -5,11 +5,14 @@ import ProfileDropDown from "./Profile/ProfileDropDown";
 import { UserContext } from "../context/UserContext.js";
 import { StyledLink } from "./Profile/Profile"; 
 import axios from "axios"; 
+import { useLocation } from "react-router-dom";
+
 
 function Header(){
 
   // Context 
   const user = useContext(UserContext); 
+  const location = useLocation(); 
 
   function display_context(){
     // username w/ dropdown or sign in + create account 
@@ -18,12 +21,12 @@ function Header(){
     else return (
       <React.Fragment>
         <NavButton onClick={handle_auth}>SIGN IN OR CREATE ACCOUNT w/ TMDB</NavButton>
-        <a id="tmdb-auth" href="/#" target="__blank" style={{transform: "scale(0)"}}>temp</a>   
+        <a id="tmdb-auth" href="/#" target="__blank" style={{display: "none"}}>temp</a>   
       </React.Fragment>
     )
   }
 
-
+  
   const handle_auth = async () => {
     // get req token, redirect to tmdb to approve req token 
     const req_token = await axios.get(`https://api.themoviedb.org/3/authentication/token/new?api_key=${process.env.REACT_APP_API_KEY}`).catch(error => console.log(error)); 
@@ -37,19 +40,23 @@ function Header(){
     } 
   }
 
+  const handle_home = () => {
+    // if already on home page and hit home, reload 
+    if(location.pathname === "/") window.location.reload(); 
+  }
 
   return(
       <HeaderContainer>
 
         <H1>
-          <StyledLink to="/" onClick={() => window.location.reload()} style={{color: "#e1e3e5"}}>
+          <StyledLink to="/" onClick={handle_home} style={{color: "#e1e3e5"}}>
             <span>F&iota;LMS </span>
             <span style={{fontSize: ".4em"}}>andreas g.</span>
           </StyledLink>
         </H1>
 
         <NavContainer>
-          <StyledLink to="/" onClick={() => window.location.reload()}>
+          <StyledLink to="/" onClick={handle_home}>
             <NavButton>HOME</NavButton>
           </StyledLink>
           {display_context()}
@@ -66,7 +73,7 @@ const HeaderContainer = styled.header`
   background-color:  #13181c;
   display: flex;
   align-items: center;
-  height: 8vh; 
+  height: 8vh;  
 `;
 
 const H1 = styled.h1`
@@ -86,9 +93,9 @@ const H1 = styled.h1`
 `;
 
 const NavContainer = styled.nav`
-  margin-left: 15%;
+  margin-left: 4.5%;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; 
   align-items: center; 
 `;
 

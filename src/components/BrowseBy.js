@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"; 
-import { useHistory } from "react-router-dom"; 
+import { useHistory, Link } from "react-router-dom"; 
+import { StyledLink } from "./Profile/Profile"; 
 import styled from "styled-components"; 
 import axios from "axios"; 
 
@@ -78,14 +79,6 @@ function BrowseBy() {
 const Container = styled.div`
   font-family: Roboto; 
   margin-top: 3%; 
-
-  //margin: 3% 0; 
-
-   //width: 50%; 
-
-  // position: relative;
-  // left: 24%; 
-
   display: flex; 
   align-items: center; 
 `;
@@ -101,7 +94,7 @@ const Container2 = styled.div`
 
 const Label = styled.label`
   color: #6f797d;
-  font-size: .9rem; 
+  //font-size: .9rem; 
   
   &:hover{
     cursor: text; 

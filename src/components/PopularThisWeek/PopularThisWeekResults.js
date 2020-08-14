@@ -19,6 +19,7 @@ function PopularThisWeekResults( { results }) {
 const FilmsContainer = styled.div`
   display: flex; 
   flex-direction: row; 
+  margin: 0 .5%; 
 `;
 
 export default PopularThisWeekResults; 
