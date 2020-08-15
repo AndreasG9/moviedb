@@ -3,16 +3,14 @@ import SearchResultFilm from "./SearchResultFilm";
 import SearchResultPerson from "./SearchResultPerson"; 
 import styled from "styled-components"; 
 
-
-function SearchResults( {query, results, total} ) {
+function SearchResults( {query, results} ) {
   // Display results (20 a page), each result is of component SearchResultFilm or SearchResultPerson ... 
   // See the Poster, Title, Year, and Director for each result (each Link to a specific page/search ...)
   // or Profile, name, and known for dept of person
 
-
   return (
       <Container>
-        <Header> FOUND AT LEAST {total} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
+        <Header> MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => {
             if(result.known_for_department === undefined) return <SearchResultFilm key={result.id} result={result}></SearchResultFilm>
@@ -41,6 +39,5 @@ const Header = styled.div`
   color: #a5a5a5; 
   padding-bottom: 1%; 
 `;
-
 
 export default SearchResults; 

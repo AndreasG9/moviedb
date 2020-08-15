@@ -25,7 +25,6 @@ function SearchDropDown( {add_film} ) {
     return year; 
   }
 
-
   const add_result = async (result) => {
     // relay selected film to form, to be added 
     add_film(result); 
@@ -54,14 +53,12 @@ function SearchDropDown( {add_film} ) {
 }
 
 // Style 
-
 const Container = styled.div`
   margin-top: 2%; 
   color: #e1e3e5;
   font-size: 1.2em;
   font-family: Roboto;
 `; 
-
 
 const DropDown = styled.div`
   position: absolute; 
@@ -83,7 +80,6 @@ const DropDownItem = styled.div`
     cursor: pointer;
     background-color: #00B200; 
   }
-
 `; 
 
 const Label = styled.label`
@@ -93,10 +89,5 @@ const Label = styled.label`
   font-size: .8em; 
   margin: 2% 0; 
 `; 
-
-const Results = styled.div`
-  border: 1px solid white;
-  font-size: .5em ;
-`;
 
 export default SearchDropDown; 

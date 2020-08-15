@@ -10,8 +10,7 @@ import UserFilmsPage from "./pages/User/UserFilmsPage.js";
 import UserListsPage from "./pages/User/UserListsPage.js";  
 import Error from "./pages/Page404"; 
 import NewEditList from "./components/Profile/Lists/NewEditList"; 
-
-
+ 
 
 const Routes = () => (
     <Router>
@@ -19,10 +18,10 @@ const Routes = () => (
         
       <Route exact path="/" component={Home}></Route>
       
-      <Route 
+      <Route
         path="/search" 
         render = { (props) => {
-          if(props.location.state !== undefined) return <SearchPage query={props.location.state.query}></SearchPage>
+          if(props.location.state !== undefined) return <SearchPage query={props.location.state.query} key={props.location.state.query}></SearchPage>
           else return <SearchPage query={undefined}></SearchPage>
         }}>
       </Route>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import  { useHistory} from "react-router-dom";
 import styled from "styled-components"; 
 
-function SearchBar( props ) {
+function SearchBar() {
 
   // State 
   const [query, set_query] = useState(""); 
@@ -10,15 +10,15 @@ function SearchBar( props ) {
 
   const update_search = (event) => {
     // onChange with input
-    set_query(event.target.value); 
+    set_query(event.target.value);
+
   }
 
-  const get_search = async (event) => {
+  const get_search = async (event) => { 
     event.preventDefault();
-
     if(query){
-      const params = query.replace("/ /g", "+"); // ex. search The Witch url: domain.com/search/the+witch
-      const target = `/search/${params}`; 
+      const path = query.replace(/\s/g, "+") // ex. search The Witch url: domain.com/search/the+witch
+      const target = `/search/${path}`; 
       history.push(target, {query:query}); // redirect to /search, loads the search component, pass query 
     }
   }

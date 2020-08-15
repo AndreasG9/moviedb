@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios'; 
 import SearchResults from "./SearchResults"; 
-import PaginantionNumbers from "./PaginationNumbers"; 
+import ReactPaginate from "react-paginate";
 import { useLocation, useHistory } from "react-router-dom"; 
 
 function Search( {query} ) {
@@ -11,6 +11,8 @@ function Search( {query} ) {
 
   if(query === undefined){
     // user manually entered a path, (in our format the-movie-title, otherwise just send 404)
+
+    if(location.pathname.split("/").length > 3) history.push("/404"); // incorrect  path format 
 
     const q = location.pathname.split("/")[2]; 
     if(q === undefined) query = " "; 
@@ -22,10 +24,7 @@ function Search( {query} ) {
   // State 
   const [results, set_results] = useState([]);
   const [current_page, set_current_page] = useState(1);
-  const [pages, set_pages] = useState({
-    posts_per_page: 20,
-    total_pages: ""
-  });
+  const [total_pages, set_total_pages] = useState("");
 
 
   useEffect( () => {
@@ -35,48 +34,52 @@ function Search( {query} ) {
 
     const get_search = async () => {
 
-      // multi-search (include movies and people, exclude the rest);
+      console.log(current_page); 
+    
+      // multi-search (include movies and people, exclude the rest); // a page has 20 results 
       const search_multi = `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`;
       const data = await axios.get(search_multi).catch(error => console.log(error)); 
 
-      // exclude media type: tv , only want movie and person results 
-      const filtered = data.data.results.filter( (result) => result.media_type === "movie" || result.known_for_department !== undefined);
+      // exclude media type: tv , only want movie and person results, and vote count must be greater than 4
+      let filtered = data.data.results.filter( (result) => result.media_type === "movie" || result.known_for_department !== undefined);
+      filtered = filtered.filter( (result => result.vote_count > 4)); 
       set_results(filtered); 
-      
-      set_pages({
-        posts_per_page: data.data.results.length,
-        total_pages: data.data.total_pages
-      })
 
+      const temp = data.data.total_pages > 10 ? 10 : data.data.total_pages; // MAX 10 total pages 
+      set_total_pages(temp); 
     }
 
     get_search(); 
 
   }, [query, current_page]); 
 
-  const page_limit = 10; 
-  const total = pages.total_pages > 10 ? page_limit*pages.posts_per_page : pages.total_pages*pages.posts_per_page;
 
-  const next = () => {
-    set_current_page(current_page + 1);
-
-    // if(current_page === total){
-
-    // }
-
+  // const next = () => set_current_page(current_page + 1);
+  // const prev = () => set_current_page(current_page - 1);
+  const go_to_page = (page_num) => {
+   set_current_page(page_num.selected+1); 
   }
-  const prev = () => {
-    set_current_page(current_page - 1);
-
-  }
-
-  const go_to_page = (page_num) => set_current_page(page_num); 
 
   return (
     <div>
       <div>
-        <SearchResults query={query} results={results} total={total}></SearchResults>
-        <PaginantionNumbers posts_per_page={pages.posts_per_page} total_pages={pages.total_pages} prev={prev} next={next} go_to_page={go_to_page}></PaginantionNumbers>
+        <SearchResults query={query} results={results}></SearchResults>
+        <ReactPaginate
+          nextClassName = "prev-next"
+          nextLinkClassName = "prev-next-link"
+          previousClassName = "prev-next"
+          previousLinkClassName = "prev-next-link"
+          activeLinkClassName = "active-page"
+          breakClassName= "break"
+          containerClassName = "paginate-container"
+          pageClassName = "page"
+          pageLinkClassName = "page-link"
+          
+          pageCount = {parseInt(total_pages)}
+          pageRangeDisplayed = {2}
+          marginPagesDisplayed = {2}
+          onPageChange = {go_to_page}>
+        </ReactPaginate>  
       </div>
     </div> 
   ); 
