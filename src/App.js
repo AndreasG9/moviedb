@@ -3,6 +3,7 @@ import './App.css';
 import Routes from "./Routes";
 import { UserContext } from "./context/UserContext.js";
 import axios from "axios"; 
+import Footer from "./components/Footer"; 
 
 function App(props) {
 
@@ -11,11 +12,10 @@ function App(props) {
   init_id = init_id == null ? false : true; 
 
   let init_acc = localStorage.getItem("account"); 
-  init_acc = init_acc == null ? {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""} : JSON.parse(init_acc); 
+  init_acc = init_acc == null ? {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""} : JSON.parse(init_acc); 
 
   const [auth, set_auth] = useState(init_id); 
   const [account, set_account] = useState(init_acc); 
-
 
 
   useEffect( () => {
@@ -61,7 +61,7 @@ function App(props) {
       console.log("CHANGE"); 
       alert("CHANGE"); 
 
-      let temp = {details: [], favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
+      let temp = {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
 
       // details 
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
@@ -132,10 +132,11 @@ function App(props) {
 
   
   return (
-    <div>
+    <div className="App">
       <UserContext.Provider value={{auth, set_auth, account, set_account}}>
         <Routes className="App"></Routes>
       </UserContext.Provider>
+      <Footer></Footer>
     </div>
   );
 }

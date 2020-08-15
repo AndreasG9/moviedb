@@ -73,9 +73,8 @@ import styled from "styled-components";
 
 // Style 
 const BackDropsContainer = styled.div` 
-  margin-top: 5%; 
+  margin: 5%; 
   border: 1px solid #a5a5a5;  
-
   position: relative; 
 `;
 

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import PaginationNumbers from "../PaginationNumbers"; 
 import  { useHistory} from "react-router-dom";
 import styled from "styled-components"; 
 
@@ -16,9 +15,12 @@ function SearchBar( props ) {
 
   const get_search = async (event) => {
     event.preventDefault();
-    const params = query.replace("/ /g", "+"); // ex. search The Witch url: domain.com/search/the+witch
-    const target = `/search/${params}`; 
-    history.push(target, {query:query}); // redirect to /search, loads the search component, pass query 
+
+    if(query){
+      const params = query.replace("/ /g", "+"); // ex. search The Witch url: domain.com/search/the+witch
+      const target = `/search/${params}`; 
+      history.push(target, {query:query}); // redirect to /search, loads the search component, pass query 
+    }
   }
   
 
@@ -46,21 +48,17 @@ function SearchBar( props ) {
 
 // Style 
 const Container = styled.div`
-  margin-top: 12%;
-  display: flex; 
-  justify-content: center;
-  align-items: center; 
-
-  position: relative;
-  left: 15%; 
+  margin-top: 9%; 
+  position: relative; 
+  left: 8.5%; 
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
   font-family: Roboto;
   background-color: #2b3440;
   border: none;  
   flex-grow: 2; 
-  width: 200px;
+  width: 240px;
   height: 30px;   
   padding: 5px;
 

@@ -9,12 +9,14 @@ import ProfilePage from "./pages/User/ProfilePage.js";
 import UserFilmsPage from "./pages/User/UserFilmsPage.js";  
 import UserListsPage from "./pages/User/UserListsPage.js";  
 import Error from "./pages/Page404"; 
-import NewList from "./components/Profile/Lists/NewList"; 
-import EditList from "./components/Profile/Lists/EditList"; 
+import NewEditList from "./components/Profile/Lists/NewEditList"; 
+
+
 
 const Routes = () => (
     <Router>
       <Switch>
+        
       <Route exact path="/" component={Home}></Route>
       
       <Route 
@@ -73,15 +75,15 @@ const Routes = () => (
 
       <Route
         path="/user/:username/list/new"
-        component={NewList}>
+        component={NewEditList}>
       </Route>
 
       <Route 
         path="/user/:username/list/:list/edit" 
         render = { props => (
-          <NewList
+          <NewEditList
             list={props.location.state.list}>
-          </NewList>
+          </NewEditList>
         )}/>
       
       <Route 

@@ -11,7 +11,7 @@ function SearchResults( {query, results, total} ) {
 
 
   return (
-      <Container className="media-width-50">
+      <Container>
         <Header> FOUND AT LEAST {total} MATCHES FOR &nbsp;"{query.toString().toUpperCase()}" </Header>
         <section>
           {results.map( (result) => {
@@ -26,6 +26,14 @@ function SearchResults( {query, results, total} ) {
 // Style 
 const Container = styled.div`
   padding-top: 1%;
+
+  width: 60%;
+  margin-left: 24%; 
+
+  @media only screen and (max-width: 1500px) {
+    width: 95%; 
+    margin: 2% 0 0 2%; 
+  }
 `;
 
 const Header = styled.div`

@@ -81,6 +81,12 @@ const Container = styled.div`
   margin-top: 3%; 
   display: flex; 
   align-items: center; 
+
+  margin-left: 24%; 
+ 
+ @media only screen and (max-width: 1500px) {
+    margin-left: 5%;  
+  }
 `;
 
 const Container2 = styled.div`

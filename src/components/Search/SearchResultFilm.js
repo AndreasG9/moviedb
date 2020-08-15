@@ -12,6 +12,7 @@ function FilmResult( { result }, props ) {
     alt_titles: []
   }); 
 
+
   const [credit, set_credit] = useState([]); 
 
   useEffect( () => {
