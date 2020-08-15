@@ -21,10 +21,10 @@ const Routes = () => (
       
       <Route 
         path="/search" 
-        render = { (props) => 
-          <SearchPage 
-            query={props.location.state.query}>
-          </SearchPage>}>
+        render = { (props) => {
+          if(props.location.state !== undefined) return <SearchPage query={props.location.state.query}></SearchPage>
+          else return <SearchPage query={undefined}></SearchPage>
+        }}>
       </Route>
 
       <Route
