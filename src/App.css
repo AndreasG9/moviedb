@@ -57,7 +57,7 @@ input{
  }
 
 .paginate-container{
-  margin: 0 auto; 
+  margin: 2% auto; 
   display: flex;
   flex-direction: row; 
   justify-content: center;

@@ -46,10 +46,10 @@ const Routes = () => (
 
       <Route
         path="/person"
-        render = { (props) => (
-          <PersonPage
-            credit={props.location.state.credit}>
-          </PersonPage>)}>
+        render = { (props) => {
+          if(props.location.state !== undefined) return <PersonPage credit={props.location.state.credit}></PersonPage>
+          else return <PersonPage credit={undefined}></PersonPage>
+        }}>
       </Route>
  
       <Route

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 import axios from "axios"; 
 import {v4 as uuidv4} from "uuid"; // couldnt use result.id as there could be multiple directors for a movie 
+import { StyledLink } from "../Profile/Profile"; 
 
-function FilmResult( { result }, props ) {
+function FilmResult( { result } ) {
   // search for a movie, each result is composed of this component 
 
   const [state, set_state] = useState({
@@ -12,8 +12,6 @@ function FilmResult( { result }, props ) {
     alt_titles: []
   }); 
 
-
-  const [credit, set_credit] = useState([]); 
 
   useEffect( () => {
     const get_specific_data = async () => {
@@ -24,20 +22,20 @@ function FilmResult( { result }, props ) {
       let titles = []; 
       let credits = `https://api.themoviedb.org/3/movie/${result.id}/credits?api_key=${process.env.REACT_APP_API_KEY}`; 
       let alt_titles = `https://api.themoviedb.org/3/movie/${result.id}/alternative_titles?api_key=${process.env.REACT_APP_API_KEY}`;
-  
-      let data = await axios.get(credits); 
-      const crew = data.data.crew; 
-  
+      
+      let crew; 
+      await axios.get(credits).then(res => crew = res.data.crew).catch(err => crew = []); 
+
+
       crew.forEach( (person) => {
         // quick search to get the director among the tens of crew memebers 
         if(person.job === "Director") {
-          directors.push(person.name);
-          set_credit(person.id); 
+          directors.push(person); 
         }
       })
       
 
-      data = await axios.get(alt_titles);
+      let data = await axios.get(alt_titles);
       const titles_arr = data.data.titles; 
 
       titles_arr.forEach( (title) => {
@@ -68,34 +66,49 @@ function FilmResult( { result }, props ) {
     return year; 
   }
 
-  const history = useHistory(); 
+  //const history = useHistory(); 
 
-  const handle_film = () => {
-    // redirect /film/movie-title, pass the movie id to retrieve its data 
+  // const handle_film = () => {
+  //   // redirect /film/movie-title, pass the movie id to retrieve its data 
 
-    // modify path
-    const params = result.title.toString().toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/film/${params}`; // ex. search The Witch /film/the-witch
-    history.push(target, {movie_id: result.id});
-  }
+  //   // modify path
+  //   const params = result.title.toString().toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
+  //   const target = `/film/${params}`; // ex. search The Witch /film/the-witch
+  //   history.push(target, {movie_id: result.id});
+  // }
 
-  const handle_director = (director) => {
-    // redirect /person/person-name
-    const params = director.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/person/${params}`; 
-    history.push(target, {credit: credit});
-  }
+  // const handle_director = (director) => {
+  //   // redirect /person/person-name
+  //   const params = director.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
+  //   const target = `/person/${params}`; 
+  //   history.push(target, {credit: credit});
+  // }
 
 
  
 
   return (
     <Container>
-      <Poster src={path} alt="POSTER MISSING" onClick={handle_film}></Poster>
+      <StyledLink key={result.id} to={
+      {
+        pathname: `/film/${`${result.id}-${result.title.toString().toLowerCase().replace( / /g, "-")}`}`,
+        state: {movie_id: result.id}
+      }
+      }>
+        <Poster src={path} alt="POSTER MISSING"></Poster>
+      </StyledLink>
 
       <ContainerInfo>
         <ContainerTitleYear>
-          <Title onClick={handle_film}>{result.title}</Title>
+          <StyledLink key={result.id} to={
+          {
+            pathname: `/film/${`${result.id}-${result.title.toString().toLowerCase().replace( / /g, "-")}`}`,
+            state: {movie_id: result.id}
+          }
+          }>
+            <Title>{result.title}</Title>
+          </StyledLink>
+
           <Year>{get_year()}</Year>
         </ContainerTitleYear>
 
@@ -108,7 +121,11 @@ function FilmResult( { result }, props ) {
           <DirectedBy>Directed By</DirectedBy>
           {
             state.directors.map( (director) => (
-              <Director key={uuidv4()} onClick={() => handle_director(director)}>{director}</Director>
+              <React.Fragment key={uuidv4()}>
+                <StyledLink to={{pathname: `/person/${director.id}-${director.name.toLowerCase().replace( / /g, "-")}`, state: {credit: director.id}}}>
+                  <Director >{director.name}</Director>
+                </StyledLink>
+              </React.Fragment>
             ))
           }
         </DirectorContainer>

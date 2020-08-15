@@ -17,7 +17,6 @@ import {v4 as uuidv4} from "uuid";
       }
     }
 
-
    return (
     <Container>
       {get_film()}
@@ -36,11 +35,5 @@ const Container = styled.div`
 
   //border: 2px solid white; 
 `;
-
-// const Wrap = styled.div`
-//   // 4 films a row 
-//   width: 25%;
-//   box-sizing: border-box;
-// `; 
 
 export default Films; 

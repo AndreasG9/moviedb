@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import PopularThisWeekResults from "./PopularThisWeekResults";
-import { StyledLink } from ".././Profile/Profile"; 
 
  function PopularThisWeek() {
   // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 

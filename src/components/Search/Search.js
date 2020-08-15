@@ -33,8 +33,6 @@ function Search( {query} ) {
     document.querySelector('body').scrollTo(0,0); // select new page, make sure start at the top 
 
     const get_search = async () => {
-
-      console.log(current_page); 
     
       // multi-search (include movies and people, exclude the rest); // a page has 20 results 
       const search_multi = `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`;

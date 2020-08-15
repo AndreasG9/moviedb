@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"; 
-import { useHistory, Link } from "react-router-dom"; 
-import { StyledLink } from "./Profile/Profile"; 
+import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 import axios from "axios"; 
 

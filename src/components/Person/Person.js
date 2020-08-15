@@ -2,9 +2,25 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components"; 
 import axios from "axios"; 
 import Films from "./Films"; 
+import { useHistory, useLocation } from "react-router-dom";
 
 function Person( {credit}) {
 
+  const location = useLocation();
+  const history = useHistory(); 
+
+  if(credit === undefined){
+    // got here with Link opened in new tab, no state. have to read url path to get credit id 
+    const temp = location.pathname.split("/");
+    credit = temp[2].split("-")[0]; 
+
+    if(isNaN(credit)) {
+      // err 
+      history.push("/404"); 
+      credit = ""; 
+    }
+  }
+  
   const [person , set_person] = useState([]); 
   const [credits, set_credits] = useState([]); 
   const [crew_depts, set_crew_depts] = useState({}); // filled w/ k,v pairs (department: count arr (numbers dont matter here, only length of arr)); 
@@ -40,7 +56,6 @@ function Person( {credit}) {
 
         // FORMAT 
         let map = data.data.crew.map( (credit) => credit.department); // get all departments the person has a credit 
-        //let depts = [...new Set(map)]; // for the department options 
         let temp = {}; 
 
         map.forEach( (dept, count) => {
@@ -55,7 +70,7 @@ function Person( {credit}) {
       set_loading(false); 
     }
 
-    get_data(); 
+    if(credit) get_data(); 
 
   }, [credit]);
 
@@ -105,6 +120,10 @@ function Person( {credit}) {
     if(cast.length > 1) return <Option>Acting  ({cast.length})</Option>; 
   }
 
+  function get_profile_path(){
+    if(person.length > 0) return <Profile src={`https://image.tmdb.org/t/p/w185/${person.profile_path}`}></Profile>; 
+  }
+
   function get_dept_credits(){
     // pass arr of objects containing films info for the specific dept that person has credit/credits for  
 
@@ -126,7 +145,7 @@ function Person( {credit}) {
 
     
 
-    // // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
+    // have to SORT ourselves (Popularity, rating, or release date, all whivh asc or desc)  
    if(current !== undefined){
       if(sort_by === "Popularity Descending") current.sort((a, b) => (a.popularity > b.popularity) ? -1 : 1);
       else if(sort_by === "Popularity Ascending") current.sort((a, b) => (a.popularity > b.popularity) ? 1 : -1);
@@ -145,6 +164,7 @@ function Person( {credit}) {
   const handle_sort_by = (event) => {
     set_sort_by(event.target.value); 
   }
+
 
 
   return (
@@ -186,7 +206,7 @@ function Person( {credit}) {
       </Container1>
       
       <ProfileContainer>
-        <Profile src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}></Profile>
+        {get_profile_path()}
         {get_bio()}
       </ProfileContainer>
 
@@ -204,7 +224,11 @@ const Container = styled.div`
   width: 60%; 
   margin: 0 auto;
   margin-top: 2%; 
-  //border: 2px solid white;  
+  
+  @media only screen and (max-width: 1500px) {
+    width: 70%; 
+    margin: 2% 0 0 8.9%; 
+  }
 `; 
 
 const Container1 = styled.div`
