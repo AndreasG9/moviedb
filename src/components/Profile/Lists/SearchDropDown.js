@@ -4,7 +4,7 @@ import { Input } from "../../Search/SearchBar";
 import axios from "axios"; 
 
 
-function SearchDropDown( {add_film} ) {
+function SearchDropDown( {add_film, header} ) {
 
   const [results, set_results] = useState([]);
   const [active, set_active] = useState(false); 
@@ -32,20 +32,34 @@ function SearchDropDown( {add_film} ) {
     document.getElementById("add-film").value=""; // clear 
   }
 
+  function include_header(){
+    if(header) return <Label>ADD FILMS</Label>;
+  }
+
+
+  const reset = () => {
+    set_active(false); 
+    document.getElementById("add-film").value="";
+  }
+
+
   return (
     <Container>
 
-      <div style={{display: "flex", flexDirection:"column", position: "relative", }}>
-        <Label>ADD FILMS</Label>
-        <Input placeholder="Enter the name of a film..." style={{width: "45%", fontSize: ".8em"}} onChange={get_search} id="add-film"></Input>
+      <div style={{display: "flex", flexDirection:"column", position: "relative"}}>
+        {include_header()}
+        <div style={{display: "flex", flexDirection:"row", width: "60%", alignItems: "center"}}>
+          <Input placeholder="Enter the name of a film..." style={{width: "45%", fontSize: ".8em"}} onChange={get_search} id="add-film"></Input>
+          <Close onClick={reset}>X</Close>
+        </div>
       </div>
 
-      <DropDown active={active} >
-      {
-        results.map( result => (
-          <DropDownItem onClick={() => add_result(result)} key={result.id}>{result.title + " (" + get_year(result) + ")"}</DropDownItem>
-        ))
-      }
+      <DropDown active={active}>
+        {
+          results.map( result => (
+            <DropDownItem onClick={() => add_result(result)} key={result.id}>{result.title + " (" + get_year(result) + ")"}</DropDownItem>
+          ))
+        }
       </DropDown>
       
     </Container>
@@ -89,5 +103,16 @@ const Label = styled.label`
   font-size: .8em; 
   margin: 2% 0; 
 `; 
+
+const Close = styled.div`
+
+  margin-left: 5%; 
+  padding: 5px; 
+
+  &:hover{
+    cursor: pointer;
+    opacity: .2; 
+  }
+`;
 
 export default SearchDropDown; 

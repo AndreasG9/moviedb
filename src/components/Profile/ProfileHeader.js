@@ -1,7 +1,8 @@
 import React, { useContext } from "react"; 
 import { useUserContext, UserContext } from "../../context/UserContext"; 
-import { NavLink, useHistory } from "react-router-dom"; 
+import { NavLink } from "react-router-dom"; 
 import styled from "styled-components";
+import { StyledLink } from "./Profile"; 
 
 
 function ProfileHeader() {
@@ -9,14 +10,13 @@ function ProfileHeader() {
   const user = useContext(UserContext); 
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
-  const history = useHistory(); 
 
   function get_username() {
-    if(user.account.details.length !== 0) return user.account.details.username; 
+    if(Object.keys(user.account.details).length !== 0) return user.account.details.username; 
   }
 
   function get_img(){
-    if(user.account.details.length !== 0) return user.account.details.avatar.gravatar.hash;
+    if(Object.keys(user.account.details).length !== 0) return user.account.details.avatar.gravatar.hash;
   }
 
   const handle_active = (selected) => {
@@ -37,27 +37,41 @@ function ProfileHeader() {
           <div style={{display: "flex", flexDirection: "column", marginLeft: "5%", justifyContent: "space-between"}}>
             <Name>{get_username()}</Name>
             <Location>Location: </Location>
-            <Edit>Edit profile</Edit>
+            <StyledLink to={`/user/${user.account.details.username}/edit`}>
+              <Edit>Edit profile</Edit>
+            </StyledLink>
           </div>
         </User>
 
         <Stats>
-          <Stat onClick={() => history.push(`/user/${user.account.details.username}/ratings`)}>
-            <StatValue>{user.account.ratings.length}</StatValue>
-            <StatHeader>{"Ratings"}</StatHeader>
-          </Stat>
-          <Stat onClick={() => history.push(`/user/${user.account.details.username}/favorites`)}>
-            <StatValue>{user.account.favorites.length}</StatValue>
-            <StatHeader>{"Favorites"}</StatHeader>
-          </Stat>
-          <Stat onClick={() => history.push(`/user/${user.account.details.username}/watchlist`)}>
-            <StatValue>{user.account.watchlist.length}</StatValue>
-            <StatHeader>{"Watchlist"}</StatHeader>
-          </Stat>
-          <Stat onClick={() => history.push(`/user/${user.account.details.username}/lists`)}>
-            <StatValue>{user.account.lists.length}</StatValue>
-            <StatHeader>{"Lists"}</StatHeader>
-          </Stat>
+
+          <StyledLink to={`/user/${user.account.details.username}/ratings`}>
+            <Stat>
+              <StatValue>{user.account.ratings.length}</StatValue>
+              <StatHeader>{"Ratings"}</StatHeader>
+            </Stat>
+          </StyledLink>
+
+          <StyledLink to={`/user/${user.account.details.username}/favorites`}>
+            <Stat>
+              <StatValue>{user.account.favorites.length}</StatValue>
+              <StatHeader>{"Favorites"}</StatHeader>
+            </Stat>
+          </StyledLink>
+
+          <StyledLink to={`/user/${user.account.details.username}/watchlist`}>
+            <Stat>
+              <StatValue>{user.account.watchlist.length}</StatValue>
+              <StatHeader>{"Watchlist"}</StatHeader>
+            </Stat>
+          </StyledLink>
+
+          <StyledLink to={`/user/${user.account.details.username}/lists`}>
+            <Stat>
+              <StatValue>{user.account.lists.length}</StatValue>
+              <StatHeader>{"Lists"}</StatHeader>
+            </Stat>
+          </StyledLink>
 
         </Stats>
       </Header>
@@ -81,33 +95,40 @@ const Header = styled.div`
   justify-content: space-between; 
 `; 
 
-
-
-const User = styled.div`
+export const User = styled.div`
   display: flex;
   flex-direction: row;
   margin-left: 2%; 
   padding: 10px; 
 `; 
 
-const Name = styled.div`
+export const Name = styled.div`
   font-size: 1.6em; 
   color: #e1e3e5;
   margin-bottom: 10%; 
 `; 
 
-const Image = styled.img`
+export const Image = styled.img`
   border-radius: 50%; 
 `;  
 
 const Location = styled.div`
-  // todo 
- //margin: 5% 0;  
+  
 `;
 
-const Edit = styled.button`
-  // todo 
-; `
+const Edit = styled.div`
+  background-color: #e1e3e5; 
+  color: #333;
+  text-align:center; 
+
+  padding: 4px;
+  font-family: Roboto;
+
+  &:hover{
+    cursor: pointer; 
+    opacity: .8; 
+  }
+`;
 
 const Stats = styled.div`
   display: flex;
@@ -146,8 +167,6 @@ export const Nav = styled.nav`
   justify-content: space-between; 
   align-items: center; 
   border: 1px solid #e1e3e5; 
-
-
 `;
 
 export const Link = styled(NavLink)`

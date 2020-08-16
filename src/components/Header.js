@@ -94,6 +94,7 @@ const H1 = styled.h1`
 
 const NavContainer = styled.nav`
   margin-left: 4.5%;
+  margin-left: 10%; 
   display: flex;
   justify-content: space-between; 
   align-items: center; 

@@ -10,6 +10,7 @@ import UserFilmsPage from "./pages/User/UserFilmsPage.js";
 import UserListsPage from "./pages/User/UserListsPage.js";  
 import Error from "./pages/Page404"; 
 import NewEditList from "./components/Profile/Lists/NewEditList"; 
+import EditProfile from "./components/Profile/Edit"; 
  
 
 const Routes = () => (
@@ -54,11 +55,24 @@ const Routes = () => (
  
       <Route
         exact path="/user/:username"
+
+        // TODO if !auth send to sign (alert must sign in to access)
+
         component={ProfilePage}>
       </Route>
 
       <Route
+        path="/user/:username/edit"
+        // TODO if !auth send to sign (alert must sign in to access)
+        component={EditProfile}>
+      </Route>
+
+      <Route
         path="/user/:username/watchlist"
+
+        // auth 
+
+        
         component={UserFilmsPage}>
       </Route>
 

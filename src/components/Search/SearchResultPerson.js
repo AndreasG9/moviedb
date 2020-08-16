@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
-import missing_portrait from "../../missing_portrait.png"; 
+import missing_portrait from "../../assets/missing_portrait.png"; 
 
 
 function SearchResultPerson( {result}) {

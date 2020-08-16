@@ -19,7 +19,6 @@ function BrowseBy() {
       const genre_req = `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`; 
       const res = await axios.get(genre_req); 
       set_genres(res.data.genres);
-
     };
 
     get_genre_ids(); 
@@ -31,6 +30,7 @@ function BrowseBy() {
     // redirect to /films/browse-by/selected 
 
     let selected = event.target.value; 
+
     const target = `/films/${select}/${selected.toLowerCase()}`; // ex. genre crime : domain.com/films/genre/crime
     history.push(target, {browseby: select, selected: selected, genres:genres});
   }
@@ -99,7 +99,6 @@ const Container2 = styled.div`
 
 const Label = styled.label`
   color: #6f797d;
-  //font-size: .9rem; 
   
   &:hover{
     cursor: text; 
