@@ -17,7 +17,7 @@ function SearchBar() {
   const get_search = async (event) => { 
     event.preventDefault();
     if(query){
-      const path = query.replace(/\s/g, "+") // ex. search The Witch url: domain.com/search/the+witch
+      const path = query.replace(/\s/g, "+"); // ex. search The Witch url: domain.com/search/the+witch
       const target = `/search/${path}`; 
       history.push(target, {query:query}); // redirect to /search, loads the search component, pass query 
     }

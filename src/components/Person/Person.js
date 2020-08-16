@@ -21,7 +21,7 @@ function Person( {credit}) {
     }
   }
   
-  const [person , set_person] = useState([]); 
+  const [person , set_person] = useState({}); 
   const [credits, set_credits] = useState([]); 
   const [crew_depts, set_crew_depts] = useState({}); // filled w/ k,v pairs (department: count arr (numbers dont matter here, only length of arr)); 
   const [cast, set_cast] = useState([]); 
@@ -121,7 +121,7 @@ function Person( {credit}) {
   }
 
   function get_profile_path(){
-    if(person.length > 0) return <Profile src={`https://image.tmdb.org/t/p/w185/${person.profile_path}`}></Profile>; 
+    if(Object.keys(person).length !== 0) return <Profile src={`https://image.tmdb.org/t/p/w185/${person.profile_path}`}></Profile>; 
   }
 
   function get_dept_credits(){
@@ -217,17 +217,15 @@ function Person( {credit}) {
 const Container = styled.div`
   display: flex;
   flex-direction: row; 
-  justify-content: space-between; 
   font-family: Roboto; 
 
-
-  width: 60%; 
-  margin: 0 auto;
+  width: 50%; 
+  margin-left: 24%; 
   margin-top: 2%; 
   
   @media only screen and (max-width: 1500px) {
-    width: 70%; 
-    margin: 2% 0 0 8.9%; 
+    width: 90%; 
+    margin: 2% 0 0 9%; 
   }
 `; 
 
@@ -239,24 +237,25 @@ const Container1 = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column; 
-  margin-left: 1.2%; 
+ // margin-left: 1.2%; 
 `;
 
-const Title = styled.h3`
-  margin: 0; 
+const Title = styled.div`
+  font-size: 1.1em; 
   color: #a5a5a5;
+  padding-bottom: 5px; 
 `; 
 
-const Name = styled.h2`
-  margin: 0; 
+const Name = styled.div`
+  font-size: 1.4em; 
   color: #e1e3e5;
 `; 
 
 const FiltersContainer = styled.div`
   border-top: 2px solid #a5a5a5;;
   border-bottom: 2px solid #a5a5a5;;
-  margin: 2% 0;  
-  //width: 50%; 
+  margin: 2% 0;   
+  width: 95%; 
 `; 
 
 const Select = styled.select`
@@ -283,10 +282,7 @@ const Option = styled.option`
 `; 
 
 const ProfileContainer = styled.div`
-  //border: 2px solid blue; 
-  
   width: 35%; 
-  margin-left: 1%; 
 `;
 
 const Profile = styled.img`

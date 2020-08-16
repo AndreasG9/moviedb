@@ -25,7 +25,7 @@ function SearchResults( {query, results} ) {
 const Container = styled.div`
   padding-top: 1%;
 
-  width: 60%;
+  width: 50%;
   margin-left: 24%; 
 
   @media only screen and (max-width: 1500px) {

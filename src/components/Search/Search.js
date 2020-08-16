@@ -38,9 +38,10 @@ function Search( {query} ) {
       const search_multi = `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${query}&page=${current_page}&include_adult=false`;
       const data = await axios.get(search_multi).catch(error => console.log(error)); 
 
+
       // exclude media type: tv , only want movie and person results, and vote count must be greater than 4
       let filtered = data.data.results.filter( (result) => result.media_type === "movie" || result.known_for_department !== undefined);
-      filtered = filtered.filter( (result => result.vote_count > 4)); 
+      filtered = filtered.filter( (result) => result.vote_count > 4 || result.known_for_department !== undefined); 
       set_results(filtered); 
 
       const temp = data.data.total_pages > 10 ? 10 : data.data.total_pages; // MAX 10 total pages 
