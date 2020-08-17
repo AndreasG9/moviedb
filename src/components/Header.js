@@ -46,34 +46,36 @@ function Header(){
   }
 
   return(
-      <HeaderContainer>
+      <Container>
+      
+          <H1>
+            <StyledLink to="/" onClick={handle_home} style={{color: "#e1e3e5"}}>
+              <span>F&iota;LMS </span>
+              <span style={{fontSize: ".4em"}}>andreas g.</span>
+            </StyledLink>
+          </H1>
 
-        <H1>
-          <StyledLink to="/" onClick={handle_home} style={{color: "#e1e3e5"}}>
-            <span>F&iota;LMS </span>
-            <span style={{fontSize: ".4em"}}>andreas g.</span>
-          </StyledLink>
-        </H1>
+          <NavContainer>
+            <StyledLink to="/" onClick={handle_home}>
+              <NavButton>HOME</NavButton>
+            </StyledLink>
+            {display_context()}
+          </NavContainer>
 
-        <NavContainer>
-          <StyledLink to="/" onClick={handle_home}>
-            <NavButton>HOME</NavButton>
-          </StyledLink>
-          {display_context()}
-        </NavContainer>
-
-        <SearchBar></SearchBar>
-      </HeaderContainer>
+          <SearchBar></SearchBar>
+        
+      </Container>
   );
 }
 
 
 // Style 
-const HeaderContainer = styled.header`
-  background-color:  #13181c;
+const Container = styled.header`
   display: flex;
   align-items: center;
-  height: 8vh;  
+  height: 10vh;
+  width: 100%;
+  background-color: #13181c;  
 `;
 
 const H1 = styled.h1`
@@ -88,16 +90,19 @@ const H1 = styled.h1`
   }
 
   @media only screen and (max-width: 1500px) {
-    margin-left: 10%; 
+    margin-left: 5%; 
   }
 `;
 
 const NavContainer = styled.nav`
-  margin-left: 4.5%;
-  margin-left: 10%; 
+  margin-left: 5%; 
   display: flex;
   justify-content: space-between; 
   align-items: center; 
+
+  @media only screen and (max-width: 1500px) {
+    margin-left: 9%; 
+  }
 `;
 
 const NavButton = styled.button`

@@ -1,5 +1,5 @@
 {
-  "name": "moviedb_clone",
+  "name": "moviedb_clone_client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
