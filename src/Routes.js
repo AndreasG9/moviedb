@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Redirect, Switch} from "react-router-dom"; 
+import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom"; 
 import Home from "./pages/Home";
 import SearchPage from "./pages/SearchPage"; 
 import FilmPage from "./pages/FilmPage"; 
@@ -11,12 +11,13 @@ import UserListsPage from "./pages/User/UserListsPage.js";
 import Error from "./pages/Page404"; 
 import NewEditList from "./components/Profile/Lists/NewEditList"; 
 import EditProfile from "./components/Profile/Edit"; 
- 
 
-const Routes = () => (
+
+
+const Routes = ( { current_user } ) => (
     <Router>
       <Switch>
-        
+
       <Route exact path="/" component={Home}></Route>
       
       <Route
@@ -55,64 +56,64 @@ const Routes = () => (
  
       <Route
         exact path="/user/:username"
-
-        // TODO if !auth send to sign (alert must sign in to access)
-
-        component={ProfilePage}>
+        render = { () => !current_user ? 
+         (<Redirect to="/"></Redirect>) : (<ProfilePage></ProfilePage>)}> 
       </Route>
 
       <Route
         path="/user/:username/edit"
-        // TODO if !auth send to sign (alert must sign in to access)
-        component={EditProfile}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<EditProfile></EditProfile>)}> 
       </Route>
 
       <Route
         path="/user/:username/watchlist"
-
-        // auth 
-
-        
-        component={UserFilmsPage}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}> 
       </Route>
 
       <Route
         path="/user/:username/ratings"
-        component={UserFilmsPage}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}> 
       </Route>
 
       <Route
         path="/user/:username/favorites"
-        component={UserFilmsPage}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}> 
       </Route>
 
       <Route
         path="/user/:username/list/new"
-        component={NewEditList}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}> 
       </Route>
+
 
       <Route 
         path="/user/:username/list/:list/edit" 
-        render = { props => (
-          <NewEditList
+        render = { (props) => !current_user ? 
+          (<Redirect to="/"></Redirect>) : 
+          (<NewEditList
             list={props.location.state.list}>
-          </NewEditList>
-        )}/>
-      
+          </NewEditList>)}> 
+      </Route>
+
       <Route 
         path="/user/:username/list/:list" 
-        render = { props => (
-          <UserFilmsPage
+        render = { (props) => !current_user ? 
+          (<Redirect to="/"></Redirect>) : 
+          (<UserFilmsPage
             list={props.location.state.list}>
-          </UserFilmsPage>
-        )}/>
-
+          </UserFilmsPage>)}> 
+        </Route>
 
       <Route
         path="/user/:username/lists"
-        component={UserListsPage}>
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : (<UserListsPage></UserListsPage>)}> 
       </Route>
-
 
       <Route
         path="/404"
@@ -125,5 +126,6 @@ const Routes = () => (
   </Router>
 
 ); 
+
 
 export default Routes; 
