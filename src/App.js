@@ -7,12 +7,17 @@ import Footer from "./components/Footer";
 
 function App(props) {
 
+  // TODO use tmdb api for auth and data only. every other req. to our api 
+
+  // own API (we get, post data when logged in and the path is user); 
+  
+  // TMDB API 
   // INIT state (dont want to get all user data each page refresh)
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
 
   let init_acc = localStorage.getItem("account"); 
-  init_acc = init_acc == null ? {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""} : JSON.parse(init_acc); 
+  init_acc = init_acc == null ? {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: "", profile_details: {}} : JSON.parse(init_acc); 
 
   const [auth, set_auth] = useState(init_id); 
   const [account, set_account] = useState(init_acc); 
@@ -59,10 +64,11 @@ function App(props) {
 
     const update = async () => {
       console.log("CHANGE"); 
-      alert("CHANGE"); 
+      //alert("CHANGE"); 
 
-      let temp = {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: ""}; 
-
+      let temp = {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: "", profile_details: {}}; 
+     
+      
       // details 
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
       let res = await axios.get(detail).catch((error) => console.log(error)); 
@@ -70,6 +76,25 @@ function App(props) {
 
       const id = temp.details.id; 
       const session =  localStorage.getItem("session_id");
+
+      // profile_details (our api)
+      await axios.get(`/api/user/${res.data.username}`)
+      .then(res => {
+        temp.profile_details = res.data;  
+      })
+      .catch(err => {
+        // add to collections (non-required data can be added in EDIT profile)
+        axios.post(`/api/user/add`, 
+        {
+          username: res.data.username,
+          location: "",
+          bio: "",
+          four_favs: []
+        })
+        .then(res => temp.profile_details = res.data)
+        .catch(err => console.log(err)); 
+      }); 
+
 
       // only get 1 page at a time, want all pages for context .... (even w/ excluding page param)
 
@@ -100,6 +125,7 @@ function App(props) {
 
       arr = await get_data(res.data.total_pages, created_lists);
       temp.lists = res.data.results.concat(arr); 
+      
 
       localStorage.setItem("account", JSON.stringify(temp));
       set_account(temp);
@@ -134,7 +160,7 @@ function App(props) {
   return (
     <div className="App">
       <UserContext.Provider value={{auth, set_auth, account, set_account}}>
-        <Routes className="App"></Routes>
+        <Routes className="App" current_user={auth}></Routes>
       </UserContext.Provider>
       <Footer></Footer>
     </div>
