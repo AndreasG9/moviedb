@@ -8,7 +8,7 @@ function BrowseBy() {
   // BrowseBy Popular, Rating, Genre, Year 
   // path home/popular/ sorting method , home/rating/ sorting method  .... 
 
-  const YEARS = ["UPCOMING", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
+  const YEARS = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
 
   const history = useHistory(); 
   const [genres, set_genres] = useState([]);
@@ -27,11 +27,44 @@ function BrowseBy() {
 
 
   function get_selected(select, event){
-    // redirect to /films/browse-by/selected 
+    // redirect to /films/?single_param=... (can select multiple param after redirected)
 
-    let selected = event.target.value; 
+    const selected = event.target.value; 
+    let param;
 
-    const target = `/films/${select}/${selected.toLowerCase()}`; // ex. genre crime : domain.com/films/genre/crime
+    if(select === "genre") {
+      let id = genres.find( (g) => g.name === event.target.value); 
+      param = `?sort_by=popularity.desc&with_genres=${id.id}`; 
+    }
+    
+    else if(select === "year") {
+      if(selected === "Upcoming") {}
+
+      else{
+        // ex 2000-01-01 to 2010-01-01
+        let year = selected.split("s")[0]; 
+      
+        let from = `${year}-01-01`;
+        let to = `${10 + parseInt(year)}-01-01`; 
+
+        param = `?sort_by=popularity.desc&primary_release_date.gte=${from}&primary_release_date.lte=${to}`; 
+      }
+    }
+    
+    else if(select === "TMDB rating") {
+      if(selected === "Highest First") param = "?vote_average.desc";
+      else param = `?vote_average.asc`; 
+    }
+
+    else if(select === "Year") param = `?sort_by=popularity.desc&year=${selected.toLowerCase()}`; 
+    
+    else {
+      if(selected === "Popularity Descending") param = "?sort_by=popularity.desc";
+      else param = "?sort_by=popularity.asc";
+    }
+
+    const target = `/films${param}`; 
+    console.log(target); 
     history.push(target, {browseby: select, selected: selected, genres:genres});
   }
 
@@ -52,8 +85,6 @@ function BrowseBy() {
           <Option hidden>TMDB RATING</Option>
           <Option>Highest First</Option>
           <Option>Lowest First</Option>
-          {/* <Option>Highest This Year First</Option>
-          <Option>Lowest This Year First</Option> */}
         </Select>
 
         <Select onChange={ (event) => get_selected("popular", event) }>

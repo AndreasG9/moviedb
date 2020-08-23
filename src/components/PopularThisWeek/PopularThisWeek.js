@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import PopularThisWeekResults from "./PopularThisWeekResults";
+import { StyledLink } from ".././Profile/Profile"; 
 
  function PopularThisWeek() {
   // display poster, tooltip the title and year, and store movie id if the user selects that film for further info 
@@ -64,8 +65,15 @@ import PopularThisWeekResults from "./PopularThisWeekResults";
     <Container>
 
       <Header>
-        <Span>POPULAR FILMS THIS WEEK</Span>
-        <SpanMore>MORE</SpanMore>
+        <StyledLink 
+          to={{
+            pathname: "/films",
+            search: "?sort_by=popularity.desc", 
+            state: {selected: "Popularity Descending"}
+          }}>
+          <Span>POPULAR FILMS THIS WEEK</Span>
+          <SpanMore>MORE</SpanMore>
+        </StyledLink>
       </Header>
 
       <BrowseContainer>
@@ -106,6 +114,11 @@ const Header = styled.div`
   border-bottom: 1px solid #6f797d; 
   width: 92%;
   margin: 5% 0 1% 0; 
+
+  @media only screen and (max-width: 1500px) {
+    width: 98.5%;  
+ }
+
 `;
 
 const Span = styled.span`
