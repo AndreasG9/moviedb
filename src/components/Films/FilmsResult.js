@@ -2,6 +2,7 @@ import React from "react";
 import { useHistory } from 'react-router-dom'; 
 import styled from "styled-components";
 import ReactTooltip from "react-tooltip";
+import { StyledLink } from "../Profile/Profile"; 
 
  function FilmsResult( {result} ) {
 
@@ -21,8 +22,14 @@ import ReactTooltip from "react-tooltip";
 
   return (
     <div onClick={handle_film}>
-      <ReactTooltip></ReactTooltip>
-      <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
+      <StyledLink 
+        to={{
+          pathname: `/film/${result.id}-${result.title.toString().toLowerCase().replace( / /g, "-")}`, 
+          state: {movie_id : result.id}
+        }}>
+        <ReactTooltip></ReactTooltip>
+        <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
+      </StyledLink>
     </div>
   )
 }
@@ -33,9 +40,6 @@ const Poster = styled.img`
   border: 1px solid #a5a5a5;
   border-radius: 3%;
 
-  width: 156px;
-  height: 233px; 
-
   margin: 6px;  
 
   &:hover{
@@ -43,7 +47,6 @@ const Poster = styled.img`
     border: 2px solid #98fb98;
     margin: 5px;  
   }
-
 
 `; 
 

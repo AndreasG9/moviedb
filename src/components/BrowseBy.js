@@ -34,7 +34,7 @@ function BrowseBy() {
 
     if(select === "genre") {
       let id = genres.find( (g) => g.name === event.target.value); 
-      param = `?sort_by=popularity.desc&with_genres=${id.id}`; 
+      param = `sort_by=popularity.desc&with_genres=${id.id}`; 
     }
     
     else if(select === "year") {
@@ -47,23 +47,23 @@ function BrowseBy() {
         let from = `${year}-01-01`;
         let to = `${10 + parseInt(year)}-01-01`; 
 
-        param = `?sort_by=popularity.desc&primary_release_date.gte=${from}&primary_release_date.lte=${to}`; 
+        param = `popularity.desc&primary_release_date.gte=${from}&primary_release_date.lte=${to}`; 
       }
     }
     
     else if(select === "TMDB rating") {
-      if(selected === "Highest First") param = "?vote_average.desc";
-      else param = `?vote_average.asc`; 
+      if(selected === "Highest First") param = "vote_average.desc";
+      else param = `vote_average.asc`; 
     }
 
-    else if(select === "Year") param = `?sort_by=popularity.desc&year=${selected.toLowerCase()}`; 
+    else if(select === "Year") param = `popularity.desc&year=${selected.toLowerCase()}`; 
     
     else {
-      if(selected === "Popularity Descending") param = "?sort_by=popularity.desc";
-      else param = "?sort_by=popularity.asc";
+      if(selected === "Popularity Descending") param = "popularity.desc";
+      else param = "popularity.asc";
     }
 
-    const target = `/films${param}`; 
+    const target = `/films?sort_by=${param}`; 
     console.log(target); 
     history.push(target, {browseby: select, selected: selected, genres:genres});
   }

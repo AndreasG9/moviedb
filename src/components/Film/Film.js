@@ -6,6 +6,7 @@ import Tabs from "./Tabs/Tabs.js";
 import Backdrops from "./Backdrops";
 import AccountLog from "./AccountLog"; 
 import { UserContext } from "../../context/UserContext.js";
+import { StyledLink } from "../Profile/Profile";
 
 
 function Film( { movie_id }) {    
@@ -144,7 +145,7 @@ function Film( { movie_id }) {
         <BackDrop src={`https://image.tmdb.org/t/p/w1280/${result.backdrop_path}`} alt="backdrop" draggable="false" className="media-width-60"></BackDrop>
       </div>
 
-      <Container className="media-width-60">
+      <Container>
         <TopContainer>
 
           <Poster src={`https://image.tmdb.org/t/p/w342/${result.poster_path}`} alt="poster"></Poster>
@@ -189,7 +190,14 @@ function Film( { movie_id }) {
 // Style 
 const BackDrop = styled.img`
   position: absolute;
+  margin-left: 22%; 
+  width: 60%; 
   opacity: .2; 
+
+  @media only screen and (max-width: 1500px) {
+    width: 97.5%; 
+    margin: 2% 0 0 2%; 
+  }
 `; 
 
 const Container = styled.div`
@@ -197,6 +205,15 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center; 
   justify-content: space-between; 
+
+  width: 60%;
+  margin-left: 22%; 
+
+  @media only screen and (max-width: 1500px) {
+    width: 99%; 
+    margin: 2% 0 0 2.5%; 
+  }
+
 `; 
 
 const TopContainer = styled.div`
@@ -277,7 +294,6 @@ const TagLineRatingContainer = styled.div`
   z-index: 1;
   display: flex; 
   flex-direction: row; 
-  //flex-wrap: wrap; 
   width: 90%; 
 `;
 
@@ -310,15 +326,11 @@ const Overview = styled.div`
   margin-left: 4%; 
 `; 
 
-const TabsContainer = styled.div`
-  //border: 1px solid #a5a5a5; 
-  //z-index: 1; 
+const TabsContainer = styled.div` 
   margin-top: 14.8%; 
-
   height: 350px; 
   width: 830px; 
 `;
-
 
 const NoLog = styled.div`
   font-family: Roboto; 
@@ -328,25 +340,25 @@ const NoLog = styled.div`
   z-index: 1; 
   margin-right: 2%; 
 
-  width: 300px;
-  height: 200px; 
+  width: 15vw; 
+  height: 15vh; 
 
   font-size: 1.2em; 
-
   color: #a5a5a5; 
+
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+
+  
+  @media only screen and (max-width: 1500px) {
+      margin-right: 5%; 
+      width: 25vw; 
+  }
 `; 
 
 const Msg = styled.div`
   color: #e1e3e5; 
-  text-align: center; 
-  margin-top: 30%; 
 `; 
 
 export default Film; 
-
-
-
-
-
-
-

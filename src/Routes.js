@@ -11,6 +11,7 @@ import UserListsPage from "./pages/User/UserListsPage.js";
 import Error from "./pages/Page404"; 
 import NewEditList from "./components/Profile/Lists/NewEditList"; 
 import EditProfile from "./components/Profile/Edit"; 
+import Films from "./components/Films/Films";
 
 
 
@@ -38,12 +39,7 @@ const Routes = ( { current_user } ) => (
 
       <Route
         path="/films"
-        render = { (props) => (
-          <FilmsPage
-            browseby={props.location.state.browseby}
-            selected={props.location.state.selected}
-            genres={props.location.state.genres}>
-          </FilmsPage>)}>
+        component={FilmsPage}> 
       </Route>
 
       <Route

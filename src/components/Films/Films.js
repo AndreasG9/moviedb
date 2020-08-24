@@ -2,59 +2,30 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios"; 
 import FilmsResults from "./FilmsResults"; 
+import { useLocation, useHistory } from "react-router-dom"; 
 
-const DECADES = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"]; 
+const DECADES = ["Upcoming", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s", "1940s", "1930s", "1920s", "1910s", "1900s"];
 
-function Films( {browseby, selected, genres} ) {
-  // ex. .../films/genre/crime (default sorted by popularity (not the biggest fan of how they determine those values))
+function Films( ) {
+  // base search off params (ex ../films?year=2010s&genre=crime   (will sort be default popularity descending))
+  // first param is always ?sort_by=... with popularity.desc being the default 
 
-  // on first render (info from BrowseBy component)
-  let selected_genre;  
-  if(browseby === "genre") selected_genre = genres.find( (g) => g.name === selected); // returns obj with name and id keys 
-  else selected_genre = {id: 0, name: "All"}; 
+  const history = useHistory(); 
+  const location = useLocation(); 
+  const search_params = new URLSearchParams(location.search); 
 
+  if(!search_params.has("sort_by")) history.push("/films?sort_by=popularity.desc");  
 
-  let years_arr = []; 
-  let decade = "All"; 
-  let visible = false; 
-  if(browseby === "year"){
-    // include a decade
-    let a_year = parseInt(selected.substring(0,4)); 
-    years_arr.push(selected); 
-
-    for(let i=0; i<10; ++i){
-      years_arr.push(a_year); 
-      ++a_year; 
-    }
-
-    decade = selected; 
-    visible = true; 
-  }
+  // // State 
+  const [query_string, set_query_string] = useState(""); 
+  const [year, set_year] = useState({});
 
 
-
-
-  let sorted; 
-  if(browseby === "TMDB rating" || browseby === "popular") sorted = selected; 
-  else sorted = "Popularity Descending"; 
-
-
-  // State 
-  const [query_params, set_query_params] = useState(""); 
-  const [genre, set_genre] = useState(selected_genre);   // will be mutated, initial is a genre or ALL 
-
-
-  const [year, set_year] = useState({
-    selected: decade,
-    years: years_arr,
-    visible: visible
-  });
-
-  const [sort_by, set_sort_by] = useState(sorted);
   const [results, set_results] = useState([]);
   const [current_page, set_current_page] = useState(1); 
   const [total_results, set_total_results] = useState(0); 
   const [loading, set_loading] = useState(false); 
+  const [genres, set_genres] = useState([]); 
 
   const [btn_active, set_btn_active] = useState({
     // prev and next buttons 
@@ -63,97 +34,61 @@ function Films( {browseby, selected, genres} ) {
   });
 
   useEffect( () => {
-    let request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&vote_count.gte=40&page=${current_page}`; // base with some default query params 
-    let query = ""; 
-    //let path = `/films`; // update 
+
+    const get_genre_ids = async () => {
+      const genre_req = `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`; 
+      const res = await axios.get(genre_req); 
+      set_genres(res.data.genres);
+    };
+
+    get_genre_ids(); 
+
+  }, []);
+
+
+  useEffect( () => {
 
     const get_data = async () => {
-      document.querySelector('body').scrollTo(0,0); // select new page, make sure start at the top 
-      set_loading(true);
+      //console.log(location.search); 
+      set_loading(true); 
+      let request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=false&vote_count.gte=40&page=${current_page}`;
+
+      let q_string = location.search;
+      q_string = q_string.replace("?", "&"); // remove first param, for tmdb req. 
+
+      request += q_string; 
+      console.log(q_string); 
+      const res = await axios.get(request); 
       
-      // set up query params 
-    
-      // ------------------------------------SORT BY-----------------------------------------------------
-      // Release Date 
-      if(sort_by === "Release Date Descending"){
-        // starting with films released before today  
-        const today = new Date().toISOString().slice(0,10); // (yyyy-mm-dd)
-        query += `&sort_by=primary_release_date.desc&primary_release_date.lte=${today}`;
-      }
-      else if(sort_by === "Release Date Ascending") request = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&include_adult=falsepage=${current_page}&sort_by=primary_release_date.asc`; // removed min vote count  
-
-      // Rating 
-      else if(sort_by === "Highest First") query += "&sort_by=vote_average.desc&without_genres=10770&vote_count.gte=100&primary_release_date.lte=2020-01-01"; // fix later 
-      else if(sort_by === "Lowest First") query += "&sort_by=vote_average.asc";
-
-      // Most popular today desc or asc  
-      else if(sort_by === "Popularity Ascending") query += "&sort_by=popularity.asc"; 
-      else query += "&sort_by=popularity.desc"; // most popular/ popular today is default / fallback sorting method 
-
-
-      // ------------------------------------YEAR----------------------------------------------------
-      if(year.selected !== "All"){
-        // narrow results to a decade or specific year 
-
-        if(isNaN(year.selected)){
-
-          if(year.selected === "Upcoming"){
-            // upcoming (any release past current date)
-            let date = new Date().toISOString().slice(0,10);  
-            query += `&release_date.gte=${date}`; 
-          }
-          else{
-            // show results for that decade (ex. 2000-01-01 - 2010-01-01);  
-            let from = `${year.years[1]}-01-01`;
-            let to = `${year.years[10]+1}-01-01`; // +1 b/c last year is xxx9
-            query += `&primary_release_date.gte=${from}&primary_release_date.lte=${to}`;
-          }
-        }
-
-        else query += `&primary_release_year=${year.selected}`;           // specific year 
+      if(res.status === 200){
+        set_results(res.data.results); // display 72 posts a page? maybe less 
+        set_total_results(res.data.total_results);
       }
 
-
-      // ------------------------------------GENRE-----------------------------------------------------
-      if(genre.id !== 0) { 
-        // get correct genre id to add to query 
-        query += `&with_genres=${genre.id}`;
-        //path += `/genre/genre.name`; 
-        }
-      else set_genre({id: 0, name: "All"}); 
-
-      // finally get the requested data  
-      request += query; 
-      const res = await axios.get(request);    
-      set_results(res.data.results); // display 72 posts a page? maybe less 
-      set_total_results(res.data.total_results); 
+      // reset page to 1 if any param changes 
+      if(q_string !== query_string) set_current_page(1); 
+      set_query_string(q_string); 
       set_loading(false); 
-
-      // if new filter, reset current page 
-      if((query_params !== query) && (query_params !== "")) set_current_page(1); 
-      set_query_params(query); 
     }
 
-    get_data();
+    get_data(); 
 
-  }, [current_page, selected, genre.id, sort_by, query_params, year.selected, year.years]); 
+  }, [current_page, location.search, query_string]); 
 
 
-  // Funcs. 
+  
   function show_years(){
-    // horizontal list of buttons with a decade and its years 
-    let res = null; 
+    // // horizontal list of buttons with a decade and its years 
  
-    if(year.selected !== "All"){
-      res = 
+    if(search_params.has("primary_release_date.gte") || search_params.has("primary_release_year")){
+       return ( 
         <React.Fragment>{
           year.years.map( (year) => (
             <Year key={year} onClick={(event) => handle_year(year)}>{year}</Year>
           ))}
         </React.Fragment>
+      )
     }
-
-    return res; 
   }
 
   // re-render will new page request 
@@ -171,17 +106,50 @@ function Films( {browseby, selected, genres} ) {
     else set_btn_active({prev: true, next: true}); 
   }
 
-  const handle_genre = (event) => {
-    // update query, re-render 
-    let selected_genre;
-    if(event.target.value === "All") selected_genre = {id: 0, name: "All"}; // if select all, change id to 0 and query will not include a genre 
-    else selected_genre = genres.find( (g) => g.name === event.target.value);
 
-    set_genre(selected_genre); 
+  // Modify search params 
+  const handle_genre = (event) => {
+
+    let selected = genres.find( (g) => g.name === event.target.value); 
+
+    if(search_params.has("with_genres")){
+      // replace existing genre
+      search_params.delete("with_genres");
+
+      if(selected !== undefined) search_params.append("with_genres", selected.id); 
+    }
+
+    else {
+      if(selected !== undefined) search_params.append("with_genres", selected.id);  
+    }
+    
+
+    history.push(`/films?${search_params.toString()}`); 
   }
 
   const handle_sorting = (event) => {
-    set_sort_by(event.target.value);
+    //set_sort_by(event.target.value);
+
+    search_params.delete("sort_by");
+    const select = event.target.value;
+    let param;
+
+    if(select === "Highest First"){
+      param = "vote_average.desc";
+
+      // increment min vote count for "highest rated all time"
+      search_params.delete("vote_count.gte");
+      search_params.append("vote_count.gte", 200); 
+    } 
+    else if(select === "Lowest First") param = "vote_average.asc"; 
+    else if(select === "Release Date Descending") param = "primary_release_date.desc"; 
+    else if(select === "Release Date Ascending") param = "primary_release_date.asc"; 
+    else if(select === "Popularity Ascending") param = "popularity.asc"
+    else param = "popularity.desc"; 
+
+    search_params.append("sort_by", param);  
+
+    history.push(`/films/?${search_params.toString()}`); 
   }
 
   const handle_years = (event) => {
@@ -192,44 +160,114 @@ function Films( {browseby, selected, genres} ) {
     let visible = false; 
 
     if(event.target.value !== "Upcoming"){
-      visible = true; 
-      let a_year = parseInt(event.target.value.substring(0,4)); 
-      years_arr.push(event.target.value); 
 
-      for(let i=0; i<10; ++i){
-        years_arr.push(a_year); 
-        ++a_year; 
+      if(search_params.has("primary_release_date.gte")){
+        // remove if changed decade
+        search_params.delete("primary_release_date.gte");
+        search_params.delete("primary_release_date.lte");
       }
+
+      if(event.target.value !== "All") {
+        // a decade 
+
+        visible = true; 
+        let a_year = parseInt(event.target.value.substring(0,4)); 
+        years_arr.push(event.target.value); 
+  
+        for(let i=0; i<10; ++i){
+          years_arr.push(a_year); 
+          ++a_year; 
+        }
+  
+        let year = a_year - 10; 
+        let from = `${year}-01-01`;
+        let to = `${10 + parseInt(year)}-01-01`;  
+  
+        search_params.append("primary_release_date.gte", from);
+        search_params.append("primary_release_date.lte", to);
+      }
+
+      history.push(`/films?${search_params.toString()}`); 
     }
     
+    else {} // upcoming TODO 
+
+
     set_year({
       selected: event.target.value,
       years: years_arr,
       visible: visible
     }); 
-
   }
 
   const handle_year = (selected_year) => {
-    // Specific year 
-    let temp = {...year};
-    temp.selected = selected_year; 
-    set_year(temp);   
+    // // Specific year 
+
+    if(search_params.has("primary_release_date.gte")) search_params.delete("primary_release_date.gte");
+    if(search_params.has("primary_release_date.lte")) search_params.delete("primary_release_date.lte");
+    if(search_params.has("primary_release_year")) search_params.delete("primary_release_year");
+
+
+    if(isNaN(selected_year)){
+      // include a decade 
+  
+      let year = selected_year.split("s")[0];
+      let from = `${year}-01-01`;
+      let to = `${10 + parseInt(year)}-01-01`;  
+
+      search_params.append("primary_release_date.gte", from); 
+      search_params.append("primary_release_date.lte", to); 
+    }
+
+    else search_params.append("primary_release_year", selected_year); 
+
+    history.push(`/films?${search_params.toString()}`); 
   }
 
   const reset = () => {
-    // set search to year: all genre: all sort by: pop descending
-    set_sort_by("Popularity Descending");
-    set_year({
-      selected: "All",
-      years: [],
-      visible: false
-    });
-    set_genre({id: 0, name: "All"});
+    // remove all search params, set sort_by to populairty.desc 
+    history.push(`/films?sort_by=popularity.desc`, {browseby: "genre", selected: "", genres: genres}); 
 
     document.getElementById("year-id").selectedIndex = 0; 
     document.getElementById("genre-id").selectedIndex = 0; 
     document.getElementById("sort-by-id").selectedIndex = 0; 
+  }
+
+  function get_filters(){
+    // for visualization of current search query 
+
+    // genre
+    let g;
+    if(search_params.has("with_genres")){
+      let find = genres.find( (gen) => gen.id === parseInt(search_params.get("with_genres"))); 
+      if(find !== undefined) g = find.name.toLowerCase();  
+    }
+
+    else g = "all" ;
+
+
+    // year 
+    let y;
+    if(search_params.has("primary_release_date.gte")){
+      // decade 
+      const decade = search_params.get("primary_release_date.gte").split("-")[0];
+      y = decade + "s"; 
+    }
+
+    else if(search_params.has("primary_release_year")) y = search_params.get("primary_release_year"); // specific year 
+    else y = "all"; 
+
+    
+    // sort_by (popularity.desc is DEFAULT)
+    const s = search_params.get("sort_by"); 
+
+
+    return (
+      <React.Fragment>
+        <div>Year: {y}</div>
+        <div>Genre: {g}</div>
+        <div>Sort By: {s}</div>
+      </React.Fragment>)
   }
 
 
@@ -240,7 +278,7 @@ function Films( {browseby, selected, genres} ) {
       <HeaderContainer>
         <div>FILMS</div>
 
-        <div>
+        <div >
           <Select onChange={handle_years} id="year-id">
             <Option hidden>Year</Option>
             <Option>All</Option>
@@ -263,17 +301,17 @@ function Films( {browseby, selected, genres} ) {
             <Group label=" TMDB FILM POPULARITY">
                 <Option>Popularity Descending</Option>
                 <Option>Popularity Ascending</Option>
-              </Group>
+            </Group>
 
-              <Group label="TMDB RATING (awful system)">
-                <Option>Highest First</Option>
-                <Option>Lowest First</Option>
-              </Group>
+            <Group label="TMDB RATING (awful system)">
+              <Option>Highest First</Option>
+              <Option>Lowest First</Option>
+            </Group>
 
-              <Group label="RELEASE DATE">
-                <Option>Release Date Descending</Option>
-                <Option>Release Date Ascending</Option>
-              </Group>
+            <Group label="RELEASE DATE">
+              <Option>Release Date Descending</Option>
+              <Option>Release Date Ascending</Option>
+            </Group>
           </Select>
         </div>
       </HeaderContainer>
@@ -282,9 +320,7 @@ function Films( {browseby, selected, genres} ) {
       <SearchResultContainer>
         <Header>There are {total_results} films matching your filters</Header>
         <Filters>
-          <div>Year: {year.selected}</div>
-          <div>Genre: {genre.name}</div>
-          <div>Sort By: {sort_by}</div>
+          {get_filters()}
           <ResetButton onClick={reset}>Reset</ResetButton>
         </Filters>
       </SearchResultContainer>
@@ -301,7 +337,6 @@ function Films( {browseby, selected, genres} ) {
 
        <ButtonsContainer>
         <Button active={btn_active.prev} onClick={prev}>Previous</Button>
-            {/* <span>{query_params}</span> */}
         <Button active={btn_active.next} onClick={next}>Next</Button>
       </ButtonsContainer> 
       
@@ -314,20 +349,28 @@ const Container = styled.div`
   flex-direction: column; 
   font-family: Roboto; 
   color: #a5a5a5; 
+
+  width: 48%; 
+  margin-left: 24%; 
+
+ @media only screen and (max-width: 1500px) {
+    width: 90%; 
+    margin-left: 5%;  
+ }
 `; 
 
-const HeaderContainer = styled.h2`
+const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row; 
   justify-content: space-between; 
-  align-items: flex-end; 
-  font-size: 1.1em; 
+  align-items: flex-end;  
   border-bottom: 1px solid #a5a5a5;
+  margin-top: 5%; 
 `;
 
 const Select = styled.select`
   font-family: Roboto;
-  
+
   background-color: #13181c; 
   color: #e1e3e5;
   padding: 5px; 
@@ -339,7 +382,6 @@ const Select = styled.select`
   &:focus{
     outline: none; 
   }
-
 `;
 
 const Group = styled.optgroup`
@@ -356,7 +398,7 @@ const Option = styled.option`
 
 const SearchResultContainer = styled.div`
   margin-left: 18%; 
-  padding: 1% 0 2% 0; 
+  padding-top: 3.5%; 
 
   display: flex; 
   flex-direction: row; 
@@ -370,6 +412,7 @@ const Header = styled.div`
 const Filters = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center; 
   font-size: .8em; 
   white-space: nowrap;
 `;
@@ -390,7 +433,6 @@ const ResetButton = styled.button`
   &:focus{
     outline: none; 
   }
-
 `;
 
 const YearsContainer = styled.div`
