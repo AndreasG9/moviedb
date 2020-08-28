@@ -19,6 +19,10 @@ function ProfileHeader() {
     if(Object.keys(user.account.details).length !== 0) return user.account.details.avatar.gravatar.hash;
   }
 
+  function get_location(){
+    if(Object.keys(user.account.user_data.details.location).length !== 0) return user.account.user_data.details.location; 
+  }
+
   const handle_active = (selected) => {
     // reuse film comp. for 4 pages, want to know the active page (update context)
     const temp = {...account};
@@ -36,7 +40,7 @@ function ProfileHeader() {
           <Image src={`https://www.gravatar.com/avatar/${get_img()}?s=150`}></Image>
           <div style={{display: "flex", flexDirection: "column", marginLeft: "5%", justifyContent: "space-between"}}>
             <Name>{get_username()}</Name>
-            <Location>Location: </Location>
+            <Location>Location: {get_location()}</Location>
             <StyledLink to={`/user/${user.account.details.username}/edit`}>
               <Edit>Edit profile</Edit>
             </StyledLink>
@@ -47,28 +51,28 @@ function ProfileHeader() {
 
           <StyledLink to={`/user/${user.account.details.username}/ratings`}>
             <Stat>
-              <StatValue>{user.account.ratings.length}</StatValue>
+              <StatValue>{user.account.user_data.ratings.length}</StatValue>
               <StatHeader>{"Ratings"}</StatHeader>
             </Stat>
           </StyledLink>
 
           <StyledLink to={`/user/${user.account.details.username}/favorites`}>
             <Stat>
-              <StatValue>{user.account.favorites.length}</StatValue>
+              <StatValue>{user.account.user_data.favorites.length}</StatValue>
               <StatHeader>{"Favorites"}</StatHeader>
             </Stat>
           </StyledLink>
 
           <StyledLink to={`/user/${user.account.details.username}/watchlist`}>
             <Stat>
-              <StatValue>{user.account.watchlist.length}</StatValue>
+              <StatValue>{user.account.user_data.watchlist.length}</StatValue>
               <StatHeader>{"Watchlist"}</StatHeader>
             </Stat>
           </StyledLink>
 
           <StyledLink to={`/user/${user.account.details.username}/lists`}>
             <Stat>
-              <StatValue>{user.account.lists.length}</StatValue>
+              <StatValue>{user.account.user_data.lists.length}</StatValue>
               <StatHeader>{"Lists"}</StatHeader>
             </Stat>
           </StyledLink>

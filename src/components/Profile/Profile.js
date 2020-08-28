@@ -1,20 +1,57 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { useHistory, Link } from "react-router-dom"; 
+import { Link } from "react-router-dom"; 
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
 import ProfileHeader from "./ProfileHeader"; 
-//import axios from "axios"; 
 
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
   const user = useContext(UserContext); 
+  console.log(user); 
+  // user.account.profile_details
+
+  // function tool_tip(){
+  //   let retval = {}; 
+  //   return retval; 
+  // }
+
+  function four_favorites(){
+    // user selected four favorites, and link to all selected favorites  
+
+    const four_favs = user.account.user_data.favorites; 
+
+    four_favs.map( (fav) => {
+
+      const year = fav.release_date !== undefined ? fav.release_date.substr(0, 4) : ""; 
+      const tool_tip = `${fav.title} (${year})`; 
+      const path = fav.id + "-" + fav.title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
+
+      return (
+        <StyledLink key={fav.id} to={
+          {
+            pathname: `/film/${path}`,
+            state: {movie_id: fav.id}
+          }
+        }>
+          <ReactTooltip></ReactTooltip>
+          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+        </StyledLink>
+      )
+
+    })
+
+  }
   
   function favorites_preview(){
-    // TODO use data from users top 4, for now use 4 most recent additions favorites 
+    // data from users 4 selected favorites in edit profile 
 
-    const four_favs = user.account.favorites.slice(0, 4);
+    if(Object.keys(user.account.user_data.favorites).length === 0) return <div style={{fontSize: ".8em", color: "#fff"}}>Add four favorites in <i>Edit Profile</i></div>
+
+    const four_favs = user.account.user_details.favorites.slice(0, 4); 
+    console.log(four_favs); 
+
 
     return four_favs.map( (fav) => {
 
@@ -38,6 +75,9 @@ function Profile() {
   }
 
   function ratings_preview(){ 
+
+    if(Object.keys(user.account.user_data.ratings).length === 0) return; 
+
     const four_ratings = user.account.ratings.slice(0, 4);
 
     return four_ratings.map( (film) => {
@@ -66,6 +106,8 @@ function Profile() {
   function watchlist_preview(){
     // use data from 4 more recent additions to watchlist 
 
+    if(Object.keys(user.account.user_data.watchlist).length === 0) return; 
+
     const four_watchlist = user.account.watchlist.slice(0, 4);
 
     return ( four_watchlist.map( (item, index) => {
@@ -76,6 +118,10 @@ function Profile() {
 
   function lists_preview(){
     // similar to watchList_prevew, but three lists 
+
+    if(Object.keys(user.account.user_data.lists).length === 0) return; 
+
+
     if(user !== undefined){
      const three_lists = user.account.lists.slice(0, 3); 
 
@@ -101,20 +147,17 @@ function Profile() {
     return res; 
   }
 
-  
-  const history = useHistory();
-
-  const handle_film = (id, title) => {
-    // redirect /film/movie-title, pass the movie id to retrieve its data 
-    const params = title.toString().toLowerCase().replace( / /g, "-"); 
-    const target = `/film/${params}`; // ex. search The Witch /film/the-witch
-    history.push(target, {movie_id: id});
+  function get_bio(){
+    if(user.account.user_data.details.bio === "") return <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO</div></Bio>; 
+    else return <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO</div>{user.account.profile_details.bio}</Bio>; 
   }
 
   const handle_list = (list) => {
     // go to specific list 
-  }
 
+    
+
+  }
 
   return (
     <Container>
@@ -123,12 +166,14 @@ function Profile() {
       
       <Body>
         <Info>
+
           <PreviewContainer style={{fontSize: "1.2em"}}>
             <StyledLink to={`/user/${user.account.details.username}/favorites`}>
-              <Title left>My Favorites <span>more</span></Title>
+              <Title left>Favorite Films<span>more</span></Title>
             </StyledLink>
             <Preview>
-              {favorites_preview()}
+              {/* {favorites_preview()} */}
+              {four_favorites()}
             </Preview>
           </PreviewContainer>  
 
@@ -143,11 +188,11 @@ function Profile() {
         </Info>
 
         <Info right>
-          <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO GOES HERE</div>TODO</Bio>
+          {get_bio()}
 
           <WatchListPreviewContainer >
             <StyledLink to={`/user/${user.account.details.username}/watchlist`}>
-              <Title>Watchlist<span>{user.account.watchlist.length}</span></Title>
+              <Title>Watchlist<span>{user.account.user_data.watchlist.length}</span></Title>
               <PreviewRight>
                 {watchlist_preview()}
               </PreviewRight>
@@ -157,7 +202,7 @@ function Profile() {
 
           <ListsPreviewContainer>
             <StyledLink to={`/user/${user.account.details.username}/lists`}>
-              <Title>Recent Lists <span>{user.account.lists.length}</span></Title>
+              <Title>Recent Lists <span>{user.account.user_data.lists.length}</span></Title>
             </StyledLink>
             <ListPreview>
               {lists_preview()}
@@ -172,13 +217,14 @@ function Profile() {
 
 
 // Style
-const Container = styled.div`
+export const Container = styled.div`
   margin-top: 1%; 
   height: 100vh; 
   font-family: Roboto; 
   color: #a5a5a5; 
   width: 60%;
   margin-left: 22%; 
+  margin-bottom: 10%; 
 
   @media only screen and (max-width: 1500px) {
     width: 97.5%; 
@@ -307,7 +353,7 @@ const YourRating = styled.div`
   background-color: rgba(66, 85, 102, 1); 
 `; 
 
-const StyledLink = styled(Link)`
+export const StyledLink = styled(Link)`
   text-decoration: none;
   color: #a5a5a5; 
 

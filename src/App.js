@@ -10,8 +10,7 @@ function App(props) {
   // TODO use tmdb api for auth and data only. every other req. to our api 
 
   // own API (we get, post data when logged in and the path is user); 
-  
-  // TMDB API 
+   
   // INIT state (dont want to get all user data each page refresh)
   let init_id = localStorage.getItem("session_id");
   init_id = init_id == null ? false : true; 
@@ -64,12 +63,12 @@ function App(props) {
 
     const update = async () => {
       console.log("CHANGE"); 
-      //alert("CHANGE"); 
 
-      let temp = {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: "", profile_details: {}}; 
+      //let temp = {details: {}, favorites: [], ratings: [], watchlist: [], lists: [], update: false, active_nav: "", profile_details: {}}; 
+
+      let temp = {details: {}, user_data: {}, update:false, active_nav: ""}; 
      
-      
-      // details 
+      // details (from tmdb auth account details)
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
       let res = await axios.get(detail).catch((error) => console.log(error)); 
       temp.details = res.data; 
@@ -77,66 +76,75 @@ function App(props) {
       const id = temp.details.id; 
       const session =  localStorage.getItem("session_id");
 
-      // profile_details (our api)
+      // user_data (our api) including watchlist, ratings, etc ... 
       await axios.get(`/api/user/${res.data.username}`)
       .then(res => {
-        temp.profile_details = res.data;  
+        temp.user_data = res.data;  
+        console.log(res.data); 
       })
       .catch(err => {
         // add to collections (non-required data can be added in EDIT profile)
         axios.post(`/api/user/add`, 
         {
           username: res.data.username,
-          location: "",
-          bio: "",
-          four_favs: []
+          details: {
+            location: "",
+            bio: "",
+            four_favs: []
+          },
+          watchlist: [],
+          ratings: [],
+          favorites: [],
+          lists: []
         })
-        .then(res => temp.profile_details = res.data)
+        .then(res => {
+          temp.user_data = res.data;
+          console.log("USER ADDED"); 
+        })
         .catch(err => console.log(err)); 
       }); 
 
 
       // only get 1 page at a time, want all pages for context .... (even w/ excluding page param)
 
-      // ratings
-      let rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&sort_by=created_at.desc`;
-      res = await axios.get(rated_movies).catch((error) => console.log(error)); 
+      // // ratings
+      // let rated_movies = `https://api.themoviedb.org/3/account/${id}/rated/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&sort_by=created_at.desc`;
+      // res = await axios.get(rated_movies).catch((error) => console.log(error)); 
 
-      let arr = await get_data(res.data.total_pages, rated_movies);
-      temp.ratings = res.data.results.concat(arr); 
+      // let arr = await get_data(res.data.total_pages, rated_movies);
+      // temp.ratings = res.data.results.concat(arr); 
             
-      // fav movies 
-      let fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`;
-      res = await axios.get(fav).catch((error) => console.log(error)); 
+      // // fav movies 
+      // let fav = `https://api.themoviedb.org/3/account/${id}/favorite/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`;
+      // res = await axios.get(fav).catch((error) => console.log(error)); 
       
-      arr = await get_data(res.data.total_pages, fav);
-      temp.favorites= res.data.results.concat(arr); 
+      // arr = await get_data(res.data.total_pages, fav);
+      // temp.favorites= res.data.results.concat(arr); 
 
-      // watchlist
-      let watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
-      res = await axios.get(watch_list).catch((error) => console.log(error)); 
+      // // watchlist
+      // let watch_list = `https://api.themoviedb.org/3/account/${id}/watchlist/movies?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
+      // res = await axios.get(watch_list).catch((error) => console.log(error)); 
 
-      arr = await get_data(res.data.total_pages, watch_list);
-      temp.watchlist = res.data.results.concat(arr); 
+      // arr = await get_data(res.data.total_pages, watch_list);
+      // temp.watchlist = res.data.results.concat(arr); 
 
-      // lists 
-      let created_lists = `https://api.themoviedb.org/3/account/${id}/lists?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
-      res = await axios.get(created_lists).catch(error => console.log(error)); 
+      // // lists 
+      // let created_lists = `https://api.themoviedb.org/3/account/${id}/lists?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session}&language=en-US&sort_by=created_at.desc`; 
+      // res = await axios.get(created_lists).catch(error => console.log(error)); 
 
-      arr = await get_data(res.data.total_pages, created_lists);
-      temp.lists = res.data.results.concat(arr); 
+      // arr = await get_data(res.data.total_pages, created_lists);
+      // temp.lists = res.data.results.concat(arr); 
       
 
       localStorage.setItem("account", JSON.stringify(temp));
       set_account(temp);
-
+      
       console.log(temp); 
   }
 
     if(account.update) update(); // update when sign in, or make change 
 
   }, [account.update]);
-
 
 
   // helper

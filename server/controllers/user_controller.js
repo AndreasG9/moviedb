@@ -13,6 +13,7 @@ module.exports.get_user = async ( req, res ) => {
     }
 
     res.send(user); // success 
+    console.log(user); 
 }
 
 module.exports.add_user = async (req, res) => {
@@ -22,16 +23,17 @@ module.exports.add_user = async (req, res) => {
   const model = new User({
     // only username is required 
     username: req.body.username,
-    session_id: req.body.session_id,
-    location: req.body.location,
-    bio: req.body.bio,
-    four_favs: req.body.four_favs
+    details: req.body.details,
+    watchlist: req.body.watchlist,
+    ratings: req.body.ratings,
+    favorites: req.body.favorites,
+    lists: req.body.lists
   }); 
 
   try{
     // add to db 
     const user_data = await model.save();
-    res.send({success: true, user: user_data}); // status 200 
+    res.send(user_data); // status 200 
   }
   catch(error){
     res.status(404).send({success: false, message: "could not ADD user"}); 
@@ -39,18 +41,27 @@ module.exports.add_user = async (req, res) => {
 
 }
 
-module.exports.update_user = async(req, res) => {
-  // update session_id, location, bio, or four_favs to an existing user in the collection 
+
+module.exports.update_user_details = async(req, res) => {
+  // location, bio, and/or four_favs to an existing user in the collection 
     
   const update = {
-    // ... 
-    location: req.body.location,  
-    bio: req.body.bio, 
-    four_favs: req.body.four_favs
+    details : req.body
   }
 
   // update doc
   await User.findOneAndUpdate({username: req.params.username}, update, { new: true, useFindAndModify: false})
-    .then(data => res.send({success: true, updated: data}))
+    .then(data => res.send({updated: data}))
     .catch(err => res.status(400).send({success: false, message: "could not UPDATE user"})); 
 }
+
+
+module.exports.update_user_watchlist = async (req, res) => {
+  // add/push film to watchlist 
+
+  // $ push
+
+}
+
+
+

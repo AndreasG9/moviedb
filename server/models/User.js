@@ -1,19 +1,34 @@
 const mongoose = require('mongoose');
-// using tmdb api for majority of data, but using own api for a user's: session_id, username, location, bio, and four fav films (ids for tmdb);
+
+const Film = mongoose.Schema({
+  id: Number,
+  title: String,
+  release_date: String, 
+  poster_path: String, 
+  rating: Number 
+});
+
+const List = mongoose.Schema({
+  id: String,
+  name: String, 
+  description: String,
+  items: [ Film ]
+}); 
 
 const UserSchema = mongoose.Schema({
-  // move to details!
+  
   username: { type: String, required: true, unique: true },
-  location: { type: String },
-  bio: { type: String, max: 500 },
-  four_favs: [
-    {
-      movie_title: String,
-      movie_id: String
-    }
-  ]
 
-  // TODO favorites, watchlist, lists (data for each list included)
+  details: {
+    location: String,
+    bio: String, 
+    four_favs: [ Film ] 
+  },
+
+  watchlist: [ Film ],
+  favorites: [ Film ],
+  ratings: [ Film ], 
+  lists: [ List ]
 });
 
 const User = mongoose.model("User", UserSchema); 
