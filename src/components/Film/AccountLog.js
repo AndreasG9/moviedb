@@ -1,4 +1,4 @@
-import React, { useContext } from "react"; 
+import React, { useContext, useState } from "react"; 
 import styled from "styled-components"; 
 import axios from "axios"; 
 import { UserContext, useUserContext, } from "../../context/UserContext.js";
@@ -7,35 +7,32 @@ import ReactTooltip from "react-tooltip";
 function AccountLog( {result} ) {
   // if logged in can mark as watched/logged, give it a rating, and add film to the list 
   // if not logged in, display log in the log, rate, and add to list 
-
-  const header = {
-    "Content-Type" : "application/json;charset=utf-8"
-    }
+  // use of our API for POST/ PUT requests
 
   const user = useContext(UserContext); 
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
-  
+
+  const SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
   let found; 
 
-  // is rated
-  found = user.account.ratings.find((movie) => movie.id === result.id);
-  let is_rated = found !== undefined ? found.rating : "";  
-
   // is favorite 
-  found = user.account.favorites.find((movie) => movie.id === result.id);
+  found = user.account.user_data.favorites.find((movie) => movie.id === result.id);
   let is_favorite = found !== undefined ? true : false; 
 
   // is on watchlist
-  found = user.account.watchlist.find((movie) => movie.id === result.id);
+  found = user.account.user_data.watchlist.find((movie) => movie.id === result.id);
   let is_on_watchlist = found !== undefined ? true : false; 
 
-  const SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+  // is rated
+  found = user.account.user_data.ratings.find((movie) => movie.id === result.id);
+  let is_rated = found !== undefined ? found.rating : "";
+
 
   // State 
-  // const [favorite, set_favorite] = useState(is_favorite); 
-  // const [watchlist, set_watchlist] = useState(is_on_watchlist); 
-  //const [rating, set_rating] = useState(is_rated); 
+  const [favorite, set_favorite] = useState(is_favorite); 
+  const [watchlist, set_watchlist] = useState(is_on_watchlist); 
+  const [rating, set_rating] = useState(is_rated); 
 
 
   function display_favorite_context(){
@@ -117,34 +114,38 @@ function AccountLog( {result} ) {
     // POST fav: true or false 
     const fav = `https://api.themoviedb.org/3/account/${user.id}/favorite?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`; 
 
-    await axios.post(fav, {
-      "media_type": "movie",
-      "media_id": result.id,
-      "favorite": status
-    }, header).catch( (error) => console.log(error));  
+    // await axios.post(fav, {
+    //   "media_type": "movie",
+    //   "media_id": result.id,
+    //   "favorite": status
+    // }, header).catch( (error) => console.log(error));  
 
 
-    //set_favorite(status); 
-    let temp = {...account};
-    temp.update = true; 
-    set_account(temp); 
+    // //set_favorite(status); 
+    // let temp = {...account};
+    // temp.update = true; 
+    // set_account(temp); 
   }
 
   const handle_watchlist = async (status) => {
-    const wl= `https://api.themoviedb.org/3/account/${user.id}/watchlist?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`; 
 
-    await axios.post(wl, {
-      "media_type": "movie",
-      "media_id": result.id,
-      "watchlist": status
-    }, header).catch( (error) => console.log(error));  
+    await axios.post(`/api/user/${user.account.details.username}/watchlist`, {
+      watchlist: status,
+      film: result 
+    })
+      .then(res => {
+        console.log(res); 
+
+        set_watchlist(status); // T or F 
+        let temp = {...account};
+        temp.update = true; 
+        set_account(temp);
+
+      })
+      .catch(err => {
+        console.log(err)
+      }); 
     
-
-
-    //set_watchlist(status); 
-    let temp = {...account};
-    temp.update = true; 
-    set_account(temp);
   }
 
 
@@ -155,42 +156,42 @@ function AccountLog( {result} ) {
     const post_rating = `https://api.themoviedb.org/3/movie/${result.id}/rating?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`;
     const scale_rating = event.target.value; 
 
-    // add auth header w/ bearer token  TODO 
-    await axios.post(post_rating, 
-      {
-        "value": scale_rating 
-      }, 
-      header)
-      .catch( (error) => console.log(error));  
+
+    // await axios.post(post_rating, 
+    //   {
+    //     "value": scale_rating 
+    //   }, 
+    //   header)
+    //   .catch( (error) => console.log(error));  
 
 
-    // tell app update context 
-    let temp = {...account};
-    temp.update = true; 
-    set_account(temp); 
+    // // tell app update context 
+    // let temp = {...account};
+    // temp.update = true; 
+    // set_account(temp); 
   }
 
   const handle_list = async (event) => {
     const id = event.target.value; 
 
-    const get_list = `https://api.themoviedb.org/3/list/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
+    // const get_list = `https://api.themoviedb.org/3/list/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
 
-    // check if already added to that specific list 
-    const res = await axios.get(get_list); 
-    const found = res.data.items.find(item => item.id === result.id); 
+    // // check if already added to that specific list 
+    // const res = await axios.get(get_list); 
+    // const found = res.data.items.find(item => item.id === result.id); 
 
-    if(found) alert("film already added to that list"); 
+    // if(found) alert("film already added to that list"); 
 
-    else{
-      const add_to_list = `https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
+    // else{
+    //   const add_to_list = `https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
 
-      await axios.post(add_to_list, {
-        "media_id": result.id
-      }, 
-      header).catch( (error) => console.log(error));  
+    //   await axios.post(add_to_list, {
+    //     "media_id": result.id
+    //   }, 
+    //   header).catch( (error) => console.log(error));  
 
-    window.location.reload(false); 
-    }
+    // window.location.reload(false); 
+    // }
   }
 
 
@@ -209,7 +210,7 @@ function AccountLog( {result} ) {
       <AddList>
         <Select smaller onChange={handle_list}>
           <Option hidden value="title">Add to a list...</Option>
-          {user.account.lists.map(list => (
+          {user.account.user_data.lists.map(list => (
             <Option value={list.id} key={list.id}>{list.name}</Option>
           ))}
         </Select>
@@ -368,25 +369,5 @@ const Option = styled.option`
   color: #333; 
   font-size: 1.3rem; 
 `; 
-
-// const Circle = styled.div`
-//   height: 25px;
-//   width: 25px; 
-//   border: 2px solid #e1e3e5;
-
-//   border-right: ${(props) => props.left ? "none" : "2px solid #e1e3e5"};
-//   border-left:  ${(props) => props.left ? "2px solid #e1e3e5" : "none"};
-//   border-radius: ${(props) => props.left ? "50% 0 0 50%" : "0 50% 50% 0"}; 
-//   margin-right: ${(props) => props.left ? "" : "1.5%"}; 
-
-//  // border-radius: 50%; 
-//   transition: 150ms; 
-  
-//   &:hover{
-//     cursor: pointer; 
-//   }
-
-//   background-color: ${(props) => props.rating >= props.value ? "#CCAC00" : ""}; // based on state 
-// `; 
 
 export default AccountLog; 

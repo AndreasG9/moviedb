@@ -1,32 +1,30 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components"; 
-import { UserContext } from "../../context/UserContext"; 
+import { UserContext, useUserContext } from "../../context/UserContext"; 
 import { Input } from "../Search/SearchBar"; 
 import { Group, Label, TextArea, Btn } from "./Lists/NewEditList"; 
 import SearchDropDown from "./Lists/SearchDropDown"; 
 import Header from "../Header"; 
+import axios from "axios"; 
 
 
  function Edit() {
-
-  // able to edit location, bio, four_fav films, which will be POST to our server along with their username 
-
-  // get existing data if present 
-  
-  // init here 
+  // able to edit location, bio, four_fav films, all part of our model, along with username and session_id (both unique)
 
   const user = useContext(UserContext); 
+  const { set_account } = useUserContext(); 
+  const { account } = useContext(UserContext); 
+  
 
-  const [location, set_location] = useState("");
-  const [bio, set_bio] = useState("");
-  const [four_fav, set_four_fav] = useState([]); 
+  const init_fav = user.account.user_data.details.four_favs.length === 0 ? [] :  user.account.user_data.details.four_favs; 
+  const init_location = user.account.user_data.details.location === undefined ? "" : user.account.user_data.details.location; 
+  const init_bio = user.account.user_data.details.bio === undefined ? "" : user.account.user_data.details.bio; 
 
-  const get_username = () => {if(Object.keys(user.account.details).length !== 0) return user.account.details.username;}
-  const get_img = () => {if(Object.keys(user.account.details).length !== 0) return user.account.details.avatar.gravatar.hash;}
+  const [location, set_location] = useState(init_location);
+  const [bio, set_bio] = useState(init_bio);
+  const [four_fav, set_four_fav] = useState(init_fav); 
 
   const add_film =  (film) => { 
-    
-    //    media_id: added_films[i].id
 
     if(four_fav.find(item => item.id === film.id) !== undefined) return;  
     let temp = [...four_fav];
@@ -46,19 +44,39 @@ import Header from "../Header";
     set_four_fav(temp); 
   }
 
+  const get_username = () => {if(Object.keys(user.account.details).length !== 0) return user.account.user_data.username;}
+  //const get_img = () => {if(Object.keys(user.account.details).length !== 0) return user.account.details.avatar.gravatar.hash;}
+
   function get_year(result){
     const year = result.release_date !== undefined ? result.release_date.substr(0, 4) : ""; 
     return year; 
   }
  
 
-  const handle_submit = (event) => {
-    // POST 
-    event.preventDefault(); 
+  const handle_submit = async (event) => {
+    // UPDATE existing user in the db 
 
+    event.preventDefault();  
 
+    // to access this page, needed auth, user already in the db 
+    await axios.put(`/api/user/${user.account.details.username}/edit`, 
+      {
+        location: location,
+        bio: bio,
+        four_favs: four_fav
+      }) 
+      .then(res => {
+        // UPDATE context! 
+        const temp = {...account};
+        temp.profile_details = res.data; 
+        console.log(res); 
+        temp.update = true; 
+        set_account(temp); 
+
+        // go to profile 
+      })
+      .catch(err => console.log(err)); 
   }
-
 
   return (
     <React.Fragment>
@@ -86,7 +104,6 @@ import Header from "../Header";
             <Label>4 Favorites</Label>
             <SearchDropDown  add_film={add_film} header={false}></SearchDropDown>
 
-            
           {four_fav.map( film => (
             <AddedFilm key={film.id}>
               <div style={{display: "flex", alignItems: "center", margin: "1%"}}>

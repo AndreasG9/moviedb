@@ -20,7 +20,6 @@ function Films( {list} ) {
 
   // get ACTIVE_NAV from path 
   const temp = location.pathname.split("/")[3];
-  console.log(temp); 
   if(temp === "profile" || temp === "ratings" || temp === "favorites" || temp === "watchlist" || temp === "lists" || temp === "list") ACTIVE_NAV = temp;
   else history.push("/404"); // url manually entered path and its not recognized/ invalid  
   

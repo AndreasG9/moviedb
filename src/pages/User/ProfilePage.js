@@ -1,6 +1,5 @@
 import React from "react"; 
 import Header from "../../components/Header";
-//import Footer from "../../components/Footer";
 import Profile from "../../components/Profile/Profile.js"; 
 
 function ProfilePage() { 
@@ -8,7 +7,6 @@ function ProfilePage() {
     <div>
       <Header></Header>
       <Profile></Profile>
-      {/* <Footer></Footer> */}
     </div>
   )
 }

@@ -12,8 +12,7 @@ module.exports.get_user = async ( req, res ) => {
       return res.status(404).send({success: false, message: "username NOT found"}); 
     }
 
-    res.send(user); // success 
-    console.log(user); 
+    res.send(user); // success, send all user data (including watchlist, ratings, etc... ) 
 }
 
 module.exports.add_user = async (req, res) => {
@@ -41,7 +40,6 @@ module.exports.add_user = async (req, res) => {
 
 }
 
-
 module.exports.update_user_details = async(req, res) => {
   // location, bio, and/or four_favs to an existing user in the collection 
     
@@ -51,17 +49,39 @@ module.exports.update_user_details = async(req, res) => {
 
   // update doc
   await User.findOneAndUpdate({username: req.params.username}, update, { new: true, useFindAndModify: false})
-    .then(data => res.send({updated: data}))
+    .then(data => res.send(data))
     .catch(err => res.status(400).send({success: false, message: "could not UPDATE user"})); 
 }
 
+module.exports.update_watchlist = async (req, res) => {
 
-module.exports.update_user_watchlist = async (req, res) => {
-  // add/push film to watchlist 
+  if(req.body.watchlist === true){
+    // add film to watchlist 
+    
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $push: { watchlist: req.body.film }}, 
+      { new: true, useFindAndModify: false })
+      .then(res.send({success: true, message: "film added to watchlist"}))
+      .catch(err => res.status(400).send({success: false, message: "could not ADD to watchlist"})); 
+  }
 
-  // $ push
+  else{
+    // remove film from watchlist 
 
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $pull: { watchlist: {id: req.body.film.id} }}, 
+      { new: true, useFindAndModify: false })
+      .then(res.send({success: true, message: "film removed from watchlist"}))
+      .catch(err => res.status(400).send({success: false, message: "could not REMOVE from watchlist"})); 
+  }
 }
 
+module.exports.get_watchlist = async (req, res) => {
+  // return a users watchlist 
+}
+ 
+ //////////////////////////// dont forget to include rating if sent ******
 
 
