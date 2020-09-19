@@ -81,6 +81,43 @@ module.exports.update_watchlist = async (req, res) => {
 module.exports.get_watchlist = async (req, res) => {
   // return a users watchlist 
 }
+
+
+module.exports.update_favorites = async (req, res) => {
+
+  if(req.body.favorite === true){
+    // add film to favorites 
+    
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $push: { favorites: req.body.film }}, 
+      { new: true, useFindAndModify: false })
+      .then(res.send({success: true, message: "film added to favorites"}))
+      .catch(err => res.status(400).send({success: false, message: "could not ADD to favorites"})); 
+  }
+
+  else{
+    // remove film from favorites
+
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $pull: { favorites: {id: req.body.film.id} }}, 
+      { new: true, useFindAndModify: false })
+      .then(res.send({success: true, message: "film removed from favorites"}))
+      .catch(err => res.status(400).send({success: false, message: "could not REMOVE from favorites"})); 
+  }
+}
+
+module.exports.get_favorites = async (req, res) => {
+  // return a users favorites
+}
+
+module.exports.update_ratings = async(res, req) => {
+  
+}
+
+
+
  
  //////////////////////////// dont forget to include rating if sent ******
 

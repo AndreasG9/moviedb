@@ -106,25 +106,24 @@ function AccountLog( {result} ) {
           </Rating>
         </div>
       )
-
   }
 
-
   const handle_fav = async (status) => {
-    // POST fav: true or false 
-    const fav = `https://api.themoviedb.org/3/account/${user.id}/favorite?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`; 
+    // will either add or remove film from favorites, managed in server 
 
-    // await axios.post(fav, {
-    //   "media_type": "movie",
-    //   "media_id": result.id,
-    //   "favorite": status
-    // }, header).catch( (error) => console.log(error));  
+    await axios.post(`/api/user/${user.account.details.username}/favorites`, {
+      favorite: status,
+      film: result
+    })
+      .then(res => {
+        console.log(res); 
 
-
-    // //set_favorite(status); 
-    // let temp = {...account};
-    // temp.update = true; 
-    // set_account(temp); 
+        set_favorite(status);
+        let temp = {...account};
+        temp.update = true; 
+        set_account(temp);
+      })
+      .catch(err => console.log(err)); 
   }
 
   const handle_watchlist = async (status) => {
@@ -145,9 +144,8 @@ function AccountLog( {result} ) {
       .catch(err => {
         console.log(err)
       }); 
-    
-  }
 
+  }
 
   const handle_rating = async (event) => {
     
@@ -155,6 +153,8 @@ function AccountLog( {result} ) {
     let session_id = localStorage.getItem("session_id");  
     const post_rating = `https://api.themoviedb.org/3/movie/${result.id}/rating?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`;
     const scale_rating = event.target.value; 
+
+    const url = `/api/user/${user.account.details.username}/ratings`; 
 
 
     // await axios.post(post_rating, 
