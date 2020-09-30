@@ -14,7 +14,7 @@ user_router.post("/:username/watchlist", update_watchlist);
 //user_router.get("/:username/favorites/movies", get_favorites); 
 user_router.post("/:username/favorites", update_favorites);
 
-user_router.post("/:username/ratings", update_ratings); 
-
+//user_router.get("/:username/ratings/movies", get_ratings); 
+user_router.post("/:username/ratings", update_ratings);
 
 module.exports = user_router; 

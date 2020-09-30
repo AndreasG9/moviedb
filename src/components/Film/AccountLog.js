@@ -104,6 +104,7 @@ function AccountLog( {result} ) {
               ))}
             </Select>
           </Rating>
+          {/* { is_rated ? <Remove>X</Remove> : "" } */}
         </div>
       )
   }
@@ -148,27 +149,29 @@ function AccountLog( {result} ) {
   }
 
   const handle_rating = async (event) => {
-    
-    // POST rating to user's account 
-    let session_id = localStorage.getItem("session_id");  
-    const post_rating = `https://api.themoviedb.org/3/movie/${result.id}/rating?api_key=${process.env.REACT_APP_API_KEY}&session_id=${session_id}`;
-    const scale_rating = event.target.value; 
+    // POST rating to user's account (will either add film + rating, or update rating for a film)
 
-    const url = `/api/user/${user.account.details.username}/ratings`; 
+    const film = {
+      id: result.id,
+      title: result.title,
+      release_date: result.release_date,
+      poster_page: result.poster_path,
+      rating: event.target.value 
+    }
 
+    await axios.post(`/api/user/${user.account.details.username}/ratings`, {
+      film: film
+    })
+    .then(res => {
+      console.log(res.data); 
 
-    // await axios.post(post_rating, 
-    //   {
-    //     "value": scale_rating 
-    //   }, 
-    //   header)
-    //   .catch( (error) => console.log(error));  
-
-
-    // // tell app update context 
-    // let temp = {...account};
-    // temp.update = true; 
-    // set_account(temp); 
+      let temp = {...account};
+      temp.update = true; 
+      set_account(temp);
+    })
+    .catch(err => {
+      console.log(err)
+    }); 
   }
 
   const handle_list = async (event) => {
@@ -368,6 +371,21 @@ const Option = styled.option`
   background-color: #8699aa; 
   color: #333; 
   font-size: 1.3rem; 
+`; 
+
+const Remove = styled.div`
+
+position: absolute; 
+top: 20%; 
+ 
+//margin-left: 60%; 
+//font-size: 1.5em;
+//border: 1px solid white; 
+
+&:hover{
+  color: #adadff;
+  cursor: pointer; 
+}
 `; 
 
 export default AccountLog; 

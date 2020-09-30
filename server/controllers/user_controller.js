@@ -112,13 +112,30 @@ module.exports.get_favorites = async (req, res) => {
   // return a users favorites
 }
 
-module.exports.update_ratings = async(res, req) => {
-  
+module.exports.update_ratings = async(req, res) => {
+  // push or set rating to film in ratings
+
+  const user = await User.findOne({username: req.params.username});
+  let found = user.ratings.find(film => film.id === req.body.film.id); 
+
+  if(found){
+    // rated, replace current film rating 
+
+    await User.findOneAndUpdate({username: req.params.username, 'ratings.id': req.body.film.id}, 
+      { $set: { 'ratings.$.rating': req.body.film.rating } },
+      { new: true, useFindAndModify: false }) 
+      .then(res.send({success: true, message: "film rated"}))
+      .catch(err => res.status(400).send({success: false, message: "could not RATE film"}));  
+  }
+
+  else{
+    // not rated, add film + rating 
+    await User.updateOne({username: req.params.username}, 
+      { $push : { ratings: req.body.film } }, 
+      { new: true, useFindAndModify: false } )
+    .then(res.send({success: true, message: "film rated"}))
+    .catch(err => res.status(400).send({success: false, message: "could not RATE film"}));  
+  }
 }
 
-
-
- 
  //////////////////////////// dont forget to include rating if sent ******
-
-
