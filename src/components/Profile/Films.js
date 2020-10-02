@@ -29,8 +29,8 @@ function Films( {list} ) {
     TOTAL_POSTS = list.item_count; 
   }
   else {
-    init_results = Object.keys(user.account.details).length !== 0 ? user.account[ACTIVE_NAV] : ""; 
-    TOTAL_POSTS = Object.keys(user.account.details).length !== 0  ? user.account[ACTIVE_NAV].length : ""; 
+    init_results = Object.keys(user.account.details).length !== 0 ? user.account.user_data[ACTIVE_NAV] : ""; 
+    TOTAL_POSTS = Object.keys(user.account.details).length !== 0  ? user.account.user_data[ACTIVE_NAV].length : ""; 
   }
   
   const POSTS_PER_PAGE = 30; 
@@ -73,9 +73,9 @@ function Films( {list} ) {
   function get_header(){
     let msg = "";  
 
-    if(ACTIVE_NAV === "watchlist") msg = `You Want to See ${user.account.watchlist.length} films`; 
-    else if(ACTIVE_NAV === "favorites") msg = `You have ${user.account.favorites.length} of favorites`;
-    else if(ACTIVE_NAV === "ratings") msg = `You Have Rated ${user.account.ratings.length} Films`;
+    if(ACTIVE_NAV === "watchlist") msg = `You Want to See ${user.account.user_data.watchlist.length} films`; 
+    else if(ACTIVE_NAV === "favorites") msg = `You have ${user.account.user_data.favorites.length} of favorites`;
+    else if(ACTIVE_NAV === "ratings") msg = `You Have Rated ${user.account.user_data.ratings.length} Films`;
     else if(ACTIVE_NAV === "lists") msg = `${list.name}`;
 
     return <Header>{msg}</Header>
@@ -98,7 +98,7 @@ function Films( {list} ) {
     // watchlist, ratings, or a specific list 
 
     if(ACTIVE_NAV === "watchlist" || ACTIVE_NAV === "lists"){
-      const found = user.account.ratings.find(item => item.id === film.id); // maybe you seen the film, but want to remind yourself to re-watch 
+      const found = user.account.user_data.ratings.find(item => item.id === film.id); // maybe you seen the film, but want to remind yourself to re-watch 
 
       if(found) return <Rating>{found.rating}</Rating>;
       else return <Rating>No rating found</Rating>;

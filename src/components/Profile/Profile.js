@@ -12,38 +12,17 @@ function Profile() {
   console.log(user); 
   // user.account.profile_details
 
-  // function tool_tip(){
-  //   let retval = {}; 
-  //   return retval; 
-  // }
+  function tool_tip(id, title, release_date){
+    let retval = {}; 
 
-  function four_favorites(){
-    // user selected four favorites, and link to all selected favorites  
+    let year = release_date !== undefined ? release_date.substr(0, 4) : ""; 
+    retval.tool_tip = `${title} (${year})`; 
+    retval.path = id + "-" + title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
 
-    const four_favs = user.account.user_data.favorites; 
-
-    four_favs.map( (fav) => {
-
-      const year = fav.release_date !== undefined ? fav.release_date.substr(0, 4) : ""; 
-      const tool_tip = `${fav.title} (${year})`; 
-      const path = fav.id + "-" + fav.title.toString().toLowerCase().replace( / /g, "-"); // for redirect 
-
-      return (
-        <StyledLink key={fav.id} to={
-          {
-            pathname: `/film/${path}`,
-            state: {movie_id: fav.id}
-          }
-        }>
-          <ReactTooltip></ReactTooltip>
-          <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
-        </StyledLink>
-      )
-
-    })
-
+    return retval; 
   }
-  
+
+
   function favorites_preview(){
     // data from users 4 selected favorites in edit profile 
 
@@ -78,7 +57,8 @@ function Profile() {
 
     if(Object.keys(user.account.user_data.ratings).length === 0) return; 
 
-    const four_ratings = user.account.ratings.slice(0, 4);
+
+    const four_ratings = user.account.user_data.ratings.slice(-4);
 
     return four_ratings.map( (film) => {
 
@@ -107,8 +87,8 @@ function Profile() {
     // use data from 4 more recent additions to watchlist 
 
     if(Object.keys(user.account.user_data.watchlist).length === 0) return; 
-
-    const four_watchlist = user.account.watchlist.slice(0, 4);
+    
+    const four_watchlist = user.account.user_data.watchlist.slice(-4);
 
     return ( four_watchlist.map( (item, index) => {
       index = 4 - index;
@@ -149,7 +129,7 @@ function Profile() {
 
   function get_bio(){
     if(user.account.user_data.details.bio === "") return <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO</div></Bio>; 
-    else return <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px"}}>BIO</div>{user.account.profile_details.bio}</Bio>; 
+    else return <Bio><div style={{borderBottom: "1px solid #6f797d", paddingBottom: "2px", marginBottom: "4%"}}>BIO</div>{user.account.user_data.details.bio}</Bio>; 
   }
 
   const handle_list = (list) => {
@@ -172,8 +152,23 @@ function Profile() {
               <Title left>Favorite Films<span>more</span></Title>
             </StyledLink>
             <Preview>
-              {/* {favorites_preview()} */}
-              {four_favorites()}
+              { user.account.user_data.details.four_favs.map( (fav) => {
+
+                const info = tool_tip(fav.id, fav.title, fav.release_date);
+
+                return (
+                  <StyledLink key={fav.id} to={
+                    {
+                      pathname: `/film/${info.path}`,
+                      state: {movie_id: fav.id}
+                    }
+                  }>
+                    <ReactTooltip></ReactTooltip>
+                    <MediumPoster src={`https://image.tmdb.org/t/p/w154/${fav.poster_path}`} key={fav.id} data-tip={info.tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"b></MediumPoster>
+                  </StyledLink>
+                )
+              })}
+
             </Preview>
           </PreviewContainer>  
 
@@ -263,8 +258,7 @@ const Info = styled.div`
   }
 `; 
 
-const Bio = styled.div`
-  // temp 
+const Bio = styled.div` 
   height: 240px;
   word-wrap: break-word;
 `; 
