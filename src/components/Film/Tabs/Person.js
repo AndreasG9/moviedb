@@ -1,7 +1,7 @@
 import React from "react"; 
 import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
-import missing_portrait from "../../../missing_portrait.png"; 
+import missing_portrait from "../../../assets/missing_portrait.png";
 
 
 function Person( {person} ) {
