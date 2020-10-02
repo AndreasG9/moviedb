@@ -1,4 +1,19 @@
-Andreas G
+Andreas G.
+
+**A moviedb with layout and some features cloned from the popular film site Letterboxd.com. (80% complete)** 
+
+
+client: react <br />
+routing: react-router <br />
+server: express <br />
+database: mongodb <br />
+film data api: The Movie Database API v3 <br />
+
+
+fonts: Roboto Font-Google Fonts 
+
+[link to development screenshots](https://github.com/AndreasG9/moviedb/tree/master/screenshots) <br /> <br />
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
