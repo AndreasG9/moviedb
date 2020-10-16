@@ -119,13 +119,28 @@ module.exports.update_ratings = async(req, res) => {
   let found = user.ratings.find(film => film.id === req.body.film.id); 
 
   if(found){
-    // rated, replace current film rating 
+    // rated, replace current film rating (or remove film if remove rating)
 
-    await User.findOneAndUpdate({username: req.params.username, 'ratings.id': req.body.film.id}, 
-      { $set: { 'ratings.$.rating': req.body.film.rating } },
-      { new: true, useFindAndModify: false }) 
-      .then(res.send({success: true, message: "film rated"}))
-      .catch(err => res.status(400).send({success: false, message: "could not RATE film"}));  
+    if(req.body.film.rating === 0){
+      // remove rated film all together 
+
+      await User.findOneAndUpdate(
+        { username: req.params.username },
+        { $pull: { ratings: {id: req.body.film.id} }}, 
+        { new: true, useFindAndModify: false })
+        .then(res.send({success: true, message: "film removed from ratings"}))
+        .catch(err => res.status(400).send({success: false, message: "could not REMOVE from ratings"})); 
+    }
+
+    else{
+      // update rating 
+
+      await User.findOneAndUpdate({username: req.params.username, 'ratings.id': req.body.film.id}, 
+        { $set: { 'ratings.$.rating': req.body.film.rating } },
+        { new: true, useFindAndModify: false }) 
+        .then(res.send({success: true, message: "film rated"}))
+        .catch(err => res.status(400).send({success: false, message: "could not RATE film"}));  
+    }
   }
 
   else{

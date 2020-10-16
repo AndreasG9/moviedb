@@ -97,14 +97,16 @@ function AccountLog( {result} ) {
         <div>
           <Rating>
             <Title>{title}</Title>
+            <div style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
             <Select onChange={handle_rating}>
               <Option hidden>{is_rated}</Option>
               {SCALE.map(val => (
                 <Option key={val}>{val}</Option>
               ))}
             </Select>
+            { is_rated ? <Remove onClick={handle_remove_rating}>X</Remove> : "" }
+            </div>
           </Rating>
-          {/* { is_rated ? <Remove>X</Remove> : "" } */}
         </div>
       )
   }
@@ -155,8 +157,36 @@ function AccountLog( {result} ) {
       id: result.id,
       title: result.title,
       release_date: result.release_date,
-      poster_page: result.poster_path,
+      poster_path: result.poster_path,
       rating: event.target.value 
+    }
+
+    console.log(film); 
+
+    await axios.post(`/api/user/${user.account.details.username}/ratings`, {
+      film: film
+    })
+    .then(res => {
+      console.log(res.data); 
+
+      let temp = {...account};
+      temp.update = true; 
+      set_account(temp);
+    })
+    .catch(err => {
+      console.log(err)
+    }); 
+  }
+
+  const handle_remove_rating = async (event) => {
+    // film currently rated, remove that rating (send 0)
+
+    const film = {
+      id: result.id,
+      title: result.title,
+      release_date: result.release_date,
+      poster_path: result.poster_path,
+      rating: 0 
     }
 
     await axios.post(`/api/user/${user.account.details.username}/ratings`, {
@@ -375,17 +405,13 @@ const Option = styled.option`
 
 const Remove = styled.div`
 
-position: absolute; 
-top: 20%; 
- 
-//margin-left: 60%; 
-//font-size: 1.5em;
-//border: 1px solid white; 
+  margin-left: 20%; 
+  font-size: 1.2em; 
 
-&:hover{
-  color: #adadff;
-  cursor: pointer; 
-}
+  &:hover{
+    color: #adadff;
+    cursor: pointer;
+  }
 `; 
 
 export default AccountLog; 
