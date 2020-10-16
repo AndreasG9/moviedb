@@ -1,7 +1,7 @@
 import React from "react"; 
-import { useHistory } from "react-router-dom"; 
 import styled from "styled-components"; 
 import missing_portrait from "../../../assets/missing_portrait.png";
+import { StyledLink } from "../../Profile/Profile";
 
 
 function Person( {person} ) {
@@ -9,18 +9,9 @@ function Person( {person} ) {
 
   const character = person.character !== undefined ? person.character : person.job; 
 
-  const history = useHistory();
-
-  const handle_person = () => {
-    // redirect to person/person-name 
-
-    const params = person.name.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/person/${params}`; 
-    history.push(target, {credit: person.id});
-  }
-
   return (
-    <Container onClick={handle_person}>
+    <Container>
+      <StyledLink to={{pathname: `/person/${person.id}-${person.name.toLowerCase().replace( / /g, "-")}`, state: {credit: person.id}}}>
       <Profile 
         src={`https://image.tmdb.org/t/p/w185${person.profile_path}`} 
         alt="portrait" 
@@ -30,6 +21,7 @@ function Person( {person} ) {
       <Name>{person.name}</Name>
       <CharacterOrJob>{character}</CharacterOrJob>
 
+      </StyledLink>
     </Container>
   )
 }
@@ -49,7 +41,6 @@ const Container = styled.div`
   &:hover{
     cursor: pointer;
   }
-
 `; 
 
 const Profile = styled.img`
@@ -62,11 +53,14 @@ const Profile = styled.img`
 const Name = styled.div`
   margin-top: 2%; 
   font-weight: bold;
+  font-size: 1.1em;
+  color: #333; 
 `;
 
 const CharacterOrJob = styled.div`
   margin-top: 2%; 
+  color: #333;
+  opacity: .7;
 `;
-
 
 export default Person; 

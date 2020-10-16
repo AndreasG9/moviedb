@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react"; 
 import axios from "axios"; 
-import { useHistory, useLocation } from "react-router-dom"; 
+import { useLocation } from "react-router-dom"; 
 import styled from "styled-components"; 
 import Tabs from "./Tabs/Tabs.js";
 import Backdrops from "./Backdrops";
 import AccountLog from "./AccountLog"; 
 import { UserContext } from "../../context/UserContext.js";
 import { StyledLink } from "../Profile/Profile";
+import {v4 as uuidv4} from "uuid";
 
 
 function Film( { movie_id }) {    
@@ -40,10 +41,6 @@ function Film( { movie_id }) {
     crew: []
   });
 
-  const [director_credit, set_director_credit] = useState(""); // for redirect to /person (redirect to cast or crew inside tabs)
-
-  const history = useHistory();
-
 
   useEffect( () => {
     // bunch of diff state vars  
@@ -72,8 +69,7 @@ function Film( { movie_id }) {
 
       data.data.crew.forEach( (person) => {
         if(person.job === "Director") {
-          directors_arr.push(person.name);
-          set_director_credit(person.id); 
+          directors_arr.push(person);
         }
       });
 
@@ -99,9 +95,13 @@ function Film( { movie_id }) {
     if(directors.length > 2){
       return (
         <React.Fragment>
-          <Director onClick={() => handle_director(directors[0])}>{directors[0]}</Director>
-          <Director>{directors[1]}</Director>
-          <Director >...</Director>
+          <StyledLink to={{pathname: `/person/${directors[0].id}-${directors[0].name.toLowerCase().replace( / /g, "-")}`, state: {credit: directors[0].id}}}>
+            <Director >{directors[0].name}</Director>
+          </StyledLink>
+          <StyledLink to={{pathname: `/person/${directors[1].id}-${directors[1].name.toLowerCase().replace( / /g, "-")}`, state: {credit: directors[1].id}}}>
+            <Director >{directors[1].name}</Director>
+          </StyledLink>
+          <Director noclick>...</Director>
         </React.Fragment>
       )
     }
@@ -109,13 +109,29 @@ function Film( { movie_id }) {
     else if (directors.length > 1){
       return (
         <React.Fragment>
-          <Director>{directors[0]}</Director>
-          <Director>{directors[1]}</Director>
+          {
+            directors.map( (director) => (
+              <React.Fragment key={uuidv4()}>
+                <StyledLink to={{pathname: `/person/${director.id}-${director.name.toLowerCase().replace( / /g, "-")}`, state: {credit: director.id}}}>
+                  <Director >{director.name}</Director>
+                </StyledLink>
+              </React.Fragment>
+            ))
+          }
         </React.Fragment>
       )
     }
 
-    else return <Director onClick={() => handle_director(directors[0])}>{directors[0]}</Director>
+    //else return <Director onClick={() => handle_director(directors[0])}>{directors[0]}</Director>
+    else {
+      if(directors[0] !== undefined){
+        return (
+          <StyledLink to={{pathname: `/person/${directors[0].id}-${directors[0].name.toLowerCase().replace( / /g, "-")}`, state: {credit: directors[0].id}}}>
+            <Director >{directors[0].name}</Director>
+          </StyledLink>
+        )
+      }
+    }
   }
 
   function get_title(){
@@ -123,14 +139,6 @@ function Film( { movie_id }) {
       if(result.title.length > 30) return <Title style={{fontSize: "2.2em"}}>{result.title}</Title> // smaller font for longer titles 
       else return <Title>{result.title}</Title>
     }
-  }
-
-  const handle_director = (director) => {
-    // redirect /person/person-name
-
-    const params = director.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/person/${params}`; 
-    history.push(target, {credit: director_credit});
   }
 
   function display_context(){
@@ -213,7 +221,6 @@ const Container = styled.div`
     width: 99%; 
     margin: 2% 0 0 2.5%; 
   }
-
 `; 
 
 const TopContainer = styled.div`
@@ -282,11 +289,11 @@ const Director = styled.h3`
   padding: 10px; 
   text-align: center; 
 
-  margin-left: 1%;
+  margin-left: 4%; 
 
   &:hover{
-    cursor: pointer;
-    color: #e1e3e5;
+    cursor: ${props => props.noclick ? "" : "pointer"}; 
+    color: ${props => props.noclick ? "" : "#e1e3e5"}; 
   }
 `;
 
