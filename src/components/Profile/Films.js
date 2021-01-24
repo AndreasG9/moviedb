@@ -25,8 +25,8 @@ function Films( {list} ) {
   
   // easier to call 
   if(ACTIVE_NAV === "list") {
-    init_results = list.items; 
-    TOTAL_POSTS = list.item_count; 
+    init_results = list !== undefined ? list.items : [];
+    TOTAL_POSTS = list !== undefined ? list.item_count : 0;
   }
   else {
     init_results = Object.keys(user.account.details).length !== 0 ? user.account.user_data[ACTIVE_NAV] : ""; 

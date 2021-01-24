@@ -4,15 +4,15 @@ const User = require("../models/User");
 module.exports.get_user = async ( req, res ) => {
   // get user from db/collection (by username)
   // if dont find, client will make POST req. to add_user 
+    
+  const user = await User.findOne({username: req.params.username});
 
-    const user = await User.findOne({username: req.params.username});
+  if(!user){
+    // not found, 
+    return res.status(404).send({success: false, message: "username NOT found"}); 
+  }
 
-    if(!user){
-      // not found, 
-      return res.status(404).send({success: false, message: "username NOT found"}); 
-    }
-
-    res.send(user); // success, send all user data (including watchlist, ratings, etc... ) 
+  res.send(user); // success, send all user data (including watchlist, ratings, etc... ) 
 }
 
 module.exports.add_user = async (req, res) => {
@@ -108,10 +108,6 @@ module.exports.update_favorites = async (req, res) => {
   }
 }
 
-module.exports.get_favorites = async (req, res) => {
-  // return a users favorites
-}
-
 module.exports.update_ratings = async(req, res) => {
   // push or set rating to film in ratings
 
@@ -153,4 +149,25 @@ module.exports.update_ratings = async(req, res) => {
   }
 }
 
+module.exports.update_lists = async(req, res) => {
+  // NEW or EDIT! 
+  
+  console.log(req.body); 
+  
+  const user = await User.findOne({username: req.params.username});
+  let found = user.lists.find(list => list.name === req.body.list.name); 
+
+  console.log(found); 
+
+  // new list 
+  
+
+  // PRINT DATA I GET BEFORE I ADD TO MONGO
+  //console.log(req.body); 
+}
+
+module.exports.temp = async(req, res) => {
+
+  res.send("HELLO");
+}
  //////////////////////////// dont forget to include rating if sent ******

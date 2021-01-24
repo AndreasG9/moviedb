@@ -83,9 +83,13 @@ const Routes = ( { current_user } ) => (
       <Route
         path="/user/:username/list/new"
         render = { () => !current_user ? 
-          (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}> 
+          (<Redirect to="/"></Redirect>) : 
+          (<NewEditList
+            >
+          </NewEditList>)}>  
       </Route>
 
+      {/* (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}>  */}
 
       <Route 
         path="/user/:username/list/:list/edit" 

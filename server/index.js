@@ -15,10 +15,11 @@ app.use("/api", api_router);
 
 // Connect mongodb
 mongoose.connect(process.env.MONGO_URI, 
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}, 
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}, 
   () => console.log("connected to db"))
   .catch(error => console.log(error)); 
 
 
 // todo production, no proxy 
 app.listen(PORT); 
+console.log("server listenting on port: " + PORT);

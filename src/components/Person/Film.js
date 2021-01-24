@@ -1,7 +1,7 @@
 import React from "react"; 
 import styled from "styled-components";
-import { useHistory } from "react-router-dom"; 
 import ReactTooltip from "react-tooltip";
+import { StyledLink} from "../Profile/Profile"; 
 
  function Result( {result} ) {
 
@@ -11,36 +11,23 @@ import ReactTooltip from "react-tooltip";
 
   const res = result.character !== undefined ? result.character : result.job; 
 
-  const history = useHistory(); 
-
-  const handle_film = () => {
-    // redirect to film/film-name
-    const params = result.title.toLowerCase().replace( / /g, "-"); // ex. search The Witch url: domain.com/search/the-witch
-    const target = `/film/${params}`; 
-    history.push(target, {movie_id: result.id});
-  }
-
-
   return (
-    <Container onClick={handle_film}>
+    <StyledLink style={{margin: "1%"}}
+      to={{
+        pathname: `/film/${result.id}-${result.title.toLowerCase().replace( / /g, "-")}`,
+        state: {movie_id : result.id}
+      }}>
       <ReactTooltip></ReactTooltip>
       <Poster src={poster} alt="poster" data-tip={tool_tip}  data-effect="solid" data-background-color="#425566" data-text-color="#e1e3e5" data-delay-show="200"></Poster>
       <CharOrJob>{res}</CharOrJob>
-    </Container>
+    </StyledLink>
   )
 }
-
-const Container = styled.div`
-  margin: 1%; 
-`; 
 
 const Poster = styled.img`
   display: block; 
   border: 1px solid #a5a5a5;
   border-radius: 3%;
-
-  width: 156px;
-  height: 233px; 
 
   &:hover{
     cursor: pointer;
