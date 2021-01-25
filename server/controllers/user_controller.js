@@ -151,19 +151,24 @@ module.exports.update_ratings = async(req, res) => {
 
 module.exports.update_lists = async(req, res) => {
   // NEW or EDIT! 
-  
-  console.log(req.body); 
-  
+
   const user = await User.findOne({username: req.params.username});
-  let found = user.lists.find(list => list.name === req.body.list.name); 
+  let found = user.lists.find(list => list._id === req.body.id); 
 
-  console.log(found); 
 
-  // new list 
-  
+  if(found){
+    // update exisiting list (name, desc, and/or items)
 
-  // PRINT DATA I GET BEFORE I ADD TO MONGO
-  //console.log(req.body); 
+  }
+  else{
+    // new list 
+    console.log("new list");
+    await User.updateOne({username: req.params.username}, 
+      { $push : { lists: req.body } }, 
+      { new: true, useFindAndModify: false } )
+    .then(res.send({success: true, message: "list created"}))
+    .catch(err => res.status(400).send({success: false, message: "could not create new list"}));  
+  }
 }
 
 module.exports.temp = async(req, res) => {

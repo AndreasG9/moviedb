@@ -65,16 +65,29 @@ function App(props) {
       // details (from tmdb auth account details)
       const detail = `https://api.themoviedb.org/3/account?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
       let res = await axios.get(detail).catch((error) => console.log(error)); 
-      temp.details = res.data; 
+      temp.details = res.data;
 
+
+      //  await axios.get(detail)
+      //               .then(res => { 
+      //                 temp.details = res.data; 
+
+      //                 return axios.get(`/api/user/${res.data.username}`); 
+      //               })
+      //               .then(res => {
+      //                 console.log(res); 
+      //               })
+      //               .catch(err => console.log(err))
+      //temp.details = res.data; 
       // const id = temp.details.id; 
       // const session =  localStorage.getItem("session_id");
 
       // user_data (our api) including watchlist, ratings, etc ... 
-      await axios.get(`/api/user/${res.data.username}`)
+      
+      
+      await axios.get(`/api/user/${res.data.username}/data`)
         .then(res => {
           temp.user_data = res.data;  
-          console.log(res.data); 
         })
         .catch(err => {
           // add to collections (non-required data can be added in EDIT profile, account log for a film, etc...)
@@ -99,7 +112,7 @@ function App(props) {
             .catch(err => console.log(err)); 
         }); 
 
-
+          
       localStorage.setItem("account", JSON.stringify(temp));
       set_account(temp);
       console.log(temp); 

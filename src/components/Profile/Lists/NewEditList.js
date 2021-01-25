@@ -5,8 +5,7 @@ import { Input } from "../../Search/SearchBar";
 import Header from "../../Header"; 
 import SearchDropDown from "./SearchDropDown"; 
 import { useHistory, } from "react-router-dom"; 
-import { useUserContext, UserContext } from "../../../context/UserContext"; 
-
+import { useUserContext, UserContext } from "../../../context/UserContext";  
 
 function NewList( { list } ) {  
   // if passed an existing list, you are in "edit" mode
@@ -96,26 +95,48 @@ function NewList( { list } ) {
 
     if(list_name.trim() === "") {
       // only required input 
-      alert("Name of List required"); 
+      alert("Name of list required"); 
       return; 
     }
+
+    // TODO
+    // DOUBLE CHECK, LIST NAME not taken!
+
+    // TODO
+    // what if change list name!
+  
 
     let redo = false; 
 
-    if(list !== undefined && ((init_name !== list_name) || (init_desc !== list_desc))){
-      // // have to CREATE a new list, w/ existing data + updated data b/c you changed the title or desc of the list 
+    // if(list !== undefined && ((init_name !== list_name) || (init_desc !== list_desc))){
+    //   // // have to CREATE a new list, w/ existing data + updated data b/c you changed the title or desc of the list 
 
-      // delete list
+    //   // delete list
 
-      //set redo to true; 
-      alert("TODO ! ");
-      return; 
-      
-    }
+    //   //set redo to true; 
+    //   alert("TODO ! ");
+    //   return; 
+    // }
 
     let res; 
-    let id; 
+   // let id; 
 
+    if(list === undefined){
+      // create NEW LIST, will include added films (if present)
+  
+      await axios.post(`/api/user/${user.account.details.username}/lists`, 
+        {
+          "name": list_name,
+          "description": list_desc,
+          "items": added_films
+        })
+        .then(res => {
+          console.log(res); 
+        })
+        .catch(err => console.log(err)); 
+    }
+
+    /*
     if(list === undefined || redo){
       // create NEW LIST, add each movie.  (same path if you update an existing list and change the Name of the list or Desc, have to start fresh)
     
@@ -142,9 +163,10 @@ function NewList( { list } ) {
       res = await axios.post(`https://api.themoviedb.org/3/list/${id}/clear?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&confirm=true`); // clear list
       if(res.data.success) add_films(id); 
     }
+    */ 
 
  
-    //UPDATE CONTEXT FOR APP 
+    // UPDATE CONTEXT FOR APP 
     let temp = {...account};
     temp.update = true;
     set_account(temp);
@@ -157,11 +179,18 @@ function NewList( { list } ) {
     // helper func. 
 
     for(let i=0; i<added_films.length; ++i){
-      await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+      await axios.post(``, 
         {
           media_id: added_films[i].id
         }).catch(error => console.log(error));  
     }
+
+    // for(let i=0; i<added_films.length; ++i){
+    //   await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+    //     {
+    //       media_id: added_films[i].id
+    //     }).catch(error => console.log(error));  
+    // }
 
   }
 
@@ -171,6 +200,8 @@ function NewList( { list } ) {
       <Header></Header>
 
       <Container>
+
+        <NewListHeader>New List</NewListHeader>
 
         <form onSubmit={handle_submit}>
           <Group>
@@ -214,6 +245,11 @@ function NewList( { list } ) {
 }
 
 // Style 
+const NewListHeader = styled.h2` 
+  color: #6f797d; 
+  border-bottom: 1px solid;
+`
+
 export const Container = styled.div`
   margin-top: 2%; 
   width: 60%; 
@@ -252,7 +288,7 @@ export const TextArea = styled.textarea`
   }
 `; 
 
-export const AddedItems = styled.div`
+const AddedItems = styled.div`
   border: 1px solid blue;
   margin-top: 1%; 
 `; 
