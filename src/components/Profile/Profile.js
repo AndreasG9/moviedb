@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../../context/UserContext"; 
 import ReactTooltip from "react-tooltip";
 import ProfileHeader from "./ProfileHeader"; 
+import {v4 as uuidv4} from "uuid"; 
 
 function Profile() {
   // get user rated movies, favorite, watchlist, and created lists 
 
-  const user = useContext(UserContext); 
-  console.log(user); 
-  // user.account.profile_details
+  const user = useContext(UserContext);  
+  console.log(user.account.user_data);
 
   function tool_tip(id, title, release_date){
     let retval = {}; 
@@ -101,14 +101,14 @@ function Profile() {
 
     if(Object.keys(user.account.user_data.lists).length === 0) return; 
 
-
     if(user !== undefined){
-     const three_lists = user.account.lists.slice(0, 3); 
+     const three_lists = user.account.user_data.lists.slice(0, 3); 
 
+      
      if(three_lists.length > 0){
         return (
           three_lists.map( list => (
-            <div key={list.id} style={{margin: "2% 0", display: "flex", padding: "2px", alignItems:"baseline"}} onClick={() => handle_list(list)}>
+            <div key={uuidv4()} style={{margin: "2% 0", display: "flex", padding: "2px", alignItems:"baseline"}} onClick={() => handle_list(list)}>
               <ListTitle>{list.name}</ListTitle>
               <ListTitle smaller>{list.item_count} {film_or_films(list.item_count)}</ListTitle>
             </div>

@@ -1,53 +1,31 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import styled from "styled-components"; 
 import { Container, Header, FiltersContainer, Select, Option} from "../Films"; 
-import { StyledLink } from "../Profile"; 
 import ReactPaginate from 'react-paginate';
-import axios from "axios"; 
 import { UserContext} from "../../../context/UserContext"; 
 import ProfileHeader from "../ProfileHeader"; 
 import { useHistory } from "react-router-dom"; 
+import {v4 as uuidv4} from "uuid"; 
 
  function Lists() {
   // other User pages link to film comp., lists goes here first to preview lists, them to films comp.  
 
+  // ********************************** TODO STRUCTURE BETTER ***********************************************************
+
   const user = useContext(UserContext); 
   const history = useHistory();  
+  let lists = useMemo( () => user.account.user_data.lists.length !== 0 ? user.account.user_data.lists : [user]); 
 
-  // easier to call 
-  let lists = user.account.lists.length !== 0 ? user.account.lists : []; 
   const POSTS_PER_PAGE = 10;
-  const TOTAL_POSTS = user.account.lists.length !== 0  ? user.account.lists.length : 0; 
+  const TOTAL_POSTS =  user.account.user_data.lists.length !== 0 ? user.account.user_data.lists.length : 0;
 
   const [current_page, set_current_page] = useState(1); 
   const [current, set_current] = useState([]); 
-  const [lists_data, set_lists_data] = useState([]); 
+  const [lists_data, set_lists_data] = useState(lists); // REMOVE
 
 
   useEffect( () => {
-    // lists with all their content 
-
-    const get_lists = async () => {
-      console.log("get lists"); 
-
-      let temp = []; 
-
-      for(let i=0; i<lists.length; ++i){
-        const res = await axios.get(`https://api.themoviedb.org/3/list/${lists[i].id}?api_key=${process.env.REACT_APP_API_KEY}`).catch(error => console.log(error)); 
-        if(res === undefined) return; 
-        temp = temp.concat(res.data);
-      }
-
-      set_lists_data(temp); 
-    }
-
-    get_lists(); 
-
-  }, [lists]);
-
-
-  useEffect( () => {
-    // show 30 of the results a page 
+    // show n of the results a page 
 
     if(lists.length > 0){
       const last = current_page * POSTS_PER_PAGE;
@@ -65,7 +43,7 @@ import { useHistory } from "react-router-dom";
 
     if(list.length > 0){
       return (
-        <React.Fragment key={list.id}>
+        <React.Fragment  key={uuidv4()}>
           {four_films.map( item => {
 
             return <MiniPoster src={`https://image.tmdb.org/t/p/w92/${item.poster_path}`} key={item.id}></MiniPoster>
@@ -75,7 +53,6 @@ import { useHistory } from "react-router-dom";
     }
   }
   
-
   function film_or_films(count){
     let res = ""; 
 
@@ -84,7 +61,6 @@ import { useHistory } from "react-router-dom";
 
     return count + " " + res; 
   }
-
 
   function get_short_desc(list){
     if(list.description.length < 50) return list.description;
@@ -113,7 +89,7 @@ import { useHistory } from "react-router-dom";
       
       <ProfileHeader></ProfileHeader>
 
-      <Header>You have {user.account.lists.length} lists</Header>
+      <Header>You have { user.account.user_data.lists.length} lists</Header>
 
      <div style={{display: "flex"}}>
         <FiltersContainer style={{width: "75%"}}>
@@ -127,10 +103,8 @@ import { useHistory } from "react-router-dom";
 
       <ListsContainer>
 
-      
-        {
-        current.map(list => (
-          <List key={list.id}>
+        {current.map(list => (
+          <List  key={uuidv4()}>
 
           <ListPreview onClick={() => handle_list(list)}>
             {get_list_preview(list.items)}
@@ -138,7 +112,7 @@ import { useHistory } from "react-router-dom";
 
           <div style={{display: "flex", flexDirection: "column", paddingLeft: "5px"}} onClick={() => handle_list(list)}>
               <ListTitle>{list.name}</ListTitle>
-              <ListItemCount>{film_or_films(list.item_count)}</ListItemCount>
+              <ListItemCount>{film_or_films(list.items.length)}</ListItemCount>
               <ListShortDesc>{get_short_desc(list)}</ListShortDesc>
           </div>
 
@@ -147,7 +121,6 @@ import { useHistory } from "react-router-dom";
         ))}
       </ListsContainer>
      
-
       <ReactPaginate
         nextClassName = "prev-next"
         previousClassName = "prev-next"
@@ -171,7 +144,6 @@ import { useHistory } from "react-router-dom";
 // Style 
 const ListsContainer = styled.div`
   width: 75%; 
-
 `; 
 
 const List = styled.div`
@@ -200,7 +172,6 @@ const ListPreview = styled.div`
   }
 `;
 
-
 const ListTitle = styled.div`
   color: #e1e3e5;
   font-size: 1.4em;
@@ -221,7 +192,7 @@ const ListShortDesc = styled.div`
   margin-top: 5%; 
 `; 
 
-const NewListBtn = styled.button`
+export const NewListBtn = styled.button`
   border: none; 
   color: #a5a5a5;
   background-color: #273038; 

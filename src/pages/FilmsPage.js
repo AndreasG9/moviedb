@@ -4,14 +4,13 @@ import Header from "../components/Header";
 import Films from "../components/Films/Films.js";
 
 
-function FilmsPage( {browseby, selected, genres} ) {
+function FilmsPage() {
   // /films/genre or decade or .... / sorting method 
 
   return (
     <div>
-    <Header></Header>
-    <Films browseby={browseby} selected={selected} genres={genres}></Films>
-    {/* <Footer></Footer> */}
+      <Header></Header>
+      <Films ></Films>
     </div>
   )
 }

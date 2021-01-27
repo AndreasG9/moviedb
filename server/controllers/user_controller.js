@@ -155,9 +155,9 @@ module.exports.update_lists = async(req, res) => {
   const user = await User.findOne({username: req.params.username});
   let found = user.lists.find(list => list._id === req.body.id); 
 
-
   if(found){
     // update exisiting list (name, desc, and/or items)
+    console.log("edit list");
 
   }
   else{
@@ -169,6 +169,27 @@ module.exports.update_lists = async(req, res) => {
     .then(res.send({success: true, message: "list created"}))
     .catch(err => res.status(400).send({success: false, message: "could not create new list"}));  
   }
+}
+
+module.exports.delete_list = async(req, res) => {
+  // delete a list
+
+  const user = await User.findOne({username: req.params.username});
+  let found = false; 
+
+  user.lists.forEach( list => {
+    // eslint-disable-next-line eqeqeq
+    if(list._id == req.params.list) found = true; 
+  })
+
+  if(found){
+    await User.updateOne({username: req.params.username}, 
+      { $pull: {lists: { _id: req.params.list } } }, 
+      { new: true, useFindAndModify: false } )
+      .then(res.send({success: true, message: "list deleted"}))
+      .catch(err => res.status(400).send({success: false, message: "failed to delete list"}));
+  }
+  
 }
 
 module.exports.temp = async(req, res) => {

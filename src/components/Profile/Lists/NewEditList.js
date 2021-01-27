@@ -53,29 +53,27 @@ function NewList( { list } ) {
 
   const handle_cancel = () => {
     // go back to lists 
-    history.push(`/user/${user.account.details.username}/lists`);
+
+    let res = window.confirm("Are you sure you want to get back to lists?"); 
+
+    if(res) history.push(`/user/${user.account.details.username}/lists`); 
   }
 
   const handle_delete = async () => {
     let res = window.confirm("Are you sure you want to delete this list"); 
+    console.log(list);
 
     if(res){
       // delete list 
-
-      // FIX you fucking idiot 
-
-      // console.log(res); 
-      const retval = await axios.delete(`https://api.themoviedb.org/3/list/${list.id}?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`);
-      console.log(retval);
        
+      await axios.post(`/api/user/${user.account.details.username}/lists/${list._id}/delete`).catch(err => console.log(err)); 
 
-      // let temp = {...account};
-      // temp.update = true;
-      // set_account(temp);
 
-      //update(); 
+      let temp = {...account};
+      temp.update = true; 
+      set_account(temp);
+
       history.push(`/user/${user.account.details.username}/lists`); // success 
-      //if(retval.data.status_code === 12) history.push(`/user/${user.account.details.username}/lists`); // success 
     }
 
   }
@@ -98,13 +96,6 @@ function NewList( { list } ) {
       alert("Name of list required"); 
       return; 
     }
-
-    // TODO
-    // DOUBLE CHECK, LIST NAME not taken!
-
-    // TODO
-    // what if change list name!
-  
 
     let redo = false; 
 
@@ -134,6 +125,11 @@ function NewList( { list } ) {
           console.log(res); 
         })
         .catch(err => console.log(err)); 
+    }
+    else{
+      // EDIT 
+
+
     }
 
     /*
@@ -175,24 +171,24 @@ function NewList( { list } ) {
     history.push(`/user/${user.account.details.username}/lists`);
   }
 
-  const add_films = async (id) => {
-    // helper func. 
+  // const add_films = async (id) => {
+  //   // helper func. 
 
-    for(let i=0; i<added_films.length; ++i){
-      await axios.post(``, 
-        {
-          media_id: added_films[i].id
-        }).catch(error => console.log(error));  
-    }
+  //   for(let i=0; i<added_films.length; ++i){
+  //     await axios.post(``, 
+  //       {
+  //         media_id: added_films[i].id
+  //       }).catch(error => console.log(error));  
+  //   }
 
-    // for(let i=0; i<added_films.length; ++i){
-    //   await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-    //     {
-    //       media_id: added_films[i].id
-    //     }).catch(error => console.log(error));  
-    // }
+  //   // for(let i=0; i<added_films.length; ++i){
+  //   //   await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
+  //   //     {
+  //   //       media_id: added_films[i].id
+  //   //     }).catch(error => console.log(error));  
+  //   // }
 
-  }
+  // }
 
 
   return (

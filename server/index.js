@@ -15,9 +15,9 @@ app.use("/api", api_router);
 
 // Connect mongodb
 mongoose.connect(process.env.MONGO_URI, 
-  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}, 
+  { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false}, 
   () => console.log("connected to db"))
-  .catch(error => console.log(error)); 
+  // .catch(error => console.log(error)); 
 
 
 // todo production, no proxy 

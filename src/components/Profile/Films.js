@@ -27,6 +27,7 @@ function Films( {list} ) {
   if(ACTIVE_NAV === "list") {
     init_results = list !== undefined ? list.items : [];
     TOTAL_POSTS = list !== undefined ? list.item_count : 0;
+
   }
   else {
     init_results = Object.keys(user.account.details).length !== 0 ? user.account.user_data[ACTIVE_NAV] : ""; 
@@ -84,7 +85,8 @@ function Films( {list} ) {
   function include_desc(){
     // only iff a list 
 
-    if(ACTIVE_NAV === "lists"){
+    if(ACTIVE_NAV === "list"){ 
+
       return (
         <Description>
           {list.description || "no description"}
@@ -128,6 +130,14 @@ function Films( {list} ) {
     history.push(target, {movie_id: film.id});
   } 
 
+  // const get_edit_btn = () => {
+  //   // if you are viewing a list, btn to take you to page to edit/ delelte the list
+
+  //   if(ACTIVE_NAV === "list"){
+  //     return <EditListBtn onClick={handle_list_edit}>Edit or Delete List...</EditListBtn>
+  //   }
+  // }
+
 
   return (
     <Container>
@@ -137,6 +147,7 @@ function Films( {list} ) {
       {get_header()}
 
       <FiltersContainer>
+          
           <label>Sort By</label>
           <Select onChange={handle_sorting} id="sort-by-id">
 
@@ -275,7 +286,6 @@ export const FiltersContainer = styled.div`
   @media only screen and (max-width: 1100px) {
     width: 86%;
  }
-
 `; 
 
 export const Select = styled.select`
@@ -357,7 +367,6 @@ const Description = styled.div`
   @media only screen and (max-width: 1100px) {
     width: 86%;
  }
-
 `; 
 
 const Button = styled.button`
@@ -375,6 +384,27 @@ const Button = styled.button`
   &:hover{
     cursor: pointer;
     color: #e1e3e5;
+  }
+`; 
+
+export const EditListBtn = styled.button`
+  border: none; 
+  color: #a5a5a5;
+  background-color: #273038; 
+  border-radius: 8%;
+  padding: 4px;
+  font-size: 1.1em;  
+  text-align: center; 
+  
+  margin-right: 48%; 
+
+  &:hover{
+    cursor: pointer;
+    color: #e1e3e5;
+  }
+
+  &:focus{
+    outline: none;
   }
 `; 
 
