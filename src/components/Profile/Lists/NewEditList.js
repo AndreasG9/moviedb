@@ -15,17 +15,15 @@ function NewList( { list } ) {
   let init_name = list !== undefined ? list.name : "";
   let init_desc = list !== undefined ? list.description : "";
   let init_films = list !== undefined ? list.items : [];
-
+ 
   const history = useHistory(); 
   const user = useContext(UserContext); 
-
   const { set_account } = useUserContext(); 
   const { account } = useContext(UserContext); 
 
   const [list_name, set_list_name] = useState(init_name);
   const [list_desc, set_list_desc] = useState(init_desc); 
   const [added_films, set_added_films] = useState(init_films); 
- // const [block, set_block] = useState(true);
 
   
   function context_button(){
@@ -60,14 +58,13 @@ function NewList( { list } ) {
   }
 
   const handle_delete = async () => {
-    let res = window.confirm("Are you sure you want to delete this list"); 
+    let res = window.confirm("Are you sure you want to delete this list?"); 
     console.log(list);
 
     if(res){
       // delete list 
        
       await axios.post(`/api/user/${user.account.details.username}/lists/${list._id}/delete`).catch(err => console.log(err)); 
-
 
       let temp = {...account};
       temp.update = true; 
@@ -97,25 +94,11 @@ function NewList( { list } ) {
       return; 
     }
 
-    let redo = false; 
-
-    // if(list !== undefined && ((init_name !== list_name) || (init_desc !== list_desc))){
-    //   // // have to CREATE a new list, w/ existing data + updated data b/c you changed the title or desc of the list 
-
-    //   // delete list
-
-    //   //set redo to true; 
-    //   alert("TODO ! ");
-    //   return; 
-    // }
-
-    let res; 
-   // let id; 
 
     if(list === undefined){
       // create NEW LIST, will include added films (if present)
   
-      await axios.post(`/api/user/${user.account.details.username}/lists`, 
+      await axios.post(`/api/user/${user.account.details.username}/lists/new`, 
         {
           "name": list_name,
           "description": list_desc,
@@ -127,41 +110,28 @@ function NewList( { list } ) {
         .catch(err => console.log(err)); 
     }
     else{
-      // EDIT 
+      // EDIT (name, desc, and/or items)
+      
+      // let updated_list = {
+      //   _id: list._id,
+      //   name: list_name,
+      //   description: list_desc,
+      //   items: added_films
+      // }
 
-
+      await axios.post(`/api/user/${user.account.details.username}/lists/${list._id}/edit`,
+        { 
+          _id: list._id,
+          name: list_name,
+          description: list_desc,
+          items: added_films
+        })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => console.log(err));
     }
 
-    /*
-    if(list === undefined || redo){
-      // create NEW LIST, add each movie.  (same path if you update an existing list and change the Name of the list or Desc, have to start fresh)
-    
-      res = await axios.post(`https://api.themoviedb.org/3/list?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-        {
-          "name": list_name,
-          "description": list_desc,
-          "language": "en"
-        }).catch(error => console.log(error)); 
-
-      if(res === undefined) return; 
-    
-      if(res.data.success){
-        id = res.data.list_id; 
-        add_films(id); 
-      }
-    }
-
-    else {
-      // easiest way to only update items is to clear the list and just add added_films, 
-      // rather than comparing init list and added_films and adding and removing appropriately
-      id = list.id; // use existing list id 
-
-      res = await axios.post(`https://api.themoviedb.org/3/list/${id}/clear?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}&confirm=true`); // clear list
-      if(res.data.success) add_films(id); 
-    }
-    */ 
-
- 
     // UPDATE CONTEXT FOR APP 
     let temp = {...account};
     temp.update = true;

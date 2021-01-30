@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components"; 
 import { Container, Header, FiltersContainer, Select, Option} from "../Films"; 
 import ReactPaginate from 'react-paginate';
@@ -14,7 +14,7 @@ import {v4 as uuidv4} from "uuid";
 
   const user = useContext(UserContext); 
   const history = useHistory();  
-  let lists = useMemo( () => user.account.user_data.lists.length !== 0 ? user.account.user_data.lists : [user]); 
+  let lists = user.account.user_data.lists.length !== 0 ? user.account.user_data.lists : [];
 
   const POSTS_PER_PAGE = 10;
   const TOTAL_POSTS =  user.account.user_data.lists.length !== 0 ? user.account.user_data.lists.length : 0;

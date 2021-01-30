@@ -82,7 +82,6 @@ module.exports.get_watchlist = async (req, res) => {
   // return a users watchlist 
 }
 
-
 module.exports.update_favorites = async (req, res) => {
 
   if(req.body.favorite === true){
@@ -149,25 +148,37 @@ module.exports.update_ratings = async(req, res) => {
   }
 }
 
+module.exports.new_list = async(req, res) => {
+  // New list
+
+  await User.updateOne({username: req.params.username}, 
+    { $push : { lists: req.body } }, 
+    { new: true, useFindAndModify: false } )
+  .then(res.send({success: true, message: "list created"}))
+  .catch(err => res.status(400).send({success: false, message: "could not create new list"}));  
+}
+
 module.exports.update_lists = async(req, res) => {
-  // NEW or EDIT! 
+  // Edit list 
 
   const user = await User.findOne({username: req.params.username});
-  let found = user.lists.find(list => list._id === req.body.id); 
+
+  let found = false; 
+
+  user.lists.forEach( list => {
+    // eslint-disable-next-line eqeqeq
+    if(list._id == req.params.list) found = true; 
+  });  
 
   if(found){
     // update exisiting list (name, desc, and/or items)
-    console.log("edit list");
 
-  }
-  else{
-    // new list 
-    console.log("new list");
-    await User.updateOne({username: req.params.username}, 
-      { $push : { lists: req.body } }, 
-      { new: true, useFindAndModify: false } )
-    .then(res.send({success: true, message: "list created"}))
-    .catch(err => res.status(400).send({success: false, message: "could not create new list"}));  
+    await User.findOneAndUpdate(
+      { "lists._id": req.params.list },
+      { $set: { "lists.$.name": req.body.name, "lists.$.description": req.body.description, "lists.$.items": req.body.items } }, 
+      { new: true, useFindAndModify: false })
+      .then(res.send({success: true, message: "list updated"}))
+      .catch(err => res.status(400).send({success: false, message: "could not update list"})); 
   }
 }
 
@@ -180,7 +191,7 @@ module.exports.delete_list = async(req, res) => {
   user.lists.forEach( list => {
     // eslint-disable-next-line eqeqeq
     if(list._id == req.params.list) found = true; 
-  })
+  }); 
 
   if(found){
     await User.updateOne({username: req.params.username}, 
