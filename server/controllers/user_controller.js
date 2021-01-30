@@ -79,7 +79,7 @@ module.exports.update_watchlist = async (req, res) => {
 }
 
 module.exports.get_watchlist = async (req, res) => {
-  // return a users watchlist 
+  // return a users watchlist TODO if don't want parse user returned
 }
 
 module.exports.update_favorites = async (req, res) => {
@@ -158,8 +158,8 @@ module.exports.new_list = async(req, res) => {
   .catch(err => res.status(400).send({success: false, message: "could not create new list"}));  
 }
 
-module.exports.update_lists = async(req, res) => {
-  // Edit list 
+module.exports.update_list = async(req, res) => {
+  // Edit list (TODO, fix efficiency; dont just replace all, combine update list and append list)
 
   const user = await User.findOne({username: req.params.username});
 
@@ -180,6 +180,17 @@ module.exports.update_lists = async(req, res) => {
       .then(res.send({success: true, message: "list updated"}))
       .catch(err => res.status(400).send({success: false, message: "could not update list"})); 
   }
+}
+
+module.exports.append_list = async(req, res) => {
+  // temp, will merge into update list 
+
+  await User.findOneAndUpdate(
+    { "lists._id": req.params.list },
+    { $push: { "lists.$.items": req.body } }, 
+    { new: true, useFindAndModify: false })
+    .then(res.send({success: true, message: "list updated"}))
+    .catch(err => res.status(400).send({success: false, message: "could not update list"})); 
 }
 
 module.exports.delete_list = async(req, res) => {

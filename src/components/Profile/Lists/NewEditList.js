@@ -112,13 +112,6 @@ function NewList( { list } ) {
     else{
       // EDIT (name, desc, and/or items)
       
-      // let updated_list = {
-      //   _id: list._id,
-      //   name: list_name,
-      //   description: list_desc,
-      //   items: added_films
-      // }
-
       await axios.post(`/api/user/${user.account.details.username}/lists/${list._id}/edit`,
         { 
           _id: list._id,
@@ -140,26 +133,6 @@ function NewList( { list } ) {
     // go to user lists to see update 
     history.push(`/user/${user.account.details.username}/lists`);
   }
-
-  // const add_films = async (id) => {
-  //   // helper func. 
-
-  //   for(let i=0; i<added_films.length; ++i){
-  //     await axios.post(``, 
-  //       {
-  //         media_id: added_films[i].id
-  //       }).catch(error => console.log(error));  
-  //   }
-
-  //   // for(let i=0; i<added_films.length; ++i){
-  //   //   await axios.post(`https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`, 
-  //   //     {
-  //   //       media_id: added_films[i].id
-  //   //     }).catch(error => console.log(error));  
-  //   // }
-
-  // }
-
 
   return (
     <React.Fragment>
@@ -271,8 +244,7 @@ export const Btn = styled.button`
   text-align: center; 
   margin-right: 3px; 
   width: 110px; 
-   
-
+  
   &:hover{
     cursor: pointer;
     color: #adadff;

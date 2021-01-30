@@ -90,6 +90,17 @@ const Routes = ( { current_user } ) => (
           </NewEditList>)}> 
       </Route>
 
+      
+      <Route
+        path="/user/:username/list/new"
+        render = { () => !current_user ? 
+          (<Redirect to="/"></Redirect>) : 
+          (<NewEditList>
+          </NewEditList>)}>  
+      </Route>
+
+      {/* (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}>  */}
+
       <Route 
         path="/user/:username/list/:list" 
         render = { (props) => !current_user ? 
@@ -98,17 +109,6 @@ const Routes = ( { current_user } ) => (
             list={props.location.state.list}>
           </UserFilmsPage>)}> 
         </Route>
-
-        <Route
-        path="/user/:username/list/new"
-        render = { () => !current_user ? 
-          (<Redirect to="/"></Redirect>) : 
-          (<NewEditList
-            >
-          </NewEditList>)}>  
-      </Route>
-
-      {/* (<Redirect to="/"></Redirect>) : (<UserFilmsPage></UserFilmsPage>)}>  */}
 
       <Route
         path="/user/:username/lists"

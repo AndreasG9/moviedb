@@ -161,8 +161,6 @@ function AccountLog( {result} ) {
       rating: event.target.value 
     }
 
-    console.log(film); 
-
     await axios.post(`/api/user/${user.account.details.username}/ratings`, {
       film: film
     })
@@ -205,23 +203,18 @@ function AccountLog( {result} ) {
   }
 
   const handle_list = async (event) => {
+    // Add film to exisiting list 
     const id = event.target.value; 
 
-    // const get_list = `https://api.themoviedb.org/3/list/${id}?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`;
+    // Todo check item already on list! 
 
-    // // check if already added to that specific list 
-    // const res = await axios.get(get_list); 
-    // const found = res.data.items.find(item => item.id === result.id); 
-
-    // if(found) alert("film already added to that list"); 
-
-    // else{
-    //   const add_to_list = `https://api.themoviedb.org/3/list/${id}/add_item?api_key=${process.env.REACT_APP_API_KEY}&session_id=${localStorage.getItem("session_id")}`;
-
-    //   await axios.post(add_to_list, {
-    //     "media_id": result.id
-    //   }, 
-    //   header).catch( (error) => console.log(error));  
+    await axios.post(`/api/user/${user.account.details.username}/lists/${id}/append`, result )
+    .then(res => {
+      let temp = {...account};
+      temp.update = true; 
+      set_account(temp);
+    })
+    .catch(err => console.log(err));
 
     // window.location.reload(false); 
     // }
@@ -244,7 +237,7 @@ function AccountLog( {result} ) {
         <Select smaller onChange={handle_list}>
           <Option hidden value="title">Add to a list...</Option>
           {user.account.user_data.lists.map(list => (
-            <Option value={list.id} key={list.id}>{list.name}</Option>
+            <Option value={list._id} key={list._id}>{list.name}</Option>
           ))}
         </Select>
       </AddList>
